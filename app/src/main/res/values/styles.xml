@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.Channels" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Base.Theme.Channels.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="Base.Theme.Channels.SubHeader">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:fontFamily">@string/subheader_font_family</item>
+    </style>
+
+    <style name="Base.Theme.Channels.NavDrawerItem">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="Base.Theme.Channels.TwoLineListPrimary">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="Base.Theme.Channels.TwoLineListSecondary">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/secondary_text_default_material_light</item>
+    </style>
+
+    <style name="Theme.Channels" parent="Base.Theme.Channels">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.Channels.ActionBar" parent="Base.Theme.Channels.ActionBar">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="Theme.Channels.ActionBar.Transparent" parent="Base.Theme.Channels.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.Channels.NavigationDrawer" parent="Base.Theme.Channels">
+        <item name="textAppearanceListItem">@style/Theme.Channels.NavDrawerItem</item>
+    </style>
+
+    <style name="Theme.Channels.SubHeader" parent="Base.Theme.Channels.SubHeader"/>
+
+    <style name="Theme.Channels.NavDrawerItem" parent="Base.Theme.Channels.NavDrawerItem">
+        <item name="android:fontFamily">@string/subheader_font_family</item>
+    </style>
+
+    <style name="Theme.Channels.TwoLineListPrimary"
+           parent="Base.Theme.Channels.TwoLineListPrimary"/>
+
+    <style name="Theme.Channels.TwoLineListSecondary"
+           parent="Base.Theme.Channels.TwoLineListSecondary"/>
+
+    <style name="Theme.Channels.NavigationDrawer.Secondary"
+           parent="Base.Theme.Channels.TwoLineListSecondary">
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>

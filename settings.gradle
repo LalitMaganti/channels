@@ -1,0 +1,2 @@
+include ':app', ':relay-jvm:relay', ':relay-jvm:android', ':relay-jvm:annotations',
+        ':relay-jvm:compiler'

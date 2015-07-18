@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Channels</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="navigation_font_family" translatable="false">sans-serif</string>
+    <string name="subheader_font_family" translatable="false">sans-serif-medium</string>
+    <string name="status_disconnected">Disconnected</string>
+</resources>

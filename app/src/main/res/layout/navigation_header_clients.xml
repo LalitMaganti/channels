@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<co.fusionx.channels.view.ServerCarouselView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="150dp">
+
+    <ImageView
+        android:id="@+id/view_navigation_drawer_header_image"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/colorPrimaryDark"
+        android:scaleType="fitXY"
+        android:src="?selectableItemBackground"/>
+
+    <co.fusionx.channels.navigation.view.BezelImageView
+        android:id="@+id/profile_image"
+        android:layout_width="@dimen/navdrawer_profile_image_size_small"
+        android:layout_height="@dimen/navdrawer_profile_image_size_small"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="@dimen/navigation_drawer_top_margin"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/person_image_empty"
+        app:maskDrawable="@drawable/circle_mask"/>
+
+    <co.fusionx.channels.navigation.view.BezelImageView
+        android:id="@+id/profile_image_3"
+        android:layout_width="@dimen/navdrawer_profile_image_size_small"
+        android:layout_height="@dimen/navdrawer_profile_image_size_small"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/navigation_drawer_top_margin"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/person_image_empty"
+        app:maskDrawable="@drawable/circle_mask"/>
+
+    <co.fusionx.channels.navigation.view.BezelImageView
+        android:id="@+id/profile_image_2"
+        android:layout_width="@dimen/navdrawer_profile_image_size_small"
+        android:layout_height="@dimen/navdrawer_profile_image_size_small"
+        android:layout_marginTop="@dimen/navigation_drawer_top_margin"
+        android:layout_toStartOf="@id/profile_image_3"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/person_image_empty"
+        app:maskDrawable="@drawable/circle_mask"/>
+</co.fusionx.channels.view.ServerCarouselView>

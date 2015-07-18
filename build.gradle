@@ -1,0 +1,37 @@
+allprojects {
+    buildscript {
+        repositories {
+            jcenter()
+        }
+    }
+    repositories {
+        jcenter()
+    }
+}
+
+ext {
+    kotlinVersion = '1.0.0-beta-4589'
+    kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    kotlinAndroid = "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
+    kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
+    relay = ':relay-jvm:relay'
+    relayAndroid = ':relay-jvm:android'
+    relayAnnotations = ':relay-jvm:annotations'
+    relayCompiler = ':relay-jvm:compiler'
+
+    kovenant = 'nl.komponents.kovenant:kovenant:3.0.0-beta.4'
+    kovenantAndroid = 'nl.komponents.kovenant:kovenant-android:3.0.0-beta.4'
+
+    dagger = 'com.google.dagger:dagger:2.0.1'
+    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0.2'
+    annotation = 'javax.annotation:jsr250-api:1.0'
+
+    okio = 'com.squareup.okio:okio:1.6.0'
+
+    junit = 'junit:junit:4.12'
+    truth = 'com.google.truth:truth:0.28'
+    assertj = 'org.assertj:assertj-core:3.3.0'
+    mockito = 'org.mockito:mockito-core:2.0.41-beta'
+}
