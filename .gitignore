@@ -1,5 +1,45 @@
+bin/
+gen/
+.metadata
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~
+lint.xml
+
+.classpath
+.settings/
+.loadpath
 .gradle
-/local.properties
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# Idea files
 .idea
-.DS_Store
-/build
+build
+*.iml
+out
+
+# built application files
+*.apk
+*.ap_
+
+# Java class files
+*.class
+
+local.properties
+project.properties
+# Contains release info
+signing.properties
+notes
+
+# Crashlytics
+crashlytics.properties
+crashlytics-build.properties
+com_crashlytics_export_strings.xml
+
+# Crowdin
+crowdin*
