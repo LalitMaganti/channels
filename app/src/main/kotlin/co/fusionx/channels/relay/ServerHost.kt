@@ -9,5 +9,5 @@ class ServerHost(override val name: CharSequence) : ClientChild(), EventListener
 
     override fun onSocketConnect() = add("Connection was successful.")
     override fun onGenericCode(code: Int, text: String): Unit = add("$code: $text")
-    override fun onWelcome(text: String) = add(text)
+    override fun onWelcome(target: String, text: String) = add(text)
 }
