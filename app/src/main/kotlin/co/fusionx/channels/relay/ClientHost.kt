@@ -64,6 +64,10 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
     }
 
     private class BasicEventListener(private val client: RelayClient) : EventListener {
+        override fun onPing(server: String) {
+            client.send(ClientGenerator.pong(server))
+        }
+
         override fun onSocketConnect() {
             client.send(ClientGenerator.nick("tilal6993"))
             client.send(ClientGenerator.user("tilal6993", "Lalit"))
