@@ -2,121 +2,123 @@ package co.fusionx.channels.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ExpandableListView
-import android.widget.TextView
 import co.fusionx.channels.R
-import co.fusionx.channels.base.objectProvider
-import co.fusionx.channels.observable.ObservableList
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
-import co.fusionx.channels.relay.RelayHost
 import co.fusionx.channels.view.EmptyViewRecyclerViewLayout
+import timber.log.Timber
 
 public class NavigationAdapter(
         private val context: Context,
-        private val clientClickListener: (ClientHost) -> Unit,
-        private val childClickListener: (ClientChild) -> Unit) :
-        EmptyViewRecyclerViewLayout.Adapter<NavigationAdapter.ViewHolder>(),
-        ObservableList.Observer {
+        clientClickListener: (ClientHost) -> Unit,
+        childClickListener: (ClientChild) -> Unit) :
+        EmptyViewRecyclerViewLayout.Adapter<NavigationAdapter.ViewHolder>() {
 
     internal var currentType: Int = VIEW_TYPE_CLIENT
         private set
 
-    private val inflater = lazy(LazyThreadSafetyMode.NONE) { LayoutInflater.from(context) }
-    private val relayHost: RelayHost
+    private val inflater: LayoutInflater
 
-    private val headerCount: Int
-        get() = 1
+    private val childAdapter: NavigationChildAdapter
+    private val clientAdapter: NavigationClientAdapter
+
+    private val headerCount = 1
+    private val footerCount = 0
     private val contentCount: Int
-        get() = if (currentType == VIEW_TYPE_CHILD) {
-            relayHost.selectedClient!!.children.size
-        } else {
-            relayHost.clients.size
+        get() {
+            if (currentType == VIEW_TYPE_CHILD) {
+                return childAdapter.itemCount
+            } else {
+                return clientAdapter.itemCount
+            }
         }
-    private val footerCount: Int
-        get() = if (currentType == VIEW_TYPE_CHILD) 0 else 0
+
+    private val observer = ChildAdapterObserver()
 
     init {
-        relayHost = context.objectProvider.relayHost()
-        relayHost.clients.addObserver(object : ObservableList.Observer {
-            override fun onAdd(position: Int) {
-                if (currentType == VIEW_TYPE_CLIENT) notifyItemInserted(headerCount + position)
-            }
-        })
+        inflater = LayoutInflater.from(context)
+
+        clientAdapter = NavigationClientAdapter(context, clientClickListener)
+        childAdapter = NavigationChildAdapter(context, childClickListener)
+
+        clientAdapter.registerAdapterDataObserver(observer)
     }
 
     fun updateCurrentType(type: Int) {
+        if (type == currentType) return
+
+        if (currentType == VIEW_TYPE_CLIENT) {
+            clientAdapter.unregisterAdapterDataObserver(observer)
+        } else if (currentType == VIEW_TYPE_CHILD) {
+            childAdapter.stopObserving()
+            childAdapter.unregisterAdapterDataObserver(observer)
+        } else {
+            Timber.e("This should not be happening.")
+        }
+
         notifyItemRangeRemoved(headerCount, contentCount + footerCount)
         currentType = type
         notifyItemRangeInserted(headerCount, contentCount + footerCount)
 
         if (currentType == VIEW_TYPE_CHILD) {
-            relayHost.selectedClient!!.children.forEach { it.buffer.addObserver(this) }
+            childAdapter.startObserving()
+            childAdapter.registerAdapterDataObserver(observer)
+        } else if (currentType == VIEW_TYPE_CHILD) {
+            clientAdapter.registerAdapterDataObserver(observer)
         } else {
-            relayHost.selectedClient?.children?.forEach { it.buffer.removeObserver(this) }
+            Timber.e("This should not be happening.")
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, type: Int): ViewHolder? = when (type) {
         VIEW_TYPE_HEADER -> HeaderViewHolder(
-                inflater.value.inflate(R.layout.navigation_header_clients, parent, false))
-        VIEW_TYPE_CLIENT -> ClientViewHolder(
-                inflater.value.inflate(R.layout.navigation_client, parent, false))
+                inflater.inflate(R.layout.navigation_header_clients, parent, false))
+        VIEW_TYPE_CLIENT -> clientAdapter.onCreateViewHolder(parent, type)
         VIEW_TYPE_CLIENT_FOOTER -> ClientFooterViewHolder(
-                inflater.value.inflate(R.layout.navigation_client_footer, parent, false))
-        VIEW_TYPE_CHILD -> ChildViewHolder(
-                inflater.value.inflate(R.layout.navigation_client_children, parent, false))
+                inflater.inflate(R.layout.navigation_client_footer, parent, false))
+        VIEW_TYPE_CHILD -> childAdapter.onCreateViewHolder(parent, type)
         VIEW_TYPE_DIVIDER -> DividerViewHolder(
-                inflater.value.inflate(R.layout.recycler_divider, parent, false))
+                inflater.inflate(R.layout.recycler_divider, parent, false))
         else -> null
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+        val viewType = getItemViewType(position)
+        if (viewType == VIEW_TYPE_CHILD) {
+            childAdapter.bindViewHolder(holder, position - headerCount)
+        } else if (viewType == VIEW_TYPE_CLIENT) {
+            clientAdapter.bindViewHolder(holder, position - headerCount)
+        } else {
+            holder.bind(position)
+        }
     }
 
     override fun isEmpty(): Boolean = false
     override fun getItemCount(): Int = headerCount + contentCount + footerCount
 
-    override fun getItemViewType(position: Int): Int {
-        if (position == 0) return VIEW_TYPE_HEADER
-        return currentType
-    }
+    override fun getItemViewType(position: Int): Int =
+            if (position < headerCount)
+                VIEW_TYPE_HEADER
+            else if (position < headerCount + contentCount)
+                currentType
+            else
+                VIEW_TYPE_DIVIDER
 
     inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView) {
         private val background = itemView.findViewById(R.id.view_navigation_drawer_header_image)
 
         override fun bind(position: Int) {
+            /*
             background.setOnClickListener {
                 if (relayHost.selectedClient != null) {
                     updateCurrentType(if (currentType == VIEW_TYPE_CHILD) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
                 }
             }
-        }
-    }
-
-    inner class ClientViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val title = itemView.findViewById(R.id.drawer_client_title) as TextView
-        private val status = itemView.findViewById(R.id.drawer_client_status) as TextView
-
-        override fun bind(position: Int) {
-            val item = relayHost.clients[position - headerCount]
-            itemView.setOnClickListener { clientClickListener(item) }
-        }
-    }
-
-    inner class ChildViewHolder(itemView: View) : ViewHolder(itemView) {
-        private val title = itemView.findViewById(R.id.drawer_client_children_title) as TextView
-        private val message = itemView.findViewById(R.id.drawer_client_children_message) as TextView
-
-        override fun bind(position: Int) {
-            val child = relayHost.selectedClient!!.children[position - headerCount]
-            title.text = child.name
-            message.text = child.message
-            itemView.setOnClickListener { childClickListener(child) }
+            */
         }
     }
 
@@ -137,14 +139,38 @@ public class NavigationAdapter(
     }
 
     companion object {
-        val VIEW_TYPE_HEADER: Int = 0
-        val VIEW_TYPE_CLIENT: Int = 1
-        val VIEW_TYPE_CLIENT_FOOTER: Int = 2
-        val VIEW_TYPE_CHILD: Int = 3
-        val VIEW_TYPE_DIVIDER: Int = 4
+        const val VIEW_TYPE_HEADER: Int = 0
+        const val VIEW_TYPE_CLIENT: Int = 1
+        const val VIEW_TYPE_CLIENT_FOOTER: Int = 2
+        const val VIEW_TYPE_CHILD: Int = 3
+        const val VIEW_TYPE_DIVIDER: Int = 4
     }
 
-    override fun onAdd(position: Int) {
-        notifyItemRangeChanged(headerCount, contentCount)
+    private inner class ChildAdapterObserver : RecyclerView.AdapterDataObserver() {
+        override fun onChanged() {
+            notifyDataSetChanged()
+        }
+
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+            notifyItemRangeChanged(positionStart + headerCount, itemCount)
+        }
+
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+            notifyItemRangeChanged(positionStart + headerCount, itemCount, payload)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            notifyItemRangeInserted(positionStart + headerCount, itemCount)
+        }
+
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            notifyItemRangeRemoved(positionStart + headerCount, itemCount)
+        }
+
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            for (i in 0..itemCount) {
+                notifyItemMoved(fromPosition + i + headerCount, toPosition + i + headerCount)
+            }
+        }
     }
 }

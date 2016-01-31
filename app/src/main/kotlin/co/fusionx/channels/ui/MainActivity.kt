@@ -3,7 +3,6 @@ package co.fusionx.channels.ui
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CoordinatorLayout
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -11,11 +10,9 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import butterknife.bindView
 import co.fusionx.channels.R
-import co.fusionx.channels.base.objectProvider
 import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
-import co.fusionx.channels.relay.RelayHost
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
 import kotlin.properties.Delegates
@@ -53,17 +50,21 @@ public class MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawers()
             }
         }
+        eventRecycler.callbacks = object : EventRecyclerView.Callbacks {
+            override fun onBottomScrollPosted() {
+                appbar.setExpanded(false)
+            }
+        }
+
+        if (savedInstanceState == null) {
+            eventRecycler.switchContent()
+        }
     }
 
     /* ActionBarDrawerToggle overrides */
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         actionBarDrawerToggle.syncState()
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        // appbar.setExpanded(true)
     }
 
     override fun onConfigurationChanged(config: Configuration) {

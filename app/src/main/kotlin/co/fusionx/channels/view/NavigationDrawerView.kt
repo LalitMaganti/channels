@@ -30,10 +30,12 @@ public class NavigationDrawerView @JvmOverloads constructor(
 
         recycler.layoutManager = LinearLayoutManager(context)
 
-        adapter = NavigationAdapter(context, { callbacks.onClientClick(it) }) {
-            callbacks.onChildClick(it)
+        if (!isInEditMode) {
+            adapter = NavigationAdapter(context, { callbacks.onClientClick(it) }) {
+                callbacks.onChildClick(it)
+            }
+            emptyRecyclerLayout.setRecyclerAdapter(adapter)
         }
-        emptyRecyclerLayout.setRecyclerAdapter(adapter)
     }
 
     public override fun onSaveInstanceState(): Parcelable {
