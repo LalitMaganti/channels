@@ -168,7 +168,7 @@ public class NavigationAdapter(
         }
 
         override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
-            for (i in 0..itemCount) {
+            for (i in 0..itemCount - 1) {
                 notifyItemMoved(fromPosition + i + headerCount, toPosition + i + headerCount)
             }
         }
