@@ -1,24 +1,26 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
+import android.databinding.DataBindingUtil
+import android.databinding.ObservableList
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.objectProvider
-import co.fusionx.channels.observable.ObservableList
+import co.fusionx.channels.databinding.NavigationClientBinding
+import co.fusionx.channels.databinding.ObservableListRecyclerAdapterProxy
 import co.fusionx.channels.relay.ClientHost
 
 class NavigationClientAdapter(
         private val context: Context,
         private val clientClickListener: (ClientHost) -> Unit) :
-        RecyclerView.Adapter<NavigationAdapter.ViewHolder>(),
-        ObservableList.Observer {
+        RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
     private val clients: ObservableList<ClientHost>
+
+    private val listener = ObservableListRecyclerAdapterProxy<ClientHost>(this)
 
     init {
         inflater = LayoutInflater.from(context)
@@ -26,39 +28,30 @@ class NavigationClientAdapter(
     }
 
     fun startObserving() {
-        clients.addObserver(this)
+        clients.addOnListChangedCallback(listener)
     }
 
     fun stopObserving() {
-        clients.removeObserver(this)
+        clients.removeOnListChangedCallback(listener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClientViewHolder {
-        return ClientViewHolder(inflater.inflate(R.layout.navigation_client, parent, false))
+        return ClientViewHolder(DataBindingUtil.inflate<NavigationClientBinding>(
+                inflater, R.layout.navigation_client_children, parent, false))
     }
 
-    override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
-        holder.bind(position)
-    }
+    override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) = Unit
 
     override fun getItemCount(): Int {
         return clients.size
     }
 
-    override fun onAdd(position: Int) {
-        notifyItemInserted(position)
-    }
-
-    inner class ClientViewHolder(itemView: View) : NavigationAdapter.ViewHolder(itemView) {
-        private val title = itemView.findViewById(R.id.drawer_client_title) as TextView
-        private val status = itemView.findViewById(R.id.drawer_client_status) as TextView
-
+    inner class ClientViewHolder(private val binding: NavigationClientBinding) :
+            NavigationAdapter.ViewHolder(binding.root) {
         override fun bind(position: Int) {
             val item = clients[position]
-            title.text = item.name
-            status.text = item.status
-
-            itemView.setOnClickListener { clientClickListener(item) }
+            binding.client = item
+            binding.root.setOnClickListener { clientClickListener(item) }
         }
     }
 }

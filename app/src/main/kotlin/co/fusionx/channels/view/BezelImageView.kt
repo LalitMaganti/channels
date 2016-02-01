@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package co.fusionx.channels.navigation.view
+package co.fusionx.channels.view
 
 import android.content.Context
+import android.databinding.ObservableList
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.v4.view.ViewCompat

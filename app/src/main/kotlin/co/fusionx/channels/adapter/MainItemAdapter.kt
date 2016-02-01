@@ -1,14 +1,12 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
+import android.databinding.ObservableList
 import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import co.fusionx.channels.R
-import co.fusionx.channels.observable.ObservableList
-import java.util.*
 
 public class MainItemAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

@@ -1,15 +1,17 @@
 package co.fusionx.channels.relay
 
 import android.support.v7.util.SortedList
-import co.fusionx.channels.observable.ObservableList
 import co.fusionx.relay.util.PrefixExtractor
 import java.util.*
 
-public class ChannelHost(override val name: CharSequence) : ClientChild() {
-    override val buffer: ObservableList<CharSequence> = ObservableList(ArrayList())
+public class ChannelHost(private val name: CharSequence) : ClientChild() {
 
-    private val callback = DispatchingCallback()
-    val users: SortedList<CharSequence> = SortedList(CharSequence::class.java, callback)
+    private val dispatcher = DispatchingCallback()
+    val users: SortedList<CharSequence> = SortedList(CharSequence::class.java, dispatcher)
+
+    fun onPrivmsg(prefix: String, message: String) {
+        add("${PrefixExtractor.nick(prefix)}: $message")
+    }
 
     fun onJoin(prefix: String) {
         val nick = PrefixExtractor.nick(prefix)
@@ -23,23 +25,25 @@ public class ChannelHost(override val name: CharSequence) : ClientChild() {
     }
 
     public fun addUserCallback(userCallback: UserCallback) {
-        callback.addUserCallback(userCallback)
+        dispatcher.addUserCallback(userCallback)
     }
 
     public fun removeUserCallback(userCallback: UserCallback) {
-        callback.removeUserCallback(userCallback)
+        dispatcher.removeUserCallback(userCallback)
     }
 
+    override fun getName() = name
+
     public abstract class UserCallback : SortedList.Callback<CharSequence>() {
-        override fun areContentsTheSame(oldItem: CharSequence, newItem: CharSequence): Boolean {
+        override final fun areContentsTheSame(oldItem: CharSequence, newItem: CharSequence): Boolean {
             return oldItem == newItem
         }
 
-        override fun areItemsTheSame(item1: CharSequence, item2: CharSequence): Boolean {
+        override final fun areItemsTheSame(item1: CharSequence, item2: CharSequence): Boolean {
             return item1 == item2
         }
 
-        override fun compare(o1: CharSequence, o2: CharSequence): Int {
+        override final fun compare(o1: CharSequence, o2: CharSequence): Int {
             for (i in 0..o1.length - 1) {
                 val a = o1[i]
                 val b = o2[i]

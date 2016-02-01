@@ -1,6 +1,7 @@
 package co.fusionx.channels.view
 
 import android.content.Context
+import android.databinding.ObservableList
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.LinearLayoutManager
@@ -8,13 +9,12 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import co.fusionx.channels.adapter.MainItemAdapter
 import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.observable.ObservableList
+import co.fusionx.channels.databinding.ObservableListRecyclerAdapterProxy
 import kotlin.properties.Delegates
 
 public class EventRecyclerView @JvmOverloads constructor(
         context: Context,
-        attrs: AttributeSet? = null) : RecyclerView(context, attrs),
-        ObservableList.Observer {
+        attrs: AttributeSet? = null) : RecyclerView(context, attrs) {
 
     var callbacks: Callbacks? = null
 
@@ -25,6 +25,8 @@ public class EventRecyclerView @JvmOverloads constructor(
     private var firstVisible = -1
     private var lastVisible = -1
     private var data: ObservableList<CharSequence>? = null
+
+    private lateinit var listener: ObservableListRecyclerAdapterProxy<CharSequence>
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -40,6 +42,11 @@ public class EventRecyclerView @JvmOverloads constructor(
         })
 
         adapter = MainItemAdapter(context)
+        listener = object : ObservableListRecyclerAdapterProxy<CharSequence>(adapter) {
+            override fun onItemRangeInserted(sender: ObservableList<CharSequence>?, positionStart: Int, itemCount: Int) {
+                scroll(positionStart + itemCount - 1)
+            }
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -87,14 +94,9 @@ public class EventRecyclerView @JvmOverloads constructor(
             post { layoutManager.scrollToPositionWithOffset(buffer.size - 1, 0) }
         }
 
-        data?.removeObserver(this)
+        data?.removeOnListChangedCallback(listener)
         data = buffer
-        data?.addObserver(this)
-    }
-
-    override fun onAdd(position: Int) {
-        adapter.notifyItemInserted(position)
-        scroll(position)
+        data?.addOnListChangedCallback(listener)
     }
 
     private fun scroll(position: Int) {

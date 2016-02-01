@@ -1,35 +1,29 @@
 package co.fusionx.channels.relay
 
+import android.databinding.ObservableArrayList
+import android.databinding.ObservableField
+import android.databinding.ObservableList
 import android.os.Handler
-import android.support.annotation.IntDef
 import android.support.v4.util.SimpleArrayMap
-import co.fusionx.channels.observable.ObservableList
 import co.fusionx.relay.ConnectionConfiguration
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
 import co.fusionx.relay.protocol.ClientGenerator
 import co.fusionx.relay.util.PrefixExtractor
-import java.util.*
+import co.fusionx.relay.util.isChannel
 
 public class ClientHost(private val configuration: ConnectionConfiguration) {
-    public val children: ObservableList<ClientChild> = ObservableList(ArrayList())
-    public var selectedChild: ClientChild
-        private set
-    public val status: String
-        get() = ClientHost.statusAsString(statusValue)
+    public val children: ObservableList<ClientChild> = ObservableArrayList()
+    public val selectedChild: ObservableField<ClientChild>
+    public val status: ObservableField<Long> = ObservableField(STOPPED)
 
     // TODO(tilal6991) Fix this to do the correct thing.
     public val name: CharSequence
         get() = "Freenode"
 
     // TODO(tilal6991) Fix this to do the correct thing.
-    private var nick: String = "tilal6993"
-    private var statusValue: Long = STOPPED
-        @Status get
-        set(@Status i) {
-            field = i
-        }
+    private val nick: ObservableField<String> = ObservableField("tilal6993")
 
     private var server: ServerHost
     private val client: RelayClient
@@ -43,12 +37,12 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         server = ServerHost("Freenode")
         children.add(server)
 
-        selectedChild = server
+        selectedChild = ObservableField(server)
     }
 
     public fun select(child: ClientChild): Boolean {
         if (selectedChild == child) return true
-        selectedChild = child
+        selectedChild.set(child)
         return false
     }
 
@@ -57,7 +51,7 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
 
         override fun onSocketConnect() {
             handler.post {
-                statusValue = SOCKET_CONNECTED
+                status.set(SOCKET_CONNECTED)
                 server.onSocketConnect()
             }
         }
@@ -69,7 +63,7 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
                 val c: ChannelHost
-                if (PrefixExtractor.nick(prefix) == nick) {
+                if (PrefixExtractor.nick(prefix) == nick.get()) {
                     c = ChannelHost(channel)
                     children.add(c)
                     channels.put(channel, c)
@@ -80,16 +74,25 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
             }
         }
 
-        public  override fun onOtherCode(code: Int, arguments: List<String>) {
+        public override fun onOtherCode(code: Int, arguments: List<String>) {
             handler.post { server.onOtherCode(code, arguments) }
         }
 
         public override fun onWelcome(target: String, text: String) {
             handler.post {
-                statusValue = CONNECTED
+                status.set(CONNECTED)
                 server.onWelcome(target, text)
 
-                nick = target
+                nick.set(target)
+            }
+        }
+
+        override fun onPrivmsg(prefix: String, target: String, message: String) {
+            handler.post {
+                if (target.isChannel()) {
+                    channels[target].onPrivmsg(prefix, message)
+                }
+                // TODO(tilal6991) handle the private message case
             }
         }
     }
@@ -107,9 +110,9 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
     }
 
     fun onSelected() {
-        selectedChild = server
-        if (statusValue == STOPPED) {
-            statusValue = CONNECTING
+        selectedChild.set(server)
+        if (status.get() == STOPPED) {
+            status.set(CONNECTING)
             client.start()
         }
     }
@@ -121,19 +124,5 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         public const val CONNECTED: Long = 3
         public const val RECONNECTING: Long = 4
         public const val DISCONNECTED: Long = 5
-
-        @IntDef(STOPPED, CONNECTING, SOCKET_CONNECTED, CONNECTED, RECONNECTING, DISCONNECTED)
-        @Retention(AnnotationRetention.SOURCE)
-        public annotation class Status
-
-        fun statusAsString(statusValue: Long): String = when (statusValue) {
-            STOPPED -> "Stopped"
-            CONNECTING -> "Connecting"
-            SOCKET_CONNECTED -> "Socket connected"
-            CONNECTED -> "Connected"
-            RECONNECTING -> "Reconnecting"
-            DISCONNECTED -> "Disconnected"
-            else -> "Invalid status - this is a bug"
-        }
     }
 }

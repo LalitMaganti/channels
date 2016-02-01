@@ -27,6 +27,10 @@ android {
         versionName "1.0"
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -60,10 +64,16 @@ dependencies {
     compile project(rootProject.ext.relayAnnotations)
     kapt project(rootProject.ext.relayCompiler)
 
+    kapt 'com.android.databinding:compiler:1.0-rc5'
+
     compile 'org.jetbrains.anko:anko-sdk21:0.8.1'
     compile 'org.jetbrains.anko:anko-sqlite:0.8.1'
 
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
     compile 'com.jakewharton.timber:timber:4.1.0'
+}
+
+kapt {
+    generateStubs = true
 }

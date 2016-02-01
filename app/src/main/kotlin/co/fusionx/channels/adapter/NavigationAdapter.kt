@@ -1,13 +1,13 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
+import android.databinding.Observable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.observable.ObservableReference
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
 import co.fusionx.channels.relay.RelayHost
@@ -66,6 +66,7 @@ public class NavigationAdapter(
     fun updateCurrentType(type: Int) {
         if (type == currentType) return
 
+        // Stop observing everything old.
         if (currentType == VIEW_TYPE_CLIENT) {
             clientAdapter.stopObserving()
             clientAdapter.unregisterAdapterDataObserver(observer)
@@ -76,10 +77,15 @@ public class NavigationAdapter(
             Timber.e("This should not be happening.")
         }
 
+        // Swap the old items out and the new items in.
         notifyItemRangeRemoved(headerCount, contentCount)
         currentType = type
         notifyItemRangeInserted(headerCount, contentCount)
 
+        // Invalidate all the headers.
+        // notifyItemRangeChanged(0, headerCount)
+
+        // Start observing everything new.
         if (currentType == VIEW_TYPE_CLIENT) {
             clientAdapter.startObserving()
             clientAdapter.registerAdapterDataObserver(observer)
@@ -101,17 +107,23 @@ public class NavigationAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val viewType = getItemViewType(position)
-        if (viewType == VIEW_TYPE_CHILD) {
-            childAdapter.onBindViewHolder(holder, position - headerCount)
-        } else if (viewType == VIEW_TYPE_CLIENT) {
-            clientAdapter.onBindViewHolder(holder, position - headerCount)
+        if (viewType == VIEW_TYPE_CHILD || viewType == VIEW_TYPE_CLIENT) {
+            holder.bind(position - headerCount)
         } else {
             holder.bind(position)
         }
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        super.onViewRecycled(holder)
+        val position = holder.adapterPosition
+        if (position == -1) return
+
+        val viewType = getItemViewType(position)
+        if (viewType == VIEW_TYPE_CHILD || viewType == VIEW_TYPE_CLIENT) {
+            holder.unbind(position - headerCount)
+        } else {
+            holder.unbind(position)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -125,22 +137,27 @@ public class NavigationAdapter(
         return currentType
     }
 
-    inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView),
-            ObservableReference.Observer<ClientHost> {
+    inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView) {
 
         private val background = itemView.findViewById(R.id.view_navigation_drawer_header_image)
 
+        private val listener = object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                onChanged()
+            }
+        }
+
         override fun bind(position: Int) {
-            relayHost.selectedClient.addObserver(this)
-            onPreSet(relayHost.selectedClient.get())
+            relayHost.selectedClient.addOnPropertyChangedCallback(listener)
+            onChanged()
         }
 
-        override fun unbind() {
-            relayHost.selectedClient.removeObserver(this)
+        override fun unbind(position: Int) {
+            relayHost.selectedClient.removeOnPropertyChangedCallback(listener)
         }
 
-        override fun onPostSet(new: ClientHost?) {
-            if (new == null) {
+        fun onChanged() {
+            if (relayHost.selectedClient.get() == null) {
                 background.setOnClickListener(null)
             } else {
                 background.setOnClickListener {
@@ -156,7 +173,7 @@ public class NavigationAdapter(
 
     abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         public abstract fun bind(position: Int)
-        public open fun unbind() = Unit
+        public open fun unbind(position: Int) = Unit
     }
 
     companion object {
