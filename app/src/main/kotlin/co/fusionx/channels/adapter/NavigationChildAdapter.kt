@@ -1,6 +1,7 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import co.fusionx.channels.view.EmptyViewRecyclerViewLayout
 class NavigationChildAdapter(
         private val context: Context,
         private val childClickListener: (ClientChild) -> Unit) :
-        EmptyViewRecyclerViewLayout.Adapter<NavigationAdapter.ViewHolder>(),
+        RecyclerView.Adapter<NavigationAdapter.ViewHolder>(),
         ObservableList.Observer {
 
     private val inflater: LayoutInflater
@@ -32,8 +33,6 @@ class NavigationChildAdapter(
     override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
         holder.bind(position)
     }
-
-    override fun isEmpty(): Boolean = itemCount == 0
 
     override fun getItemCount(): Int = selectedClient?.children?.size ?: 0
 

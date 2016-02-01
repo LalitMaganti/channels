@@ -10,6 +10,7 @@ import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
 import co.fusionx.relay.protocol.ClientGenerator
+import co.fusionx.relay.util.PrefixExtractor
 import java.util.*
 
 public class ClientHost(private val configuration: ConnectionConfiguration) {
@@ -57,14 +58,15 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
 
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
-                if (prefix == nick) {
-                    val c = ChannelHost(channel)
+                val c: ChannelHost
+                if (PrefixExtractor.nick(prefix) == nick) {
+                    c = ChannelHost(channel)
                     children.add(c)
                     channels.put(channel, c)
                 } else {
-                    val c = channels.get(channel)
-                    c.addUser(prefix)
+                    c = channels.get(channel)
                 }
+                c.onJoin(prefix)
             }
         }
 
@@ -75,7 +77,7 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         public override fun onWelcome(target: String, text: String) {
             handler.post {
                 status = CONNECTED
-                server.onWelcome(text)
+                server.onWelcome(target, text)
 
                 nick = target
             }
@@ -90,6 +92,7 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         override fun onSocketConnect() {
             client.send(ClientGenerator.nick("tilal6993"))
             client.send(ClientGenerator.user("tilal6993", "Lalit"))
+            client.send(ClientGenerator.join("#channels"))
         }
     }
 

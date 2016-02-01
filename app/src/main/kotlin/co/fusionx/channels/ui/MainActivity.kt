@@ -46,7 +46,11 @@ public class MainActivity : AppCompatActivity() {
             }
 
             override fun onChildClick(child: ClientChild) {
-                relayHost.selectedClient!!.select(child)
+                val alreadySelected = relayHost.selectedClient!!.select(child)
+
+                if (!alreadySelected) {
+                    eventRecycler.switchContent()
+                }
                 drawerLayout.closeDrawers()
             }
         }

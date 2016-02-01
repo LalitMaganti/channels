@@ -16,7 +16,7 @@ public class NavigationAdapter(
         private val context: Context,
         clientClickListener: (ClientHost) -> Unit,
         childClickListener: (ClientChild) -> Unit) :
-        EmptyViewRecyclerViewLayout.Adapter<NavigationAdapter.ViewHolder>() {
+        RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     internal var currentType: Int = VIEW_TYPE_CLIENT
         private set
@@ -27,7 +27,6 @@ public class NavigationAdapter(
     private val clientAdapter: NavigationClientAdapter
 
     private val headerCount = 1
-    private val footerCount = 0
     private val contentCount: Int
         get() {
             if (currentType == VIEW_TYPE_CHILD) {
@@ -60,9 +59,9 @@ public class NavigationAdapter(
             Timber.e("This should not be happening.")
         }
 
-        notifyItemRangeRemoved(headerCount, contentCount + footerCount)
+        notifyItemRangeRemoved(headerCount, contentCount)
         currentType = type
-        notifyItemRangeInserted(headerCount, contentCount + footerCount)
+        notifyItemRangeInserted(headerCount, contentCount)
 
         if (currentType == VIEW_TYPE_CHILD) {
             childAdapter.startObserving()
@@ -78,35 +77,28 @@ public class NavigationAdapter(
         VIEW_TYPE_HEADER -> HeaderViewHolder(
                 inflater.inflate(R.layout.navigation_header_clients, parent, false))
         VIEW_TYPE_CLIENT -> clientAdapter.onCreateViewHolder(parent, type)
-        VIEW_TYPE_CLIENT_FOOTER -> ClientFooterViewHolder(
-                inflater.inflate(R.layout.navigation_client_footer, parent, false))
         VIEW_TYPE_CHILD -> childAdapter.onCreateViewHolder(parent, type)
-        VIEW_TYPE_DIVIDER -> DividerViewHolder(
-                inflater.inflate(R.layout.recycler_divider, parent, false))
         else -> null
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val viewType = getItemViewType(position)
         if (viewType == VIEW_TYPE_CHILD) {
-            childAdapter.bindViewHolder(holder, position - headerCount)
+            childAdapter.onBindViewHolder(holder, position - headerCount)
         } else if (viewType == VIEW_TYPE_CLIENT) {
-            clientAdapter.bindViewHolder(holder, position - headerCount)
+            clientAdapter.onBindViewHolder(holder, position - headerCount)
         } else {
             holder.bind(position)
         }
     }
 
-    override fun isEmpty(): Boolean = false
-    override fun getItemCount(): Int = headerCount + contentCount + footerCount
+    override fun getItemCount(): Int = headerCount + contentCount
 
     override fun getItemViewType(position: Int): Int =
             if (position < headerCount)
                 VIEW_TYPE_HEADER
-            else if (position < headerCount + contentCount)
-                currentType
             else
-                VIEW_TYPE_DIVIDER
+                currentType
 
     inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView) {
         private val background = itemView.findViewById(R.id.view_navigation_drawer_header_image)
@@ -122,18 +114,6 @@ public class NavigationAdapter(
         }
     }
 
-    class ClientFooterViewHolder(itemView: View) : ViewHolder(itemView) {
-        override fun bind(position: Int) {
-            throw UnsupportedOperationException()
-        }
-    }
-
-    class DividerViewHolder(itemView: View) : ViewHolder(itemView) {
-        override fun bind(position: Int) {
-            throw UnsupportedOperationException()
-        }
-    }
-
     abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         public abstract fun bind(position: Int)
     }
@@ -141,9 +121,7 @@ public class NavigationAdapter(
     companion object {
         const val VIEW_TYPE_HEADER: Int = 0
         const val VIEW_TYPE_CLIENT: Int = 1
-        const val VIEW_TYPE_CLIENT_FOOTER: Int = 2
-        const val VIEW_TYPE_CHILD: Int = 3
-        const val VIEW_TYPE_DIVIDER: Int = 4
+        const val VIEW_TYPE_CHILD: Int = 2
     }
 
     private inner class ChildAdapterObserver : RecyclerView.AdapterDataObserver() {

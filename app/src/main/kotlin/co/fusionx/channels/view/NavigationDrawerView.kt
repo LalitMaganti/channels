@@ -21,21 +21,20 @@ public class NavigationDrawerView @JvmOverloads constructor(
     internal var callbacks by Delegates.notNull<Callbacks>()
 
     private val recycler: RecyclerView by bindView(R.id.navdrawer_recycler)
-    private val emptyRecyclerLayout: EmptyViewRecyclerViewLayout
-            by bindView(R.id.empty_recycler_parent)
+    // private val emptyRecyclerLayout: EmptyViewRecyclerViewLayout
+    //        by bindView(R.id.empty_recycler_parent)
     private var adapter: NavigationAdapter by Delegates.notNull()
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
 
-        recycler.layoutManager = LinearLayoutManager(context)
-
         if (!isInEditMode) {
             adapter = NavigationAdapter(context, { callbacks.onClientClick(it) }) {
                 callbacks.onChildClick(it)
             }
-            emptyRecyclerLayout.setRecyclerAdapter(adapter)
+            recycler.adapter = adapter
         }
+        recycler.layoutManager = LinearLayoutManager(context)
     }
 
     public override fun onSaveInstanceState(): Parcelable {

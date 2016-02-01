@@ -11,9 +11,11 @@ public class ChannelHost(override val name: CharSequence) : ClientChild() {
     val users: SortedList<CharSequence> = SortedList(
             CharSequence::class.java, callback)
 
-    fun addUser(prefix: String) {
+    fun onJoin(prefix: String) {
         val nick = PrefixExtractor.nick(prefix)
         users.add(nick)
+
+        add("$nick joined the channel")
     }
 
     public fun addUserCallback(userCallback: UserCallback) {
