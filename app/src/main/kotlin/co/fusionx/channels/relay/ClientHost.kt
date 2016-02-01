@@ -2,7 +2,6 @@ package co.fusionx.channels.relay
 
 import android.os.Handler
 import android.support.annotation.IntDef
-import android.support.v4.util.ArrayMap
 import android.support.v4.util.SimpleArrayMap
 import co.fusionx.channels.observable.ObservableList
 import co.fusionx.relay.ConnectionConfiguration
@@ -17,13 +16,20 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
     public val children: ObservableList<ClientChild> = ObservableList(ArrayList())
     public var selectedChild: ClientChild
         private set
-    public var status: Long = STOPPED
+    public val status: String
+        get() = ClientHost.statusAsString(statusValue)
+
+    // TODO(tilal6991) Fix this to do the correct thing.
+    public val name: CharSequence
+        get() = "Freenode"
+
+    // TODO(tilal6991) Fix this to do the correct thing.
+    private var nick: String = "tilal6993"
+    private var statusValue: Long = STOPPED
         @Status get
         set(@Status i) {
             field = i
         }
-
-    private var nick: String = "tilal6993"
 
     private var server: ServerHost
     private val client: RelayClient
@@ -51,9 +57,13 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
 
         override fun onSocketConnect() {
             handler.post {
-                status = SOCKET_CONNECTED
+                statusValue = SOCKET_CONNECTED
                 server.onSocketConnect()
             }
+        }
+
+        override fun onNames(channelName: String, nickList: List<String>) {
+            handler.post { channels.get(channelName).onNames(nickList) }
         }
 
         public override fun onJoin(prefix: String, channel: String) {
@@ -76,7 +86,7 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
 
         public override fun onWelcome(target: String, text: String) {
             handler.post {
-                status = CONNECTED
+                statusValue = CONNECTED
                 server.onWelcome(target, text)
 
                 nick = target
@@ -98,8 +108,8 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
 
     fun onSelected() {
         selectedChild = server
-        if (status == STOPPED) {
-            status = CONNECTING
+        if (statusValue == STOPPED) {
+            statusValue = CONNECTING
             client.start()
         }
     }
@@ -115,5 +125,15 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         @IntDef(STOPPED, CONNECTING, SOCKET_CONNECTED, CONNECTED, RECONNECTING, DISCONNECTED)
         @Retention(AnnotationRetention.SOURCE)
         public annotation class Status
+
+        fun statusAsString(statusValue: Long): String = when (statusValue) {
+            STOPPED -> "Stopped"
+            CONNECTING -> "Connecting"
+            SOCKET_CONNECTED -> "Socket connected"
+            CONNECTED -> "Connected"
+            RECONNECTING -> "Reconnecting"
+            DISCONNECTED -> "Disconnected"
+            else -> "Invalid status - this is a bug"
+        }
     }
 }

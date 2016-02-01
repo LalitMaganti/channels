@@ -7,15 +7,19 @@ import java.util.*
 
 public class ChannelHost(override val name: CharSequence) : ClientChild() {
     override val buffer: ObservableList<CharSequence> = ObservableList(ArrayList())
+
     private val callback = DispatchingCallback()
-    val users: SortedList<CharSequence> = SortedList(
-            CharSequence::class.java, callback)
+    val users: SortedList<CharSequence> = SortedList(CharSequence::class.java, callback)
 
     fun onJoin(prefix: String) {
         val nick = PrefixExtractor.nick(prefix)
         users.add(nick)
 
         add("$nick joined the channel")
+    }
+
+    fun onNames(nickList: List<String>) {
+        users.addAll(nickList)
     }
 
     public fun addUserCallback(userCallback: UserCallback) {
@@ -36,7 +40,7 @@ public class ChannelHost(override val name: CharSequence) : ClientChild() {
         }
 
         override fun compare(o1: CharSequence, o2: CharSequence): Int {
-            for (i in 0..o1.length) {
+            for (i in 0..o1.length - 1) {
                 val a = o1[i]
                 val b = o2[i]
                 if (a < b) {

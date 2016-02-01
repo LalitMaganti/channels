@@ -47,8 +47,8 @@ class NavigationClientAdapter(
 
         override fun bind(position: Int) {
             val item = clients[position]
-            // title.text = item.name
-            // status.text = item.status.toString()
+            title.text = item.name
+            status.text = item.status
 
             itemView.setOnClickListener { clientClickListener(item) }
         }
