@@ -2,128 +2,52 @@ package co.fusionx.channels.adapter
 
 import android.content.Context
 import android.databinding.Observable
-import android.os.Bundle
-import android.os.Parcelable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.relay.ClientChild
-import co.fusionx.channels.relay.ClientHost
 import co.fusionx.channels.relay.RelayHost
-import timber.log.Timber
 
 public class NavigationAdapter(
         private val context: Context,
-        clientClickListener: (ClientHost) -> Unit,
-        childClickListener: (ClientChild) -> Unit) :
+        private var contentAdapter: RecyclerView.Adapter<NavigationAdapter.ViewHolder>) :
         RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
-    internal var currentType: Int = VIEW_TYPE_CLIENT
-        private set
-
     private val inflater: LayoutInflater
-    private val relayHost: RelayHost
-        get() = context.relayHost
-
-    private val childAdapter: NavigationChildAdapter
-    private val clientAdapter: NavigationClientAdapter
 
     private val headerCount = 1
-    private val contentCount: Int
-        get() {
-            if (currentType == VIEW_TYPE_CHILD) {
-                return childAdapter.itemCount
-            } else {
-                return clientAdapter.itemCount
-            }
-        }
+    private val contentCount: Int get() = contentAdapter.itemCount
 
-    private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            val client = relayHost.selectedClient.get()
-            updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
-        }
-    }
     private val observer = ChildAdapterObserver()
 
     init {
         inflater = LayoutInflater.from(context)
 
-        clientAdapter = NavigationClientAdapter(context) {
-            clientClickListener(it)
-
-            // Even if the client does not change we still want to switch this view.
-            if (it == relayHost.selectedClient.get()) {
-                updateCurrentType(VIEW_TYPE_CHILD)
-            }
-        }
-        childAdapter = NavigationChildAdapter(context, childClickListener)
+        contentAdapter.registerAdapterDataObserver(observer)
     }
 
-    fun startObserving() {
-        clientAdapter.startObserving()
-        clientAdapter.registerAdapterDataObserver(observer)
-
-        relayHost.selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
-    }
-
-    fun stopObserving() {
-        if (currentType == VIEW_TYPE_CHILD) {
-            childAdapter.stopObserving()
-            childAdapter.unregisterAdapterDataObserver(observer)
-        } else {
-            clientAdapter.stopObserving()
-            clientAdapter.unregisterAdapterDataObserver(observer)
-        }
-
-        relayHost.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
-    }
-
-    private fun updateCurrentType(type: Int) {
-        if (type == currentType) return
-
-        // Stop observing everything old.
-        if (currentType == VIEW_TYPE_CLIENT) {
-            clientAdapter.stopObserving()
-            clientAdapter.unregisterAdapterDataObserver(observer)
-        } else if (currentType == VIEW_TYPE_CHILD) {
-            childAdapter.stopObserving()
-            childAdapter.unregisterAdapterDataObserver(observer)
-        } else {
-            Timber.e("This should not be happening.")
-        }
-
-        // Swap the old items out and the new items in.
+    public fun updateContentAdapter(adapter: RecyclerView.Adapter<NavigationAdapter.ViewHolder>) {
+        contentAdapter.unregisterAdapterDataObserver(observer)
         notifyItemRangeRemoved(headerCount, contentCount)
-        currentType = type
-        notifyItemRangeInserted(headerCount, contentCount)
 
-        // Start observing everything new.
-        if (currentType == VIEW_TYPE_CLIENT) {
-            clientAdapter.startObserving()
-            clientAdapter.registerAdapterDataObserver(observer)
-        } else if (currentType == VIEW_TYPE_CHILD) {
-            childAdapter.startObserving()
-            childAdapter.registerAdapterDataObserver(observer)
-        } else {
-            Timber.e("This should not be happening.")
-        }
+        contentAdapter = adapter
+
+        adapter.notifyItemRangeInserted(headerCount, contentCount)
+        adapter.registerAdapterDataObserver(observer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, type: Int): ViewHolder? = when (type) {
         VIEW_TYPE_HEADER -> HeaderViewHolder(
                 inflater.inflate(R.layout.navigation_header_clients, parent, false))
-        VIEW_TYPE_CLIENT -> clientAdapter.onCreateViewHolder(parent, type)
-        VIEW_TYPE_CHILD -> childAdapter.onCreateViewHolder(parent, type)
+        VIEW_TYPE_CONTENT -> contentAdapter.onCreateViewHolder(parent, type)
         else -> null
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val viewType = getItemViewType(position)
-        if (viewType == VIEW_TYPE_CHILD || viewType == VIEW_TYPE_CLIENT) {
+        if (viewType == VIEW_TYPE_CONTENT) {
             holder.bind(position - headerCount)
         } else {
             holder.bind(position)
@@ -135,7 +59,7 @@ public class NavigationAdapter(
         if (position == -1) return
 
         val viewType = getItemViewType(position)
-        if (viewType == VIEW_TYPE_CHILD || viewType == VIEW_TYPE_CLIENT) {
+        if (viewType == VIEW_TYPE_CONTENT) {
             holder.unbind(position - headerCount)
         } else {
             holder.unbind(position)
@@ -150,13 +74,17 @@ public class NavigationAdapter(
         if (position < headerCount) {
             return VIEW_TYPE_HEADER
         }
-        return currentType
+        return VIEW_TYPE_CONTENT
     }
 
     inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView) {
 
         private val background = itemView.findViewById(R.id.view_navigation_drawer_header_image)
 
+        override fun bind(position: Int) {
+        }
+
+        /*
         private val listener = object : Observable.OnPropertyChangedCallback() {
             override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
                 onChanged()
@@ -185,19 +113,12 @@ public class NavigationAdapter(
                 }
             }
         }
+        */
     }
 
     abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         public abstract fun bind(position: Int)
         public open fun unbind(position: Int) = Unit
-    }
-
-    companion object {
-        const val VIEW_TYPE_HEADER: Int = 0
-        const val VIEW_TYPE_CLIENT: Int = 1
-        const val VIEW_TYPE_CHILD: Int = 2
-
-        const val PARCEL_CURRENT_TYPE: String = "current_type"
     }
 
     private inner class ChildAdapterObserver : RecyclerView.AdapterDataObserver() {
@@ -228,15 +149,8 @@ public class NavigationAdapter(
         }
     }
 
-    fun onSaveInstanceState(): Parcelable {
-        val bundle = Bundle()
-        bundle.putInt(PARCEL_CURRENT_TYPE, currentType)
-        return bundle
-    }
-
-    fun onRestoreInstanceState(parcelable: Parcelable) {
-        if (parcelable is Bundle) {
-            updateCurrentType(parcelable.getInt(PARCEL_CURRENT_TYPE, VIEW_TYPE_CLIENT))
-        }
+    companion object {
+        const val VIEW_TYPE_HEADER: Int = 0
+        const val VIEW_TYPE_CONTENT: Int = 1
     }
 }

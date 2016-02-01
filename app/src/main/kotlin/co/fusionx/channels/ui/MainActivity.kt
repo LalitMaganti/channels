@@ -7,15 +7,17 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.ArraySet
 import android.view.MenuItem
 import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.presenter.NavigationPresenter
+import co.fusionx.channels.presenter.Presenter
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
-import kotlin.properties.Delegates
 
 public class MainActivity : AppCompatActivity() {
 
@@ -25,7 +27,11 @@ public class MainActivity : AppCompatActivity() {
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
     private val appbar: AppBarLayout by bindView(R.id.appbar)
 
-    private var actionBarDrawerToggle: ActionBarDrawerToggle by Delegates.notNull()
+    private val presenters: MutableCollection<Presenter> = ArraySet()
+
+    private lateinit var navigationPresenter: NavigationPresenter
+
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,25 +40,57 @@ public class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
-        navDrawerView.callbacks = object : NavigationDrawerView.Callbacks {
-            override fun onClientClick(client: ClientHost) {
-                val alreadySelected = relayHost.select(client)
 
-                if (!alreadySelected) {
-                    drawerLayout.closeDrawers()
-                }
-            }
+        navigationPresenter = NavigationPresenter(navDrawerView,
+                object : NavigationPresenter.Callbacks {
+                    override fun onClientClick(client: ClientHost) {
+                        val alreadySelected = relayHost.select(client)
 
-            override fun onChildClick(child: ClientChild) {
-                relayHost.selectedClient.get()!!.select(child)
-                drawerLayout.closeDrawers()
-            }
-        }
+                        if (!alreadySelected) {
+                            drawerLayout.closeDrawers()
+                        }
+                    }
+
+                    override fun onChildClick(child: ClientChild) {
+                        relayHost.selectedClient.get()!!.select(child)
+                        drawerLayout.closeDrawers()
+                    }
+                });
+        presenters.addAll(arrayOf(navigationPresenter))
+
+
         eventRecycler.callbacks = object : EventRecyclerView.Callbacks {
             override fun onBottomScrollPosted() {
                 appbar.setExpanded(false)
             }
         }
+
+        presenters.forEach { it.setup() }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        presenters.forEach { it.restoreState(savedInstanceState.getBundle(it.id)) }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenters.forEach { it.bind() }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenters.forEach { it.unbind() }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenters.forEach { outState.putBundle(it.id, it.saveState()) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenters.forEach { it.teardown() }
     }
 
     /* ActionBarDrawerToggle overrides */

@@ -43,12 +43,4 @@ class NavigationChildAdapter(
             binding.root.setOnClickListener { childClickListener(binding.child) }
         }
     }
-
-    fun startObserving() {
-        selectedClient!!.children.addOnListChangedCallback(listener)
-    }
-
-    fun stopObserving() {
-        selectedClient?.children?.removeOnListChangedCallback(listener)
-    }
 }

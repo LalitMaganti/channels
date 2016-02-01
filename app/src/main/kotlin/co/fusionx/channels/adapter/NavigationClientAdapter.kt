@@ -27,14 +27,6 @@ class NavigationClientAdapter(
         clients = context.relayHost.clients
     }
 
-    fun startObserving() {
-        context.relayHost.addClientObserver(listener)
-    }
-
-    fun stopObserving() {
-        context.relayHost.removeClientObserver(listener)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClientViewHolder {
         return ClientViewHolder(DataBindingUtil.inflate<NavigationClientBinding>(
                 inflater, R.layout.navigation_client, parent, false))
