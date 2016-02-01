@@ -5,7 +5,6 @@ import android.databinding.ObservableField
 import android.databinding.ObservableList
 import android.os.Handler
 import android.support.v4.util.SimpleArrayMap
-import co.fusionx.relay.ConnectionConfiguration
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
@@ -13,24 +12,23 @@ import co.fusionx.relay.protocol.ClientGenerator
 import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
 
-public class ClientHost(private val configuration: ConnectionConfiguration) {
+public class ClientHost(public val configuration: ClientConfiguration) {
+    public val name: CharSequence get() = configuration.name
     public val children: ObservableList<ClientChild> = ObservableArrayList()
     public val selectedChild: ObservableField<ClientChild>
     public val status: ObservableField<Long> = ObservableField(STOPPED)
 
-    // TODO(tilal6991) Fix this to do the correct thing.
-    public val name: CharSequence
-        get() = "Freenode"
+    private val client: RelayClient
 
     // TODO(tilal6991) Fix this to do the correct thing.
     private val nick: ObservableField<String> = ObservableField("tilal6993")
 
     private var server: ServerHost
-    private val client: RelayClient
     private val channels: SimpleArrayMap<String, ChannelHost> = SimpleArrayMap()
 
     init {
-        client = RelayClient.create(configuration, AndroidMessageLoop.create())
+        client = RelayClient.create(configuration.connectionConfiguration,
+                AndroidMessageLoop.create())
         client.addEventListener(DispatchingEventListener())
         client.addEventListener(BasicEventListener(client))
 
@@ -40,10 +38,9 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
         selectedChild = ObservableField(server)
     }
 
-    public fun select(child: ClientChild): Boolean {
-        if (selectedChild == child) return true
+    public fun select(child: ClientChild) {
+        if (selectedChild.get() == child) return
         selectedChild.set(child)
-        return false
     }
 
     private inner class DispatchingEventListener : EventListener {

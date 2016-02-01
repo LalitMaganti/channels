@@ -3,7 +3,7 @@ package co.fusionx.channels.databinding
 import android.databinding.ObservableList
 import android.support.v7.widget.RecyclerView
 
-open class ObservableListRecyclerAdapterProxy<T>(private val adapter: RecyclerView.Adapter<*>) :
+open class ObservableListAdapterProxy<T>(private val adapter: RecyclerView.Adapter<*>) :
         ObservableList.OnListChangedCallback<ObservableList<T>>() {
     override fun onChanged(sender: ObservableList<T>?) {
         adapter.notifyDataSetChanged()

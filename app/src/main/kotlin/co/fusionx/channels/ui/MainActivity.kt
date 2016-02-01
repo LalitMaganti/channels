@@ -37,20 +37,14 @@ public class MainActivity : AppCompatActivity() {
         navDrawerView.callbacks = object : NavigationDrawerView.Callbacks {
             override fun onClientClick(client: ClientHost) {
                 val alreadySelected = relayHost.select(client)
-                navDrawerView.switchToChildList()
 
                 if (!alreadySelected) {
-                    eventRecycler.switchContent()
                     drawerLayout.closeDrawers()
                 }
             }
 
             override fun onChildClick(child: ClientChild) {
-                val alreadySelected = relayHost.selectedClient.get()!!.select(child)
-
-                if (!alreadySelected) {
-                    eventRecycler.switchContent()
-                }
+                relayHost.selectedClient.get()!!.select(child)
                 drawerLayout.closeDrawers()
             }
         }
@@ -58,10 +52,6 @@ public class MainActivity : AppCompatActivity() {
             override fun onBottomScrollPosted() {
                 appbar.setExpanded(false)
             }
-        }
-
-        if (savedInstanceState == null) {
-            eventRecycler.switchContent()
         }
     }
 

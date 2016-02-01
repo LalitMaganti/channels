@@ -5,15 +5,17 @@ import android.support.v4.app.Fragment
 import android.view.View
 
 public object ConnectionDBColumns {
-    public val TABLE_NAME: String = "connections"
+    public const val TABLE_NAME: String = "connections"
 
-    public val _ID: String = "_id"
-    public val TITLE: String = "title"
+    public const val _ID: String = "_id"
+    public const val NAME: String = "name"
+    public const val HOSTNAME: String = "hostname"
+    public const val PORT: String = "port"
 }
 
-val Context.connectionDb: ConnectionDBHelper
-    get() = ConnectionDBHelper.instance(applicationContext)
-val Fragment.connectionDb: ConnectionDBHelper
-    get() = ConnectionDBHelper.instance(activity.applicationContext)
-val View.connectionDb: ConnectionDBHelper
-    get() = ConnectionDBHelper.instance(context.applicationContext)
+val Context.connectionDb: ConnectionDatabase
+    get() = ConnectionDatabase.instance(this)
+val Fragment.connectionDb: ConnectionDatabase
+    get() = ConnectionDatabase.instance(activity)
+val View.connectionDb: ConnectionDatabase
+    get() = ConnectionDatabase.instance(context)

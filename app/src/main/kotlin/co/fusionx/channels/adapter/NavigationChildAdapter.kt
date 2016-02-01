@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.databinding.NavigationClientChildrenBinding
-import co.fusionx.channels.databinding.ObservableListRecyclerAdapterProxy
+import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
 
@@ -21,7 +21,7 @@ class NavigationChildAdapter(
     private val selectedClient: ClientHost?
         get() = context.relayHost.selectedClient.get()
 
-    private val listener = ObservableListRecyclerAdapterProxy<ClientChild>(this)
+    private val listener = ObservableListAdapterProxy<ClientChild>(this)
 
     init {
         inflater = LayoutInflater.from(context)
@@ -49,6 +49,6 @@ class NavigationChildAdapter(
     }
 
     fun stopObserving() {
-        selectedClient!!.children.removeOnListChangedCallback(listener)
+        selectedClient?.children?.removeOnListChangedCallback(listener)
     }
 }

@@ -2,14 +2,14 @@ package co.fusionx.channels.adapter
 
 import android.content.Context
 import android.databinding.DataBindingUtil
-import android.databinding.ObservableList
+import android.support.v7.util.SortedList
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.fusionx.channels.R
-import co.fusionx.channels.base.objectProvider
+import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.databinding.NavigationClientBinding
-import co.fusionx.channels.databinding.ObservableListRecyclerAdapterProxy
+import co.fusionx.channels.databinding.SortedListAdapterProxy
 import co.fusionx.channels.relay.ClientHost
 
 class NavigationClientAdapter(
@@ -18,32 +18,34 @@ class NavigationClientAdapter(
         RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
-    private val clients: ObservableList<ClientHost>
 
-    private val listener = ObservableListRecyclerAdapterProxy<ClientHost>(this)
+    private val clients: SortedList<ClientHost>
+    private val listener = SortedListAdapterProxy(this)
 
     init {
         inflater = LayoutInflater.from(context)
-        clients = context.objectProvider.relayHost().clients
+        clients = context.relayHost.clients
     }
 
     fun startObserving() {
-        clients.addOnListChangedCallback(listener)
+        context.relayHost.addClientObserver(listener)
     }
 
     fun stopObserving() {
-        clients.removeOnListChangedCallback(listener)
+        context.relayHost.removeClientObserver(listener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClientViewHolder {
         return ClientViewHolder(DataBindingUtil.inflate<NavigationClientBinding>(
-                inflater, R.layout.navigation_client_children, parent, false))
+                inflater, R.layout.navigation_client, parent, false))
     }
 
-    override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) = Unit
+    override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
+        return Unit
+    }
 
     override fun getItemCount(): Int {
-        return clients.size
+        return clients.size()
     }
 
     inner class ClientViewHolder(private val binding: NavigationClientBinding) :

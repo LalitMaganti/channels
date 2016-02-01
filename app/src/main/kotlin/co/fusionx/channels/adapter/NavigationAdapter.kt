@@ -2,6 +2,8 @@ package co.fusionx.channels.adapter
 
 import android.content.Context
 import android.databinding.Observable
+import android.os.Bundle
+import android.os.Parcelable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +26,7 @@ public class NavigationAdapter(
 
     private val inflater: LayoutInflater
     private val relayHost: RelayHost
+        get() = context.relayHost
 
     private val childAdapter: NavigationChildAdapter
     private val clientAdapter: NavigationClientAdapter
@@ -38,22 +41,36 @@ public class NavigationAdapter(
             }
         }
 
+    private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            val client = relayHost.selectedClient.get()
+            updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
+        }
+    }
     private val observer = ChildAdapterObserver()
 
     init {
         inflater = LayoutInflater.from(context)
-        relayHost = context.relayHost
 
-        clientAdapter = NavigationClientAdapter(context, clientClickListener)
+        clientAdapter = NavigationClientAdapter(context) {
+            clientClickListener(it)
+
+            // Even if the client does not change we still want to switch this view.
+            if (it == relayHost.selectedClient.get()) {
+                updateCurrentType(VIEW_TYPE_CHILD)
+            }
+        }
         childAdapter = NavigationChildAdapter(context, childClickListener)
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    fun startObserving() {
         clientAdapter.startObserving()
         clientAdapter.registerAdapterDataObserver(observer)
+
+        relayHost.selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+    fun stopObserving() {
         if (currentType == VIEW_TYPE_CHILD) {
             childAdapter.stopObserving()
             childAdapter.unregisterAdapterDataObserver(observer)
@@ -61,9 +78,11 @@ public class NavigationAdapter(
             clientAdapter.stopObserving()
             clientAdapter.unregisterAdapterDataObserver(observer)
         }
+
+        relayHost.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
     }
 
-    fun updateCurrentType(type: Int) {
+    private fun updateCurrentType(type: Int) {
         if (type == currentType) return
 
         // Stop observing everything old.
@@ -81,9 +100,6 @@ public class NavigationAdapter(
         notifyItemRangeRemoved(headerCount, contentCount)
         currentType = type
         notifyItemRangeInserted(headerCount, contentCount)
-
-        // Invalidate all the headers.
-        // notifyItemRangeChanged(0, headerCount)
 
         // Start observing everything new.
         if (currentType == VIEW_TYPE_CLIENT) {
@@ -180,6 +196,8 @@ public class NavigationAdapter(
         const val VIEW_TYPE_HEADER: Int = 0
         const val VIEW_TYPE_CLIENT: Int = 1
         const val VIEW_TYPE_CHILD: Int = 2
+
+        const val PARCEL_CURRENT_TYPE: String = "current_type"
     }
 
     private inner class ChildAdapterObserver : RecyclerView.AdapterDataObserver() {
@@ -207,6 +225,18 @@ public class NavigationAdapter(
             for (i in 0..itemCount - 1) {
                 notifyItemMoved(fromPosition + i + headerCount, toPosition + i + headerCount)
             }
+        }
+    }
+
+    fun onSaveInstanceState(): Parcelable {
+        val bundle = Bundle()
+        bundle.putInt(PARCEL_CURRENT_TYPE, currentType)
+        return bundle
+    }
+
+    fun onRestoreInstanceState(parcelable: Parcelable) {
+        if (parcelable is Bundle) {
+            updateCurrentType(parcelable.getInt(PARCEL_CURRENT_TYPE, VIEW_TYPE_CLIENT))
         }
     }
 }

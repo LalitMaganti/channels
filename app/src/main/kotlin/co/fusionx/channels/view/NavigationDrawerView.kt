@@ -12,6 +12,7 @@ import co.fusionx.channels.R
 import co.fusionx.channels.adapter.NavigationAdapter
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 public class NavigationDrawerView @JvmOverloads constructor(
@@ -21,26 +22,39 @@ public class NavigationDrawerView @JvmOverloads constructor(
     internal var callbacks by Delegates.notNull<Callbacks>()
 
     private val recycler: RecyclerView by bindView(R.id.navdrawer_recycler)
-    // private val emptyRecyclerLayout: EmptyViewRecyclerViewLayout
-    //        by bindView(R.id.empty_recycler_parent)
     private var adapter: NavigationAdapter by Delegates.notNull()
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
 
-        if (!isInEditMode) {
-            adapter = NavigationAdapter(context, { callbacks.onClientClick(it) }) {
-                callbacks.onChildClick(it)
-            }
-            recycler.adapter = adapter
-        }
         recycler.layoutManager = LinearLayoutManager(context)
+        if (isInEditMode) return
+
+        adapter = NavigationAdapter(context, { callbacks.onClientClick(it) }) {
+            callbacks.onChildClick(it)
+        }
+        recycler.adapter = adapter
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        adapter.startObserving()
+        Timber.v("NavigationDrawerView attached to window")
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        adapter.stopObserving()
+        Timber.v("NavigationDrawerView detached from window")
     }
 
     public override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         bundle.putParcelable(SUPER_STATE, super.onSaveInstanceState())
-        bundle.putInt(STATE_CURRENT_TYPE, adapter.currentType)
+        bundle.putParcelable(PARCEL_ADAPTER_STATE, adapter.onSaveInstanceState())
+        Timber.v("NavigationDrawerView saving state")
         return bundle
     }
 
@@ -48,19 +62,12 @@ public class NavigationDrawerView @JvmOverloads constructor(
         val superState: Parcelable
         if (state is Bundle) {
             superState = state.getParcelable(SUPER_STATE)
-            adapter.updateCurrentType(state.getInt(STATE_CURRENT_TYPE, -1))
+            adapter.onRestoreInstanceState(state.getParcelable<Parcelable>(PARCEL_ADAPTER_STATE))
         } else {
             superState = state
         }
+        Timber.v("NavigationDrawerView restoring state")
         super.onRestoreInstanceState(superState)
-    }
-
-    internal fun switchToChildList() {
-        adapter.updateCurrentType(NavigationAdapter.VIEW_TYPE_CHILD)
-    }
-
-    internal fun switchToClientList() {
-        adapter.updateCurrentType(NavigationAdapter.VIEW_TYPE_CLIENT)
     }
 
     interface Callbacks {
@@ -69,6 +76,6 @@ public class NavigationDrawerView @JvmOverloads constructor(
     }
 
     companion object {
-        private val STATE_CURRENT_TYPE = "current_type"
+        private val PARCEL_ADAPTER_STATE = "adapter_state"
     }
 }

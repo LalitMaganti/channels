@@ -9,7 +9,7 @@ import co.fusionx.channels.BR;
 
 public abstract class ClientChild extends BaseObservable {
 
-    private ObservableList<CharSequence> buffer = new ObservableArrayList<>()
+    private ObservableList<CharSequence> buffer = new ObservableArrayList<>();
 
     public void add(String message) {
         buffer.add(message);

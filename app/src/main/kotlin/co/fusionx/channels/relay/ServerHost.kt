@@ -1,7 +1,5 @@
 package co.fusionx.channels.relay
 
-import android.databinding.ObservableArrayList
-import android.databinding.ObservableList
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.protocol.ReplyCodes
 import co.fusionx.relay.util.join
@@ -16,7 +14,6 @@ class ServerHost(private val name: CharSequence) : ClientChild(), EventListener 
     override fun onWelcome(target: String, text: String) = add(text)
 
     override fun getName() = name
-    override fun getBuffer() = buffer
 
     companion object {
         private val displayedCodes: Set<Int> = setOf(

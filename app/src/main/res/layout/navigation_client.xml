@@ -31,6 +31,6 @@
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{client.status}"/>
+            android:text="@{String.valueOf(client.status)}"/>
     </LinearLayout>
 </layout>

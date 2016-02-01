@@ -2,13 +2,41 @@ package co.fusionx.channels.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import org.jetbrains.anko.db.*
 
-public class ConnectionDBHelper(private val context: Context) : ManagedSQLiteOpenHelper(
-        context, ConnectionDBHelper.DB_NAME, null, 1) {
+class ConnectionDBHelper private constructor(private val context: Context) :
+        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 3) {
+    override fun onCreate(db: SQLiteDatabase) {
+        createTables(db)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE `${ConnectionDBColumns.TABLE_NAME}`;")
+        createTables(db)
+    }
+
+    private fun createTables(db: SQLiteDatabase) {
+        db.execSQL(
+                arrayOf(
+                        ConnectionDBColumns._ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT + UNIQUE,
+                        ConnectionDBColumns.NAME to TEXT,
+                        ConnectionDBColumns.HOSTNAME to TEXT,
+                        ConnectionDBColumns.PORT to INTEGER
+                ).map { col ->
+                    "${col.first} ${col.second}"
+                }.joinToString(", ", prefix = "CREATE TABLE IF NOT EXISTS ${ConnectionDBColumns.TABLE_NAME}(", postfix = ");")
+        )
+
+        // TODO(tilal6991) remove this
+        db.insert(ConnectionDBColumns.TABLE_NAME,
+                ConnectionDBColumns.NAME to "Freenode",
+                ConnectionDBColumns.HOSTNAME to "irc.freenode.net",
+                ConnectionDBColumns.PORT to 6667)
+    }
 
     companion object {
-        private val DB_NAME = "DB_CONNECTIONS"
+        public val DB_NAME = "DB_CONNECTIONS"
         private var instance: ConnectionDBHelper? = null
 
         @Synchronized fun instance(ctx: Context): ConnectionDBHelper {
@@ -16,32 +44,6 @@ public class ConnectionDBHelper(private val context: Context) : ManagedSQLiteOpe
                 instance = ConnectionDBHelper(ctx.applicationContext)
             }
             return instance!!
-        }
-    }
-
-    override fun onCreate(db: SQLiteDatabase) {
-        createTables(db)
-    }
-
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.use {
-            db.dropTable("connections")
-        }
-        createTables(db)
-    }
-
-    private fun createTables(db: SQLiteDatabase) {
-        db.use {
-            db.createTable(
-                    ConnectionDBColumns.TABLE_NAME,
-                    true /* ifNotExists */,
-                    ConnectionDBColumns._ID to INTEGER + PRIMARY_KEY + UNIQUE + AUTOINCREMENT,
-                    ConnectionDBColumns.TITLE to TEXT
-            )
-            db.insert(
-                    ConnectionDBColumns.TABLE_NAME,
-                    ConnectionDBColumns.TITLE to "Test"
-            )
         }
     }
 }

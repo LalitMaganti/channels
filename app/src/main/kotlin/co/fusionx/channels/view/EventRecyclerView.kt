@@ -1,6 +1,8 @@
 package co.fusionx.channels.view
 
 import android.content.Context
+import android.databinding.Observable
+import android.databinding.ObservableField
 import android.databinding.ObservableList
 import android.os.Bundle
 import android.os.Parcelable
@@ -9,7 +11,8 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import co.fusionx.channels.adapter.MainItemAdapter
 import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.databinding.ObservableListRecyclerAdapterProxy
+import co.fusionx.channels.databinding.ObservableListAdapterProxy
+import co.fusionx.channels.relay.ClientChild
 import kotlin.properties.Delegates
 
 public class EventRecyclerView @JvmOverloads constructor(
@@ -26,13 +29,26 @@ public class EventRecyclerView @JvmOverloads constructor(
     private var lastVisible = -1
     private var data: ObservableList<CharSequence>? = null
 
-    private lateinit var listener: ObservableListRecyclerAdapterProxy<CharSequence>
+    private var displayedChild: ClientChild? = null
+    private val selectedChild: ObservableField<ClientChild>?
+        get() = relayHost.selectedClient.get()?.selectedChild
+
+    private lateinit var listener: ObservableListAdapterProxy<CharSequence>
+    private val childListener = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            switchContent()
+        }
+    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
 
         layoutManager = LinearLayoutManager(context)
         setLayoutManager(layoutManager)
+
+        if (isInEditMode) {
+            return
+        }
 
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -42,11 +58,21 @@ public class EventRecyclerView @JvmOverloads constructor(
         })
 
         adapter = MainItemAdapter(context)
-        listener = object : ObservableListRecyclerAdapterProxy<CharSequence>(adapter) {
+        listener = object : ObservableListAdapterProxy<CharSequence>(adapter) {
             override fun onItemRangeInserted(sender: ObservableList<CharSequence>?, positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(sender, positionStart, itemCount)
                 scroll(positionStart + itemCount - 1)
             }
         }
+
+        switchContent()
+        relayHost.selectedClient.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                displayedChild?.removeOnPropertyChangedCallback(childListener)
+                switchContent()
+                selectedChild?.addOnPropertyChangedCallback(childListener)
+            }
+        })
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -82,8 +108,10 @@ public class EventRecyclerView @JvmOverloads constructor(
         super.onRestoreInstanceState(superState)
     }
 
-    fun switchContent() {
-        val buffer = relayHost.selectedClient.get()?.selectedChild?.buffer
+    private fun switchContent() {
+        displayedChild = selectedChild?.get()
+
+        val buffer = selectedChild?.get()?.buffer
         if (buffer == data) return
 
         mainItemAdapter.setBuffer(buffer)
@@ -99,16 +127,14 @@ public class EventRecyclerView @JvmOverloads constructor(
         data?.addOnListChangedCallback(listener)
     }
 
-    private fun scroll(position: Int) {
-        post {
-            // If the last item visible is the final one then keep scrolling.
-            val last = layoutManager.findLastCompletelyVisibleItemPosition()
-            if (scrollState == SCROLL_STATE_IDLE &&
-                    (last == position - 1 || lastVisible == position - 1)) {
-                layoutManager.scrollToPositionWithOffset(position, 0)
-                callbacks?.onBottomScrollPosted()
-                lastVisible = position
-            }
+    private fun scroll(position: Int) = post {
+        // If the last item visible is the final one then keep scrolling.
+        val last = layoutManager.findLastCompletelyVisibleItemPosition()
+        if (scrollState == SCROLL_STATE_IDLE &&
+                (last == position - 1 || lastVisible == position - 1)) {
+            layoutManager.scrollToPositionWithOffset(position, 0)
+            callbacks?.onBottomScrollPosted()
+            lastVisible = position
         }
     }
 
