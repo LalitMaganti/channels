@@ -46,7 +46,7 @@ public class MainActivity : AppCompatActivity() {
             }
 
             override fun onChildClick(child: ClientChild) {
-                val alreadySelected = relayHost.selectedClient!!.select(child)
+                val alreadySelected = relayHost.selectedClient.get()!!.select(child)
 
                 if (!alreadySelected) {
                     eventRecycler.switchContent()

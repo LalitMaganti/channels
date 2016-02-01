@@ -80,8 +80,8 @@ public class ClientHost(private val configuration: ConnectionConfiguration) {
             }
         }
 
-        public override fun onGenericCode(code: Int, text: String) {
-            handler.post { server.onGenericCode(code, text) }
+        public  override fun onOtherCode(code: Int, arguments: List<String>) {
+            handler.post { server.onOtherCode(code, arguments) }
         }
 
         public override fun onWelcome(target: String, text: String) {

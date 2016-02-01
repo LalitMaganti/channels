@@ -2,14 +2,15 @@ package co.fusionx.channels.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.R
+import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.observable.ObservableReference
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
-import co.fusionx.channels.view.EmptyViewRecyclerViewLayout
+import co.fusionx.channels.relay.RelayHost
 import timber.log.Timber
 
 public class NavigationAdapter(
@@ -22,6 +23,7 @@ public class NavigationAdapter(
         private set
 
     private val inflater: LayoutInflater
+    private val relayHost: RelayHost
 
     private val childAdapter: NavigationChildAdapter
     private val clientAdapter: NavigationClientAdapter
@@ -40,17 +42,32 @@ public class NavigationAdapter(
 
     init {
         inflater = LayoutInflater.from(context)
+        relayHost = context.relayHost
 
         clientAdapter = NavigationClientAdapter(context, clientClickListener)
         childAdapter = NavigationChildAdapter(context, childClickListener)
+    }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+        clientAdapter.startObserving()
         clientAdapter.registerAdapterDataObserver(observer)
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+        if (currentType == VIEW_TYPE_CHILD) {
+            childAdapter.stopObserving()
+            childAdapter.unregisterAdapterDataObserver(observer)
+        } else {
+            clientAdapter.stopObserving()
+            clientAdapter.unregisterAdapterDataObserver(observer)
+        }
     }
 
     fun updateCurrentType(type: Int) {
         if (type == currentType) return
 
         if (currentType == VIEW_TYPE_CLIENT) {
+            clientAdapter.stopObserving()
             clientAdapter.unregisterAdapterDataObserver(observer)
         } else if (currentType == VIEW_TYPE_CHILD) {
             childAdapter.stopObserving()
@@ -63,11 +80,12 @@ public class NavigationAdapter(
         currentType = type
         notifyItemRangeInserted(headerCount, contentCount)
 
-        if (currentType == VIEW_TYPE_CHILD) {
+        if (currentType == VIEW_TYPE_CLIENT) {
+            clientAdapter.startObserving()
+            clientAdapter.registerAdapterDataObserver(observer)
+        } else if (currentType == VIEW_TYPE_CHILD) {
             childAdapter.startObserving()
             childAdapter.registerAdapterDataObserver(observer)
-        } else if (currentType == VIEW_TYPE_CHILD) {
-            clientAdapter.registerAdapterDataObserver(observer)
         } else {
             Timber.e("This should not be happening.")
         }
@@ -92,30 +110,53 @@ public class NavigationAdapter(
         }
     }
 
-    override fun getItemCount(): Int = headerCount + contentCount
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+    }
 
-    override fun getItemViewType(position: Int): Int =
-            if (position < headerCount)
-                VIEW_TYPE_HEADER
-            else
-                currentType
+    override fun getItemCount(): Int {
+        return headerCount + contentCount
+    }
 
-    inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView) {
+    override fun getItemViewType(position: Int): Int {
+        if (position < headerCount) {
+            return VIEW_TYPE_HEADER
+        }
+        return currentType
+    }
+
+    inner class HeaderViewHolder(itemView: View) : ViewHolder(itemView),
+            ObservableReference.Observer<ClientHost> {
+
         private val background = itemView.findViewById(R.id.view_navigation_drawer_header_image)
 
         override fun bind(position: Int) {
-            /*
-            background.setOnClickListener {
-                if (relayHost.selectedClient != null) {
-                    updateCurrentType(if (currentType == VIEW_TYPE_CHILD) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
+            relayHost.selectedClient.addObserver(this)
+            onPreSet(relayHost.selectedClient.get())
+        }
+
+        override fun unbind() {
+            relayHost.selectedClient.removeObserver(this)
+        }
+
+        override fun onPostSet(new: ClientHost?) {
+            if (new == null) {
+                background.setOnClickListener(null)
+            } else {
+                background.setOnClickListener {
+                    if (currentType == VIEW_TYPE_CHILD) {
+                        updateCurrentType(VIEW_TYPE_CLIENT)
+                    } else {
+                        updateCurrentType(VIEW_TYPE_CHILD)
+                    }
                 }
             }
-            */
         }
     }
 
     abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         public abstract fun bind(position: Int)
+        public open fun unbind() = Unit
     }
 
     companion object {

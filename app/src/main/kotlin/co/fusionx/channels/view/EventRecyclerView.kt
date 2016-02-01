@@ -76,7 +76,7 @@ public class EventRecyclerView @JvmOverloads constructor(
     }
 
     fun switchContent() {
-        val buffer = relayHost.selectedClient?.selectedChild?.buffer
+        val buffer = relayHost.selectedClient.get()?.selectedChild?.buffer
         if (buffer == data) return
 
         mainItemAdapter.setBuffer(buffer)

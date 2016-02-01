@@ -3,6 +3,7 @@ package co.fusionx.channels.relay
 import android.content.Context
 import android.os.HandlerThread
 import co.fusionx.channels.observable.ObservableList
+import co.fusionx.channels.observable.ObservableReference
 import co.fusionx.relay.ConnectionConfiguration
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
@@ -12,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 public class RelayHost @Inject constructor(private val context: Context) {
     public val clients: ObservableList<ClientHost> = ObservableList(arrayListOf())
-    public var selectedClient: ClientHost? = null
+    public var selectedClient: ObservableReference<ClientHost> = ObservableReference(null)
         private set
 
     init {
@@ -24,9 +25,9 @@ public class RelayHost @Inject constructor(private val context: Context) {
     }
 
     public fun select(client: ClientHost): Boolean {
-        if (selectedClient == client) return true
+        if (selectedClient.get() == client) return true
 
-        selectedClient = client
+        selectedClient.set(client)
         client.onSelected()
         return false
     }

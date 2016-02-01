@@ -21,7 +21,6 @@ public class ObservableList<T>(private val wrapped: MutableList<T>): MutableList
     }
 
     public interface Observer {
-        public fun onAdd(position: Int) {
-        }
+        public fun onAdd(position: Int) = Unit
     }
 }

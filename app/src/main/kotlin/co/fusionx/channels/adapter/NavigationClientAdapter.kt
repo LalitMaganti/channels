@@ -10,7 +10,6 @@ import co.fusionx.channels.R
 import co.fusionx.channels.base.objectProvider
 import co.fusionx.channels.observable.ObservableList
 import co.fusionx.channels.relay.ClientHost
-import co.fusionx.channels.view.EmptyViewRecyclerViewLayout
 
 class NavigationClientAdapter(
         private val context: Context,
@@ -23,23 +22,32 @@ class NavigationClientAdapter(
 
     init {
         inflater = LayoutInflater.from(context)
-
         clients = context.objectProvider.relayHost().clients
-        clients.addObserver(object : ObservableList.Observer {
-            override fun onAdd(position: Int) {
-                notifyItemInserted(position)
-            }
-        })
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int) = ClientViewHolder(
-            inflater.inflate(R.layout.navigation_client, parent, false))
+    fun startObserving() {
+        clients.addObserver(this)
+    }
+
+    fun stopObserving() {
+        clients.removeObserver(this)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClientViewHolder {
+        return ClientViewHolder(inflater.inflate(R.layout.navigation_client, parent, false))
+    }
 
     override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
         holder.bind(position)
     }
 
-    override fun getItemCount(): Int = clients.size
+    override fun getItemCount(): Int {
+        return clients.size
+    }
+
+    override fun onAdd(position: Int) {
+        notifyItemInserted(position)
+    }
 
     inner class ClientViewHolder(itemView: View) : NavigationAdapter.ViewHolder(itemView) {
         private val title = itemView.findViewById(R.id.drawer_client_title) as TextView
@@ -53,5 +61,4 @@ class NavigationClientAdapter(
             itemView.setOnClickListener { clientClickListener(item) }
         }
     }
-
 }

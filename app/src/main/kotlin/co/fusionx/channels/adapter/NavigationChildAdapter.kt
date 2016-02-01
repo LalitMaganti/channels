@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.objectProvider
+import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.observable.ObservableList
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
-import co.fusionx.channels.view.EmptyViewRecyclerViewLayout
 
 class NavigationChildAdapter(
         private val context: Context,
@@ -21,7 +21,7 @@ class NavigationChildAdapter(
 
     private val inflater: LayoutInflater
     private val selectedClient: ClientHost?
-        get() = context.objectProvider.relayHost().selectedClient
+        get() = context.relayHost.selectedClient.get()
 
     init {
         inflater = LayoutInflater.from(context)
@@ -34,9 +34,14 @@ class NavigationChildAdapter(
         holder.bind(position)
     }
 
+    override fun onViewRecycled(holder: NavigationAdapter.ViewHolder) {
+        holder.unbind()
+    }
+
     override fun getItemCount(): Int = selectedClient?.children?.size ?: 0
 
-    inner class ChildViewHolder(itemView: View) : NavigationAdapter.ViewHolder(itemView) {
+    inner class ChildViewHolder(itemView: View) : NavigationAdapter.ViewHolder(itemView),
+            ObservableList.Observer {
         private val title = itemView.findViewById(R.id.drawer_client_children_title) as TextView
         private val message = itemView.findViewById(R.id.drawer_client_children_message) as TextView
 
@@ -45,18 +50,28 @@ class NavigationChildAdapter(
             title.text = child.name
             message.text = child.message
             itemView.setOnClickListener { childClickListener(child) }
+
+            child.buffer.addObserver(this)
+        }
+
+        override fun unbind() {
+            selectedClient!!.children[adapterPosition].buffer.removeObserver(this)
+        }
+
+        override fun onAdd(position: Int) {
+            notifyItemRangeChanged(position, 1)
         }
     }
 
     fun startObserving() {
-        selectedClient!!.children.forEach { it.buffer.addObserver(this) }
+        selectedClient!!.children.addObserver(this)
     }
 
     fun stopObserving() {
-        selectedClient?.children?.forEach { it.buffer.removeObserver(this) }
+        selectedClient!!.children.removeObserver(this)
     }
 
     override fun onAdd(position: Int) {
-        notifyItemRangeChanged(0, itemCount)
+        notifyItemInserted(position)
     }
 }
