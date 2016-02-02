@@ -30,7 +30,7 @@ public class EventRecyclerView @JvmOverloads constructor(
     private var data: ObservableList<CharSequence>? = null
 
     private var displayedChild: ClientChild? = null
-    private val selectedChild: ObservableField<ClientChild>?
+    private val selectedChild: ClientChild?
         get() = relayHost.selectedClient.get()?.selectedChild
 
     private lateinit var listener: ObservableListAdapterProxy<CharSequence>
@@ -109,9 +109,9 @@ public class EventRecyclerView @JvmOverloads constructor(
     }
 
     private fun switchContent() {
-        displayedChild = selectedChild?.get()
+        displayedChild = selectedChild
 
-        val buffer = selectedChild?.get()?.buffer
+        val buffer = selectedChild?.buffer
         if (buffer == data) return
 
         mainItemAdapter.setBuffer(buffer)

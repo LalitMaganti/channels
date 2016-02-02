@@ -1,10 +1,12 @@
 package co.fusionx.channels.relay
 
+import android.databinding.BaseObservable
+import android.databinding.Bindable
 import android.databinding.ObservableArrayList
-import android.databinding.ObservableField
 import android.databinding.ObservableList
 import android.os.Handler
 import android.support.v4.util.SimpleArrayMap
+import co.fusionx.channels.BR
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
@@ -12,35 +14,46 @@ import co.fusionx.relay.protocol.ClientGenerator
 import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
 
-public class ClientHost(public val configuration: ClientConfiguration) {
+public class ClientHost(public val configuration: ClientConfiguration) : BaseObservable() {
     public val name: CharSequence get() = configuration.name
     public val children: ObservableList<ClientChild> = ObservableArrayList()
-    public val selectedChild: ObservableField<ClientChild>
-    public val status: ObservableField<Long> = ObservableField(STOPPED)
 
-    private val client: RelayClient
-
-    // TODO(tilal6991) Fix this to do the correct thing.
-    private val nick: ObservableField<String> = ObservableField("tilal6993")
-
-    private var server: ServerHost
+    private val client: RelayClient = RelayClient.create(configuration.connectionConfiguration,
+            AndroidMessageLoop.create())
     private val channels: SimpleArrayMap<String, ChannelHost> = SimpleArrayMap()
+    private var server: ServerHost = ServerHost(name)
+
+    // Bindable properties.
+    public var selectedChild: ClientChild = server
+        @Bindable get
+        private set(it) {
+            field = it
+            notifyPropertyChanged(BR.selectedChild)
+        }
+    public var status: Long = STOPPED
+        @Bindable get
+        private set(it) {
+            field = it
+            notifyPropertyChanged(BR.status)
+        }
+    // TODO(tilal6991) Fix this to do the correct thing.
+    public var nick: String = "tilal6993"
+        @Bindable get
+        private set(it) {
+            field = it
+            notifyPropertyChanged(BR.nick)
+        }
 
     init {
-        client = RelayClient.create(configuration.connectionConfiguration,
-                AndroidMessageLoop.create())
         client.addEventListener(DispatchingEventListener())
         client.addEventListener(BasicEventListener(client))
 
-        server = ServerHost("Freenode")
         children.add(server)
-
-        selectedChild = ObservableField(server)
     }
 
     public fun select(child: ClientChild) {
-        if (selectedChild.get() == child) return
-        selectedChild.set(child)
+        if (selectedChild == child) return
+        selectedChild = child
     }
 
     private inner class DispatchingEventListener : EventListener {
@@ -48,7 +61,7 @@ public class ClientHost(public val configuration: ClientConfiguration) {
 
         override fun onSocketConnect() {
             handler.post {
-                status.set(SOCKET_CONNECTED)
+                status = SOCKET_CONNECTED
                 server.onSocketConnect()
             }
         }
@@ -60,7 +73,7 @@ public class ClientHost(public val configuration: ClientConfiguration) {
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
                 val c: ChannelHost
-                if (PrefixExtractor.nick(prefix) == nick.get()) {
+                if (PrefixExtractor.nick(prefix) == nick) {
                     c = ChannelHost(channel)
                     children.add(c)
                     channels.put(channel, c)
@@ -77,10 +90,10 @@ public class ClientHost(public val configuration: ClientConfiguration) {
 
         public override fun onWelcome(target: String, text: String) {
             handler.post {
-                status.set(CONNECTED)
+                status = CONNECTED
                 server.onWelcome(target, text)
 
-                nick.set(target)
+                nick = target
             }
         }
 
@@ -107,9 +120,10 @@ public class ClientHost(public val configuration: ClientConfiguration) {
     }
 
     fun onSelected() {
-        selectedChild.set(server)
-        if (status.get() == STOPPED) {
-            status.set(CONNECTING)
+        selectedChild = server
+
+        if (status == STOPPED) {
+            status = CONNECTING
             client.start()
         }
     }

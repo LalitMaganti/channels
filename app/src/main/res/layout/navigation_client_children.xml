@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
-        <variable name="child" type="co.fusionx.channels.relay.ClientChild"/>
+
+        <variable
+            name="child"
+            type="co.fusionx.channels.relay.ClientChild" />
     </data>
 
     <LinearLayout
@@ -21,7 +25,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{child.name}"/>
+            android:text="@{child.name}" />
 
         <TextView
             android:id="@+id/drawer_client_children_message"
@@ -31,6 +35,6 @@
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{child.message}"/>
+            android:text="@{child.message}" />
     </LinearLayout>
 </layout>

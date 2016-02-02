@@ -3,10 +3,10 @@ package co.fusionx.channels.relay
 import android.content.Context
 import android.databinding.ObservableField
 import android.support.v7.util.SortedList
-import co.fusionx.channels.databinding.SortedListAdapterProxy
 import co.fusionx.channels.databinding.SortedListDispatcher
 import co.fusionx.channels.db.connectionDb
 import co.fusionx.channels.util.compareTo
+import co.fusionx.relay.RelayClient
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,13 +14,18 @@ import javax.inject.Singleton
 public class RelayHost @Inject constructor(private val context: Context) {
     private val dispatcher = SortedListDispatcher(clientComparator.value)
 
-    public val clients: SortedList<ClientHost> = SortedList(ClientHost::class.java,
-            SortedList.BatchedCallback(dispatcher))
+    public val clients: SortedList<ClientHost> = SortedList(ClientHost::class.java, dispatcher)
     public val selectedClient: ObservableField<ClientHost?> = ObservableField(null)
 
     init {
         context.connectionDb.getConfigurations()
-                .subscribe { it -> clients.addAll(it.map { ClientHost(it) }) }
+                .map { c -> Array(c.size) { ClientHost(c[it]) } }
+                .subscribe {
+                    clients.beginBatchedUpdates()
+                    clients.clear()
+                    clients.addAll(it, true)
+                    clients.endBatchedUpdates()
+                }
     }
 
     public fun addClientObserver(callback: SortedListDispatcher.Callback) {

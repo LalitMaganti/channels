@@ -33,6 +33,7 @@ public class NavigationPresenter(private val view: NavigationDrawerView,
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
             val client = view.context.relayHost.selectedClient.get()
             updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
+            adapter.updateHeader()
         }
     }
 
@@ -47,7 +48,13 @@ public class NavigationPresenter(private val view: NavigationDrawerView,
         }
         childListener = ObservableListAdapterProxy<ClientChild>(childAdapter)
 
-        adapter = NavigationAdapter(view.context, clientAdapter)
+        adapter = NavigationAdapter(view.context, clientAdapter) {
+            if (currentType == VIEW_TYPE_CHILD) {
+                updateCurrentType(VIEW_TYPE_CLIENT)
+            } else {
+                updateCurrentType(VIEW_TYPE_CHILD)
+            }
+        }
         view.setAdapter(adapter)
     }
 

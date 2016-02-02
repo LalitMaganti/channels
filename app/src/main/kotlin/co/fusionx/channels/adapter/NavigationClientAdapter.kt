@@ -1,35 +1,48 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
-import android.databinding.DataBindingUtil
+import android.databinding.OnRebindCallback
+import android.databinding.ViewDataBinding
 import android.support.v7.util.SortedList
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.databinding.NavigationClientBinding
-import co.fusionx.channels.databinding.SortedListAdapterProxy
 import co.fusionx.channels.relay.ClientHost
 
 class NavigationClientAdapter(
         private val context: Context,
-        private val clientClickListener: (ClientHost) -> Unit) :
-        RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
+        private val clientClickListener: (ClientHost) -> Unit) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
 
-    private val clients: SortedList<ClientHost>
-    private val listener = SortedListAdapterProxy(this)
+    private val clients: SortedList<ClientHost> get() = context.relayHost.clients
 
     init {
         inflater = LayoutInflater.from(context)
-        clients = context.relayHost.clients
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClientViewHolder {
-        return ClientViewHolder(DataBindingUtil.inflate<NavigationClientBinding>(
-                inflater, R.layout.navigation_client, parent, false))
+        val holder = ClientViewHolder(NavigationClientBinding.inflate(inflater, parent, false))
+        /*
+        holder.binding.addOnRebindCallback(object : OnRebindCallback<NavigationClientBinding>() {
+            public override fun onPreBind(binding: NavigationClientBinding): Boolean {
+                return recyclerView != null && recyclerView.isComputingLayout;
+            }
+
+            public override fun onCanceled(binding: NavigationClientBinding) {
+                if (recyclerView == null || recyclerView.isComputingLayout) {
+                    return;
+                }
+                val position = holder.adapterPosition;
+                if (position != RecyclerView.NO_POSITION) {
+                    notifyItemChanged(position, DATA_INVALIDATION);
+                }
+            }
+        });
+        */
+        return holder
     }
 
     override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
@@ -40,12 +53,16 @@ class NavigationClientAdapter(
         return clients.size()
     }
 
-    inner class ClientViewHolder(private val binding: NavigationClientBinding) :
-            NavigationAdapter.ViewHolder(binding.root) {
+    override fun getItemViewType(position: Int): Int {
+        return 3
+    }
+
+    inner class ClientViewHolder(val binding: NavigationClientBinding) : NavigationAdapter.ViewHolder(binding.root) {
         override fun bind(position: Int) {
             val item = clients[position]
             binding.client = item
             binding.root.setOnClickListener { clientClickListener(item) }
+            binding.executePendingBindings()
         }
     }
 }

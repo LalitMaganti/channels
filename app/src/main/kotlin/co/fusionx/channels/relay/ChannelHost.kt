@@ -5,7 +5,7 @@ import co.fusionx.channels.databinding.SortedListDispatcher
 import co.fusionx.channels.util.compareTo
 import co.fusionx.relay.util.PrefixExtractor
 
-public class ChannelHost(private val name: CharSequence) : ClientChild() {
+public class ChannelHost(override val name: CharSequence) : ClientChild() {
 
     private val dispatcher = SortedListDispatcher(userComparator.value)
     val users: SortedList<CharSequence> = SortedList(CharSequence::class.java, dispatcher)
@@ -32,8 +32,6 @@ public class ChannelHost(private val name: CharSequence) : ClientChild() {
     public fun removeCallback(userCallback: SortedListDispatcher.Callback) {
         dispatcher.removeCallback(userCallback)
     }
-
-    override fun getName() = name
 
     companion object {
         private val userComparator = lazy { UserComparator() }

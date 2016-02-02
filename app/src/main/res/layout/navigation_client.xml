@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
-        <variable name="client" type="co.fusionx.channels.relay.ClientHost"/>
+
+        <variable
+            name="client"
+            type="co.fusionx.channels.relay.ClientHost" />
     </data>
 
     <LinearLayout
@@ -21,7 +25,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{client.name}"/>
+            android:text="@{client.name}" />
 
         <TextView
             android:id="@+id/drawer_client_status"
@@ -31,6 +35,6 @@
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{String.valueOf(client.status)}"/>
+            android:text="@{String.valueOf(client.status)}" />
     </LinearLayout>
 </layout>
