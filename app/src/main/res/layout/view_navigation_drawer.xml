@@ -18,26 +18,4 @@
         android:layout_gravity="start"
         android:orientation="vertical"/>
 
-    <!--
-    <co.fusionx.channels.view.EmptyViewRecyclerViewLayout
-        android:id="@+id/empty_recycler_parent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/navdrawer_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:orientation="vertical"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="This is empty - bad news!"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textSize="18sp"/>
-    </co.fusionx.channels.view.EmptyViewRecyclerViewLayout>
-    -->
 </co.fusionx.channels.view.NavigationDrawerView>

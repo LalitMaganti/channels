@@ -12,3 +12,5 @@ public fun CharSequence.compareTo(other: CharSequence): Int {
     }
     return length - other.length
 }
+
+public fun <T> MutableCollection<T>.addAll(vararg data: T) = addAll(data)

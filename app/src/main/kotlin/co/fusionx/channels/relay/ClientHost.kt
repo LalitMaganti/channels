@@ -1,9 +1,6 @@
 package co.fusionx.channels.relay
 
-import android.databinding.BaseObservable
-import android.databinding.Bindable
-import android.databinding.ObservableArrayList
-import android.databinding.ObservableList
+import android.databinding.*
 import android.os.Handler
 import android.support.v4.util.SimpleArrayMap
 import co.fusionx.channels.BR
@@ -24,25 +21,10 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
     private var server: ServerHost = ServerHost(name)
 
     // Bindable properties.
-    public var selectedChild: ClientChild = server
-        @Bindable get
-        private set(it) {
-            field = it
-            notifyPropertyChanged(BR.selectedChild)
-        }
-    public var status: Long = STOPPED
-        @Bindable get
-        private set(it) {
-            field = it
-            notifyPropertyChanged(BR.status)
-        }
+    public var selectedChild: ObservableField<ClientChild> = ObservableField(server)
+    public var status: ObservableLong = ObservableLong(STOPPED)
     // TODO(tilal6991) Fix this to do the correct thing.
-    public var nick: String = "tilal6993"
-        @Bindable get
-        private set(it) {
-            field = it
-            notifyPropertyChanged(BR.nick)
-        }
+    public var nick: ObservableField<String> = ObservableField("tilal6993")
 
     init {
         client.addEventListener(DispatchingEventListener())
@@ -53,7 +35,7 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
 
     public fun select(child: ClientChild) {
         if (selectedChild == child) return
-        selectedChild = child
+        selectedChild.set(child)
     }
 
     private inner class DispatchingEventListener : EventListener {
@@ -61,7 +43,7 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
 
         override fun onSocketConnect() {
             handler.post {
-                status = SOCKET_CONNECTED
+                status.set(SOCKET_CONNECTED)
                 server.onSocketConnect()
             }
         }
@@ -73,7 +55,7 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
                 val c: ChannelHost
-                if (PrefixExtractor.nick(prefix) == nick) {
+                if (PrefixExtractor.nick(prefix) == nick.get()) {
                     c = ChannelHost(channel)
                     children.add(c)
                     channels.put(channel, c)
@@ -90,10 +72,10 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
 
         public override fun onWelcome(target: String, text: String) {
             handler.post {
-                status = CONNECTED
+                status.set(CONNECTED)
                 server.onWelcome(target, text)
 
-                nick = target
+                nick.set(target)
             }
         }
 
@@ -120,10 +102,10 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
     }
 
     fun onSelected() {
-        selectedChild = server
+        selectedChild.set(server)
 
-        if (status == STOPPED) {
-            status = CONNECTING
+        if (status.get() == STOPPED) {
+            status.set(CONNECTING)
             client.start()
         }
     }

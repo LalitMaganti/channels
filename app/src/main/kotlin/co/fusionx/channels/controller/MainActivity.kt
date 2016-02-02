@@ -1,8 +1,7 @@
-package co.fusionx.channels.ui
+package co.fusionx.channels.controller
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.support.design.widget.AppBarLayout
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -12,10 +11,13 @@ import android.view.MenuItem
 import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.presenter.ActionBarPresenter
+import co.fusionx.channels.presenter.EventPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
 import co.fusionx.channels.relay.ClientChild
 import co.fusionx.channels.relay.ClientHost
+import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
 
@@ -25,11 +27,8 @@ public class MainActivity : AppCompatActivity() {
     private val eventRecycler: EventRecyclerView by bindView(R.id.event_recycler)
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
-    private val appbar: AppBarLayout by bindView(R.id.appbar)
 
     private val presenters: MutableCollection<Presenter> = ArraySet()
-
-    private lateinit var navigationPresenter: NavigationPresenter
 
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
@@ -41,31 +40,25 @@ public class MainActivity : AppCompatActivity() {
 
         actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
 
-        navigationPresenter = NavigationPresenter(navDrawerView,
-                object : NavigationPresenter.Callbacks {
-                    override fun onClientClick(client: ClientHost) {
-                        val alreadySelected = relayHost.select(client)
-
-                        if (!alreadySelected) {
-                            drawerLayout.closeDrawers()
-                        }
-                    }
-
-                    override fun onChildClick(child: ClientChild) {
-                        relayHost.selectedClient.get()!!.select(child)
-                        drawerLayout.closeDrawers()
-                    }
-                });
-        presenters.addAll(arrayOf(navigationPresenter))
-
-
-        eventRecycler.callbacks = object : EventRecyclerView.Callbacks {
-            override fun onBottomScrollPosted() {
-                appbar.setExpanded(false)
-            }
-        }
+        presenters.addAll(
+                NavigationPresenter(this, navDrawerView),
+                EventPresenter(this, eventRecycler),
+                ActionBarPresenter(this)
+        )
 
         presenters.forEach { it.setup() }
+    }
+
+    fun onClientClick(client: ClientHost) {
+        val alreadySelected = relayHost.select(client)
+        if (!alreadySelected) {
+            drawerLayout.closeDrawers()
+        }
+    }
+
+    fun onChildClick(child: ClientChild) {
+        relayHost.selectedClient.get()!!.select(child)
+        drawerLayout.closeDrawers()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

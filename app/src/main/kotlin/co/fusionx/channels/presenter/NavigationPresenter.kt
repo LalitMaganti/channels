@@ -6,22 +6,19 @@ import co.fusionx.channels.adapter.NavigationAdapter
 import co.fusionx.channels.adapter.NavigationChildAdapter
 import co.fusionx.channels.adapter.NavigationClientAdapter
 import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.databinding.SortedListAdapterProxy
 import co.fusionx.channels.relay.ClientChild
-import co.fusionx.channels.relay.ClientHost
-import co.fusionx.channels.relay.RelayHost
 import co.fusionx.channels.view.NavigationDrawerView
 import timber.log.Timber
 
-public class NavigationPresenter(private val view: NavigationDrawerView,
-                                 private val callbacks: Callbacks) : Presenter {
+public class NavigationPresenter(override val activity: MainActivity,
+                                 private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
     internal var currentType: Int = VIEW_TYPE_CLIENT
         private set
-
-    private val relayHost: RelayHost get() = view.context.relayHost
 
     private lateinit var clientAdapter: NavigationClientAdapter
     private lateinit var clientListener: SortedListAdapterProxy
@@ -31,7 +28,7 @@ public class NavigationPresenter(private val view: NavigationDrawerView,
 
     private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            val client = view.context.relayHost.selectedClient.get()
+            val client = relayHost.selectedClient.get()
             updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
             adapter.updateHeader()
         }
@@ -39,12 +36,15 @@ public class NavigationPresenter(private val view: NavigationDrawerView,
 
     override fun setup() {
         clientAdapter = NavigationClientAdapter(view.context) {
-            callbacks.onClientClick(it)
+            activity.onClientClick(it)
+
+            // Make sure we're displaying the child view.
+            updateCurrentType(VIEW_TYPE_CHILD)
         }
         clientListener = SortedListAdapterProxy(clientAdapter)
 
         childAdapter = NavigationChildAdapter(view.context) {
-            callbacks.onChildClick(it)
+            activity.onChildClick(it)
         }
         childListener = ObservableListAdapterProxy<ClientChild>(childAdapter)
 
@@ -109,18 +109,10 @@ public class NavigationPresenter(private val view: NavigationDrawerView,
         return Bundle()
     }
 
-    override fun teardown() {
-    }
-
     companion object {
         const val VIEW_TYPE_CLIENT: Int = 1
         const val VIEW_TYPE_CHILD: Int = 2
 
         const val PARCEL_CURRENT_TYPE: String = "current_type"
-    }
-
-    interface Callbacks {
-        public fun onClientClick(client: ClientHost)
-        public fun onChildClick(child: ClientChild)
     }
 }

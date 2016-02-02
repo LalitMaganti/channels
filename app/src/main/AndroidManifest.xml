@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Channels">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".controller.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
