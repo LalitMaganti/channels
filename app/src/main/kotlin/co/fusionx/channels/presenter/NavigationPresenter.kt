@@ -9,7 +9,7 @@ import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.databinding.SortedListAdapterProxy
-import co.fusionx.channels.relay.ClientChild
+import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.view.NavigationDrawerView
 import timber.log.Timber
 

@@ -1,4 +1,4 @@
-package co.fusionx.channels.relay
+package co.fusionx.channels.model
 
 import android.databinding.*
 import android.os.Handler
@@ -11,14 +11,14 @@ import co.fusionx.relay.protocol.ClientGenerator
 import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
 
-public class ClientHost(public val configuration: ClientConfiguration) : BaseObservable() {
+public class Client(public val configuration: Configuration) : BaseObservable() {
     public val name: CharSequence get() = configuration.name
     public val children: ObservableList<ClientChild> = ObservableArrayList()
 
     private val client: RelayClient = RelayClient.create(configuration.connectionConfiguration,
             AndroidMessageLoop.create())
-    private val channels: SimpleArrayMap<String, ChannelHost> = SimpleArrayMap()
-    private var server: ServerHost = ServerHost(name)
+    private val channels: SimpleArrayMap<String, Channel> = SimpleArrayMap()
+    private var server: Server = Server(name)
 
     // Bindable properties.
     public var selectedChild: ObservableField<ClientChild> = ObservableField(server)
@@ -54,9 +54,9 @@ public class ClientHost(public val configuration: ClientConfiguration) : BaseObs
 
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
-                val c: ChannelHost
+                val c: Channel
                 if (PrefixExtractor.nick(prefix) == nick.get()) {
-                    c = ChannelHost(channel)
+                    c = Channel(channel)
                     children.add(c)
                     channels.put(channel, c)
                 } else {

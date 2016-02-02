@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import co.fusionx.channels.inject.ChannelsObjectProvider
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.relay.RelayHost
+import co.fusionx.channels.model.RelayHost
 
 public val Context.app: ChannelsApplication
     get() = applicationContext as ChannelsApplication

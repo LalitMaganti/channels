@@ -1,4 +1,4 @@
-package co.fusionx.channels.relay
+package co.fusionx.channels.model
 
 import android.databinding.BaseObservable
 import android.databinding.Bindable

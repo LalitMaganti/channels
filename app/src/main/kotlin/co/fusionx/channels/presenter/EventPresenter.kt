@@ -5,7 +5,7 @@ import co.fusionx.channels.adapter.MainItemAdapter
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ClientChildListener
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
-import co.fusionx.channels.relay.ClientChild
+import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.view.EventRecyclerView
 
 class EventPresenter(override val activity: MainActivity,

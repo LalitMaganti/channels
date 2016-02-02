@@ -1,7 +1,7 @@
 package co.fusionx.channels.db
 
 import android.content.Context
-import co.fusionx.channels.relay.ClientConfiguration
+import co.fusionx.channels.model.Configuration
 import co.fusionx.relay.ConnectionConfiguration
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
@@ -14,10 +14,10 @@ public class ConnectionDatabase(private val context: Context) {
         briteDb = SqlBrite.create().wrapDatabaseHelper(ConnectionDBHelper.instance(context))
     }
 
-    public fun getConfigurations(): Observable<List<ClientConfiguration>> {
+    public fun getConfigurations(): Observable<List<Configuration>> {
         return briteDb.createQuery(ConnectionDBColumns.TABLE_NAME, "SELECT * from ${ConnectionDBColumns.TABLE_NAME}")
                 .mapToList {
-                    ClientConfiguration(
+                    Configuration(
                             it.getString(it.getColumnIndex(ConnectionDBColumns.NAME)),
                             ConnectionConfiguration.create {
                                 hostname = it.getString(it.getColumnIndex(ConnectionDBColumns.HOSTNAME))

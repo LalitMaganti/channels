@@ -4,14 +4,14 @@ import android.databinding.ObservableField
 import android.os.Bundle
 import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.controller.MainActivity
-import co.fusionx.channels.relay.ClientChild
-import co.fusionx.channels.relay.ClientHost
+import co.fusionx.channels.model.ClientChild
+import co.fusionx.channels.model.Client
 
 public interface Presenter {
     val activity: MainActivity
     val id: String
 
-    val selectedClient: ObservableField<ClientHost?>
+    val selectedClient: ObservableField<Client?>
         get() = activity.relayHost.selectedClient
     val selectedChild: ObservableField<ClientChild>?
         get() = selectedClient.get()?.selectedChild

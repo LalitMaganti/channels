@@ -5,7 +5,7 @@
 
         <variable
             name="client"
-            type="co.fusionx.channels.relay.ClientHost" />
+            type="co.fusionx.channels.model.Client" />
     </data>
 
     <LinearLayout

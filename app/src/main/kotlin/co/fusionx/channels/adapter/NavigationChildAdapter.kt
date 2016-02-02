@@ -10,8 +10,8 @@ import co.fusionx.channels.R
 import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.databinding.NavigationClientChildrenBinding
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
-import co.fusionx.channels.relay.ClientChild
-import co.fusionx.channels.relay.ClientHost
+import co.fusionx.channels.model.ClientChild
+import co.fusionx.channels.model.Client
 
 class NavigationChildAdapter(
         private val context: Context,
@@ -19,7 +19,7 @@ class NavigationChildAdapter(
         RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
-    private val selectedClient: ClientHost?
+    private val selectedClient: Client?
         get() = context.relayHost.selectedClient.get()
 
     init {

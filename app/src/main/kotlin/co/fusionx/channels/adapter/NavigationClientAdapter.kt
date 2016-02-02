@@ -9,15 +9,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.fusionx.channels.base.relayHost
 import co.fusionx.channels.databinding.NavigationClientBinding
-import co.fusionx.channels.relay.ClientHost
+import co.fusionx.channels.model.Client
 
 class NavigationClientAdapter(
         private val context: Context,
-        private val clientClickListener: (ClientHost) -> Unit) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
+        private val clientClickListener: (Client) -> Unit) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
 
-    private val clients: SortedList<ClientHost> get() = context.relayHost.clients
+    private val clients: SortedList<Client> get() = context.relayHost.clients
 
     init {
         inflater = LayoutInflater.from(context)

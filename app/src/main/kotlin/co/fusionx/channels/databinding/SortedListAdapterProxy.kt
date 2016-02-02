@@ -2,7 +2,7 @@ package co.fusionx.channels.databinding
 
 import android.support.v7.widget.RecyclerView
 
-open class SortedListAdapterProxy(private val adapter: RecyclerView.Adapter<*>) : SortedListDispatcher.Callback {
+open class SortedListAdapterProxy(private val adapter: RecyclerView.Adapter<*>) : SortedListCallbackRegistry.Callback {
     override fun onChanged(position: Int, count: Int) {
         adapter.notifyDataSetChanged()
     }

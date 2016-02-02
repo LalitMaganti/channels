@@ -4,12 +4,12 @@ import android.content.Context
 import android.databinding.Observable
 import android.databinding.ObservableField
 import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.relay.ClientChild
-import co.fusionx.channels.relay.ClientHost
+import co.fusionx.channels.model.ClientChild
+import co.fusionx.channels.model.Client
 
 public class ClientChildListener(private val context: Context,
                                  private val callback: () -> Unit) {
-    private val selectedClient: ObservableField<ClientHost?>
+    private val selectedClient: ObservableField<Client?>
         get() = context.relayHost.selectedClient
     private val selectedChild: ObservableField<ClientChild>?
         get() = selectedClient.get()?.selectedChild

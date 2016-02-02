@@ -3,7 +3,7 @@ package co.fusionx.channels.databinding
 import android.support.v7.util.SortedList
 import java.util.*
 
-class SortedListDispatcher<T>(private val comparator: Comparator<T>) : SortedList.Callback<T>() {
+class SortedListCallbackRegistry<T>(private val comparator: Comparator<T>) : SortedList.Callback<T>() {
 
     private val callbacks: MutableList<Callback> = ArrayList()
 

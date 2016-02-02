@@ -1,10 +1,10 @@
-package co.fusionx.channels.relay
+package co.fusionx.channels.model
 
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.protocol.ReplyCodes
 import co.fusionx.relay.util.join
 
-class ServerHost(override val name: CharSequence) : ClientChild(), EventListener {
+class Server(override val name: CharSequence) : ClientChild(), EventListener {
     override fun onSocketConnect() = add("Connection was successful.")
 
     override fun onOtherCode(code: Int, arguments: List<String>) {

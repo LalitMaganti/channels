@@ -15,8 +15,8 @@ import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.EventPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.relay.ClientChild
-import co.fusionx.channels.relay.ClientHost
+import co.fusionx.channels.model.ClientChild
+import co.fusionx.channels.model.Client
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
@@ -49,7 +49,7 @@ public class MainActivity : AppCompatActivity() {
         presenters.forEach { it.setup() }
     }
 
-    fun onClientClick(client: ClientHost) {
+    fun onClientClick(client: Client) {
         val alreadySelected = relayHost.select(client)
         if (!alreadySelected) {
             drawerLayout.closeDrawers()

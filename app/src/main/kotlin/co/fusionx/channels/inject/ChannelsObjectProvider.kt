@@ -1,6 +1,6 @@
 package co.fusionx.channels.inject
 
-import co.fusionx.channels.relay.RelayHost
+import co.fusionx.channels.model.RelayHost
 import dagger.Component
 import javax.inject.Singleton
 
