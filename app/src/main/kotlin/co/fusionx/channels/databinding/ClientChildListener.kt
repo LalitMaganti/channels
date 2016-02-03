@@ -6,13 +6,14 @@ import android.databinding.ObservableField
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
+import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
 public class ClientChildListener(private val context: Context,
                                  private val callback: () -> Unit) {
-    private val selectedClient: ObservableField<ClientVM?>
+    private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClient
     private val selectedChild: ObservableField<ClientChildVM>?
-        get() = selectedClient.get()?.selectedChild
+        get() = selectedClientsVM.latest?.selectedChild
 
     private val clientListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
@@ -29,10 +30,10 @@ public class ClientChildListener(private val context: Context,
     }
 
     fun bind() {
-        selectedClient.addOnPropertyChangedCallback(clientListener)
+        selectedClientsVM.addOnPropertyChangedCallback(clientListener)
     }
 
     fun unbind() {
-        selectedClient.addOnPropertyChangedCallback(clientListener)
+        selectedClientsVM.addOnPropertyChangedCallback(clientListener)
     }
 }

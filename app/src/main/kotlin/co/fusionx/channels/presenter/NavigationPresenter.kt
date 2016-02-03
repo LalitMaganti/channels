@@ -31,7 +31,7 @@ public class NavigationPresenter(override val activity: MainActivity,
 
     private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            val client = relayVM.selectedClient.get()
+            val client = selectedClient.latest
             updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
         }
     }
@@ -82,7 +82,7 @@ public class NavigationPresenter(override val activity: MainActivity,
     override fun unbind() {
         relayVM.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
         if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
+            relayVM.selectedClient.latest?.children?.removeOnListChangedCallback(childListener)
         } else {
             relayVM.clients.removeObserver(clientListener)
         }
@@ -96,7 +96,7 @@ public class NavigationPresenter(override val activity: MainActivity,
         if (currentType == VIEW_TYPE_CLIENT) {
             relayVM.clients.removeObserver(clientListener)
         } else if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
+            relayVM.selectedClient.latest?.children?.removeOnListChangedCallback(childListener)
         } else {
             Timber.e("This should not be happening. $currentType is not valid.")
         }
@@ -110,7 +110,7 @@ public class NavigationPresenter(override val activity: MainActivity,
             relayVM.clients.addObserver(clientListener)
         } else if (currentType == VIEW_TYPE_CHILD) {
             adapter.updateContentAdapter(childAdapter)
-            relayVM.selectedClient.get()!!.children.addOnListChangedCallback(childListener)
+            relayVM.selectedClient.latest!!.children.addOnListChangedCallback(childListener)
         } else {
             Timber.e("This should not be happening. $currentType is not valid.")
         }
@@ -123,10 +123,10 @@ public class NavigationPresenter(override val activity: MainActivity,
                     getQuantityString(R.plurals.connected_client_count, relayVM.clientCount.get())
                             .format(relayVM.clientCount.get()))
         } else {
-            headerVM.updateText(selectedClient.get()!!.name, selectedChild!!.get()!!.name)
+            headerVM.updateText(selectedClient.latest!!.name, selectedChild!!.get()!!.name)
         }
 
-        if (selectedClient.get() == null) {
+        if (selectedClient.latest == null) {
             headerVM.updateListener(null)
         } else {
             headerVM.updateListener(headerClickListener)

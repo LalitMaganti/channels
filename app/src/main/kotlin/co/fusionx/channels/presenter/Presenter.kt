@@ -6,15 +6,16 @@ import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
+import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
 public interface Presenter {
     val activity: MainActivity
     val id: String
 
-    val selectedClient: ObservableField<ClientVM?>
+    val selectedClient: SelectedClientsVM
         get() = activity.relayVM.selectedClient
     val selectedChild: ObservableField<ClientChildVM>?
-        get() = selectedClient.get()?.selectedChild
+        get() = selectedClient.latest?.selectedChild
 
     public fun setup() = Unit
     public fun restoreState(bundle: Bundle) = Unit

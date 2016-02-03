@@ -17,7 +17,7 @@ class NavigationChildAdapter(
 
     private val inflater: LayoutInflater
     private val selectedClient: ClientVM?
-        get() = context.relayVM.selectedClient.get()
+        get() = context.relayVM.selectedClient.latest
 
     init {
         inflater = LayoutInflater.from(context)
