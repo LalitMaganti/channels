@@ -39,11 +39,12 @@ public class Client(
     }
 
     fun startIfStopped(): Boolean {
-        if (statusEnum == Client.STOPPED) {
+        val stopped = statusEnum == Client.STOPPED
+        if (stopped) {
             statusEnum = CONNECTING
             client.start()
         }
-        return statusEnum == Client.STOPPED
+        return stopped
     }
 
     private inner class DispatchingEventListener : EventListener {

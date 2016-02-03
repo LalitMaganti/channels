@@ -12,10 +12,10 @@ public interface Presenter {
     val activity: MainActivity
     val id: String
 
-    val selectedClient: SelectedClientsVM
-        get() = activity.relayVM.selectedClient
+    val selectedClientsVM: SelectedClientsVM
+        get() = activity.relayVM.selectedClients
     val selectedChild: ObservableField<ClientChildVM>?
-        get() = selectedClient.latest?.selectedChild
+        get() = selectedClientsVM.latest?.selectedChild
 
     public fun setup() = Unit
     public fun restoreState(bundle: Bundle) = Unit

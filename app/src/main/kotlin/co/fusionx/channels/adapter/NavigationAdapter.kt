@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationHeaderBinding
+import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 
 public class NavigationAdapter(
         private val context: Context,
         private var contentAdapter: RecyclerView.Adapter<NavigationAdapter.ViewHolder>,
-        private val headerVM: NavigationHeaderVM) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
+        private val headerVM: NavigationHeaderVM,
+        private val selectedClientsVM: SelectedClientsVM) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
 
@@ -49,7 +51,7 @@ public class NavigationAdapter(
         if (viewType == VIEW_TYPE_HEADER) {
             holder.bind(position)
         } else {
-            holder.bind(position - headerCount)
+            contentAdapter.onBindViewHolder(holder, position - headerCount)
         }
     }
 
@@ -69,6 +71,9 @@ public class NavigationAdapter(
 
         override fun bind(position: Int) {
             binding.headerVm = headerVM
+            binding.viewNavigationDrawerServerCarousel.setAdapter(selectedClientsVM)
+
+            binding.executePendingBindings()
         }
     }
 

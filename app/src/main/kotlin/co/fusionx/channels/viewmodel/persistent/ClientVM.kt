@@ -22,6 +22,9 @@ public class ClientVM(private val client: Client) {
     private val server: ServerVM
     private val channels: ObservableSortedArrayMap<CharSequence, ChannelVM>
 
+    private val isActive: Boolean
+        get() = status.get() != Client.STOPPED
+
     init {
         server = ServerVM(client.server)
         channels = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator())
@@ -53,7 +56,12 @@ public class ClientVM(private val client: Client) {
     }
 
     fun compareTo(o2: ClientVM): Int {
-        return client.name.compareTo(o2.client.name)
+        if (isActive == o2.isActive) {
+            return client.name.compareTo(o2.client.name)
+        } else if (isActive) {
+            return -1
+        }
+        return 1
     }
 
     private inner class ObservableMapObserver :

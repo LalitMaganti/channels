@@ -13,6 +13,7 @@ import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.databinding.SortedListAdapterProxy
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 import timber.log.Timber
 
@@ -29,9 +30,9 @@ public class NavigationPresenter(override val activity: MainActivity,
     private lateinit var adapter: NavigationAdapter
     private lateinit var headerVM: NavigationHeaderVM
 
-    private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            val client = selectedClient.latest
+    private val selectedClientCallback = object : SelectedClientsVM.OnLatestClientChangedCallback {
+        override fun onLatestClientChanged() {
+            val client = selectedClientsVM.latest
             updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
         }
     }
@@ -42,13 +43,15 @@ public class NavigationPresenter(override val activity: MainActivity,
             updateCurrentType(VIEW_TYPE_CHILD)
         }
     }
-    private val connectedClientCount = object : Observable.OnPropertyChangedCallback() {
+    private val connectedCountCallback = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
             updateHeader()
         }
     }
 
     override fun setup() {
+        headerVM = NavigationHeaderVM()
+
         clientAdapter = NavigationClientAdapter(view.context) {
             activity.onClientClick(it)
 
@@ -62,8 +65,7 @@ public class NavigationPresenter(override val activity: MainActivity,
         }
         childListener = ObservableListAdapterProxy<ClientChildVM>(childAdapter)
 
-        headerVM = NavigationHeaderVM()
-        adapter = NavigationAdapter(view.context, clientAdapter, headerVM)
+        adapter = NavigationAdapter(view.context, clientAdapter, headerVM, selectedClientsVM)
         view.setAdapter(adapter)
     }
 
@@ -73,20 +75,20 @@ public class NavigationPresenter(override val activity: MainActivity,
 
     override fun bind() {
         relayVM.clients.addObserver(clientListener)
-        selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
-        relayVM.clientCount.addOnPropertyChangedCallback(connectedClientCount)
+        selectedClientsVM.addOnClientsChangedCallback(selectedClientCallback)
+        relayVM.connectedClientCount.addOnPropertyChangedCallback(connectedCountCallback)
 
         updateHeader()
     }
 
     override fun unbind() {
-        relayVM.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
+        relayVM.selectedClients.removeOnClientsChangedCallback(selectedClientCallback)
         if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClient.latest?.children?.removeOnListChangedCallback(childListener)
+            relayVM.selectedClients.latest?.children?.removeOnListChangedCallback(childListener)
         } else {
             relayVM.clients.removeObserver(clientListener)
         }
-        relayVM.clientCount.removeOnPropertyChangedCallback(connectedClientCount)
+        relayVM.connectedClientCount.removeOnPropertyChangedCallback(connectedCountCallback)
     }
 
     private fun updateCurrentType(type: Int) {
@@ -96,7 +98,7 @@ public class NavigationPresenter(override val activity: MainActivity,
         if (currentType == VIEW_TYPE_CLIENT) {
             relayVM.clients.removeObserver(clientListener)
         } else if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClient.latest?.children?.removeOnListChangedCallback(childListener)
+            relayVM.selectedClients.latest?.children?.removeOnListChangedCallback(childListener)
         } else {
             Timber.e("This should not be happening. $currentType is not valid.")
         }
@@ -110,7 +112,7 @@ public class NavigationPresenter(override val activity: MainActivity,
             relayVM.clients.addObserver(clientListener)
         } else if (currentType == VIEW_TYPE_CHILD) {
             adapter.updateContentAdapter(childAdapter)
-            relayVM.selectedClient.latest!!.children.addOnListChangedCallback(childListener)
+            relayVM.selectedClients.latest!!.children.addOnListChangedCallback(childListener)
         } else {
             Timber.e("This should not be happening. $currentType is not valid.")
         }
@@ -120,13 +122,13 @@ public class NavigationPresenter(override val activity: MainActivity,
     private fun updateHeader() {
         if (currentType == VIEW_TYPE_CLIENT) {
             headerVM.updateText(getString(R.string.app_name),
-                    getQuantityString(R.plurals.connected_client_count, relayVM.clientCount.get())
-                            .format(relayVM.clientCount.get()))
+                    getQuantityString(R.plurals.connected_client_count, relayVM.connectedClientCount.get())
+                            .format(relayVM.connectedClientCount.get()))
         } else {
-            headerVM.updateText(selectedClient.latest!!.name, selectedChild!!.get()!!.name)
+            headerVM.updateText(selectedClientsVM.latest!!.name, selectedChild!!.get()!!.name)
         }
 
-        if (selectedClient.latest == null) {
+        if (selectedClientsVM.latest == null) {
             headerVM.updateListener(null)
         } else {
             headerVM.updateListener(headerClickListener)

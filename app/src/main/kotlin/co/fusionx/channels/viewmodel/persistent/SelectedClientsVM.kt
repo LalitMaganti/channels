@@ -1,8 +1,8 @@
 package co.fusionx.channels.viewmodel.persistent
 
-import android.databinding.BaseObservable
+import android.util.ArraySet
 
-public class SelectedClientsVM : BaseObservable() {
+public class SelectedClientsVM {
     public var latest: ClientVM? = null
         private set
     public var penultimate: ClientVM? = null
@@ -10,12 +10,14 @@ public class SelectedClientsVM : BaseObservable() {
     public var antepenultimate: ClientVM? = null
         private set
 
+    private val callbacks: MutableCollection<OnClientsChangedCallback> = ArraySet<OnClientsChangedCallback>()
+
     fun select(client: ClientVM) {
         antepenultimate = penultimate
         penultimate = latest
         latest = client
 
-        notifyChange()
+        callbacks.forEach { it.onNewClientAdded() }
     }
 
     public fun selectPenultimate() {
@@ -23,7 +25,7 @@ public class SelectedClientsVM : BaseObservable() {
         latest = penultimate
         penultimate = oldLatest
 
-        notifyChange()
+        callbacks.forEach { it.onLatestPenultimateSwap() }
     }
 
     public fun selectAntePenultimate() {
@@ -31,6 +33,36 @@ public class SelectedClientsVM : BaseObservable() {
         latest = antepenultimate
         antepenultimate = oldLatest
 
-        notifyChange()
+        callbacks.forEach { it.onLatestAntePenultimateSwap() }
+    }
+
+    public fun addOnClientsChangedCallback(callback: OnClientsChangedCallback) {
+        callbacks.add(callback)
+    }
+
+    public fun removeOnClientsChangedCallback(callback: OnClientsChangedCallback) {
+        callbacks.remove(callback)
+    }
+
+    public interface OnClientsChangedCallback {
+        public fun onNewClientAdded()
+        public fun onLatestPenultimateSwap()
+        public fun onLatestAntePenultimateSwap()
+    }
+
+    public interface OnLatestClientChangedCallback : OnClientsChangedCallback {
+        public override fun onNewClientAdded() {
+            onLatestClientChanged()
+        }
+
+        public override fun onLatestPenultimateSwap() {
+            onLatestClientChanged()
+        }
+
+        public override fun onLatestAntePenultimateSwap() {
+            onLatestClientChanged()
+        }
+
+        public fun onLatestClientChanged()
     }
 }

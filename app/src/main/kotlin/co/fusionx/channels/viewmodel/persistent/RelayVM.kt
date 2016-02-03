@@ -3,6 +3,7 @@ package co.fusionx.channels.viewmodel.persistent
 import android.content.Context
 import android.databinding.Observable
 import android.databinding.ObservableField
+import android.databinding.ObservableInt
 import co.fusionx.channels.databinding.ObservableSortedList
 import co.fusionx.channels.databinding.SortedListCallbackRegistry
 import co.fusionx.channels.db.connectionDb
@@ -16,11 +17,13 @@ import javax.inject.Singleton
 public class RelayVM @Inject constructor(private val context: Context) {
     public val clients: ObservableSortedList<ClientVM> = ObservableSortedList(
             ClientVM::class.java, SortedListCallbackRegistry(ClientComparator.instance))
-    public val selectedClient: SelectedClientsVM = SelectedClientsVM()
-    public val clientCount: ObservableField<Int> = ObservableField(0)
+    public val selectedClients: SelectedClientsVM = SelectedClientsVM()
+    public val connectedClientCount: ObservableInt = ObservableInt(0)
 
     init {
+        /* TODO(lrm113) deal with handling constantly updating databases */
         context.connectionDb.getConfigurations()
+                .first()
                 .map { c -> Array(c.size) { ClientVM(Client(c[it])) } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -31,14 +34,14 @@ public class RelayVM @Inject constructor(private val context: Context) {
     }
 
     public fun select(client: ClientVM): Boolean {
-        if (selectedClient.latest == client) {
+        if (selectedClients.latest == client) {
             return true
         }
-        selectedClient.select(client)
+        selectedClients.select(client)
 
         val newConnect = client.onSelected()
         if (newConnect) {
-            clientCount.set(clientCount.get())
+            connectedClientCount.set(connectedClientCount.get() + 1)
         }
         return false
     }

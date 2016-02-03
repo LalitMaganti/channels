@@ -17,7 +17,7 @@ class NavigationChildAdapter(
 
     private val inflater: LayoutInflater
     private val selectedClient: ClientVM?
-        get() = context.relayVM.selectedClient.latest
+        get() = context.relayVM.selectedClients.latest
 
     init {
         inflater = LayoutInflater.from(context)
@@ -27,9 +27,13 @@ class NavigationChildAdapter(
         return ChildViewHolder(NavigationClientChildrenBinding.inflate(inflater, parent, false))
     }
 
-    override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) = Unit
+    override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
+        holder.bind(position)
+    }
 
-    override fun getItemCount(): Int = selectedClient?.children?.size ?: 0
+    override fun getItemCount(): Int {
+        return selectedClient?.children?.size ?: 0
+    }
 
     override fun getItemViewType(position: Int): Int {
         return 2

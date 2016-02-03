@@ -24,29 +24,11 @@ class NavigationClientAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ClientViewHolder {
-        val holder = ClientViewHolder(NavigationClientBinding.inflate(inflater, parent, false))
-        /*
-        holder.binding.addOnRebindCallback(object : OnRebindCallback<NavigationClientBinding>() {
-            public override fun onPreBind(binding: NavigationClientBinding): Boolean {
-                return recyclerView != null && recyclerView.isComputingLayout;
-            }
-
-            public override fun onCanceled(binding: NavigationClientBinding) {
-                if (recyclerView == null || recyclerView.isComputingLayout) {
-                    return;
-                }
-                val position = holder.adapterPosition;
-                if (position != RecyclerView.NO_POSITION) {
-                    notifyItemChanged(position, DATA_INVALIDATION);
-                }
-            }
-        });
-        */
-        return holder
+        return ClientViewHolder(NavigationClientBinding.inflate(inflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: NavigationAdapter.ViewHolder, position: Int) {
-        return Unit
+        holder.bind(position)
     }
 
     override fun getItemCount(): Int {
@@ -60,8 +42,10 @@ class NavigationClientAdapter(
     inner class ClientViewHolder(val binding: NavigationClientBinding) : NavigationAdapter.ViewHolder(binding.root) {
         override fun bind(position: Int) {
             val item = clients[position]
+
             binding.client = item
             binding.root.setOnClickListener { clientClickListener(item) }
+
             binding.executePendingBindings()
         }
     }

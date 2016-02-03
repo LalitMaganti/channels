@@ -9,7 +9,8 @@
             type="co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM" />
     </data>
 
-    <co.fusionx.channels.view.ServerCarouselView
+    <co.fusionx.channels.view.ClientCarouselView
+        android:id="@+id/view_navigation_drawer_server_carousel"
         android:layout_width="match_parent"
         android:layout_height="172dp">
 
@@ -51,9 +52,11 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="16dp"
             android:layout_marginTop="@dimen/navigation_drawer_top_margin"
+            android:alpha="0.0"
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/person_image_empty"
+            android:visibility="gone"
             app:maskDrawable="@drawable/circle_mask" />
 
         <co.fusionx.channels.view.BezelImageView
@@ -62,9 +65,11 @@
             android:layout_height="@dimen/navdrawer_profile_image_size_small"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/navigation_drawer_top_margin"
+            android:alpha="0.0"
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/person_image_empty"
+            android:visibility="gone"
             app:maskDrawable="@drawable/circle_mask" />
 
         <co.fusionx.channels.view.BezelImageView
@@ -73,9 +78,11 @@
             android:layout_height="@dimen/navdrawer_profile_image_size_small"
             android:layout_marginTop="@dimen/navigation_drawer_top_margin"
             android:layout_toStartOf="@id/profile_image_3"
+            android:alpha="0.0"
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/person_image_empty"
+            android:visibility="gone"
             app:maskDrawable="@drawable/circle_mask" />
-    </co.fusionx.channels.view.ServerCarouselView>
+    </co.fusionx.channels.view.ClientCarouselView>
 </layout>

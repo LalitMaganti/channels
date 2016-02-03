@@ -59,7 +59,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     fun onChildClick(child: ClientChildVM) {
-        relayVM.selectedClient.latest!!.select(child)
+        relayVM.selectedClients.latest!!.select(child)
         drawerLayout.closeDrawers()
     }
 

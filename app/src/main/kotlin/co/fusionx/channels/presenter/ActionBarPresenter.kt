@@ -14,7 +14,7 @@ public class ActionBarPresenter(override val activity: MainActivity) : Presenter
         get() = activity.supportActionBar
 
     private fun updateActionBar() {
-        actionBar.title = selectedClient.latest?.name ?: "Channels"
+        actionBar.title = selectedClientsVM.latest?.name ?: "Channels"
         actionBar.subtitle = selectedChild?.get()?.name
     }
 

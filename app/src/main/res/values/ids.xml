@@ -3,4 +3,5 @@
     <item name="toolbar" type="id"/>
     <item name="appbar" type="id"/>
     <item name="dynamicText" type="id"/>
+    <item name="selectedClients" type="id"/>
 </resources>
