@@ -2,6 +2,8 @@ package co.fusionx.channels.presenter
 
 import android.databinding.Observable
 import android.os.Bundle
+import android.view.View
+import co.fusionx.channels.R
 import co.fusionx.channels.adapter.NavigationAdapter
 import co.fusionx.channels.adapter.NavigationChildAdapter
 import co.fusionx.channels.adapter.NavigationClientAdapter
@@ -10,27 +12,39 @@ import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.databinding.SortedListAdapterProxy
 import co.fusionx.channels.view.NavigationDrawerView
-import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 import timber.log.Timber
 
 public class NavigationPresenter(override val activity: MainActivity,
                                  private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
-    internal var currentType: Int = VIEW_TYPE_CLIENT
-        private set
+    private var currentType: Int = VIEW_TYPE_CLIENT
 
     private lateinit var clientAdapter: NavigationClientAdapter
     private lateinit var clientListener: SortedListAdapterProxy
     private lateinit var childAdapter: NavigationChildAdapter
     private lateinit var childListener: ObservableListAdapterProxy<ClientChildVM>
     private lateinit var adapter: NavigationAdapter
+    private lateinit var headerVM: NavigationHeaderVM
 
     private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
             val client = relayVM.selectedClient.get()
             updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
-            adapter.updateHeader()
+        }
+    }
+    private val headerClickListener = View.OnClickListener {
+        if (currentType == VIEW_TYPE_CHILD) {
+            updateCurrentType(VIEW_TYPE_CLIENT)
+        } else {
+            updateCurrentType(VIEW_TYPE_CHILD)
+        }
+    }
+    private val connectedClientCount = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            updateHeader()
         }
     }
 
@@ -48,14 +62,31 @@ public class NavigationPresenter(override val activity: MainActivity,
         }
         childListener = ObservableListAdapterProxy<ClientChildVM>(childAdapter)
 
-        adapter = NavigationAdapter(view.context, clientAdapter) {
-            if (currentType == VIEW_TYPE_CHILD) {
-                updateCurrentType(VIEW_TYPE_CLIENT)
-            } else {
-                updateCurrentType(VIEW_TYPE_CHILD)
-            }
-        }
+        headerVM = NavigationHeaderVM()
+        adapter = NavigationAdapter(view.context, clientAdapter, headerVM)
         view.setAdapter(adapter)
+    }
+
+    override fun restoreState(bundle: Bundle) {
+        updateCurrentType(bundle.getInt(PARCEL_CURRENT_TYPE))
+    }
+
+    override fun bind() {
+        relayVM.clients.addObserver(clientListener)
+        selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
+        relayVM.clientCount.addOnPropertyChangedCallback(connectedClientCount)
+
+        updateHeader()
+    }
+
+    override fun unbind() {
+        relayVM.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
+        if (currentType == VIEW_TYPE_CHILD) {
+            relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
+        } else {
+            relayVM.clients.removeObserver(clientListener)
+        }
+        relayVM.clientCount.removeOnPropertyChangedCallback(connectedClientCount)
     }
 
     private fun updateCurrentType(type: Int) {
@@ -67,7 +98,7 @@ public class NavigationPresenter(override val activity: MainActivity,
         } else if (currentType == VIEW_TYPE_CHILD) {
             relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
         } else {
-            Timber.e("This should not be happening.")
+            Timber.e("This should not be happening. $currentType is not valid.")
         }
 
         // Swap the old items out and the new items in.
@@ -81,32 +112,31 @@ public class NavigationPresenter(override val activity: MainActivity,
             adapter.updateContentAdapter(childAdapter)
             relayVM.selectedClient.get()!!.children.addOnListChangedCallback(childListener)
         } else {
-            Timber.e("This should not be happening.")
+            Timber.e("This should not be happening. $currentType is not valid.")
         }
+        updateHeader()
     }
 
-    override fun restoreState(bundle: Bundle) {
-        updateCurrentType(bundle.getInt(PARCEL_CURRENT_TYPE))
-    }
-
-    override fun bind() {
-        relayVM.clients.addObserver(clientListener)
-        relayVM.selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
-    }
-
-    override fun unbind() {
-        if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
+    private fun updateHeader() {
+        if (currentType == VIEW_TYPE_CLIENT) {
+            headerVM.updateText(getString(R.string.app_name),
+                    getQuantityString(R.plurals.connected_client_count, relayVM.clientCount.get())
+                            .format(relayVM.clientCount.get()))
         } else {
-            relayVM.clients.removeObserver(clientListener)
+            headerVM.updateText(selectedClient.get()!!.name, selectedChild!!.get()!!.name)
         }
-        relayVM.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
+
+        if (selectedClient.get() == null) {
+            headerVM.updateListener(null)
+        } else {
+            headerVM.updateListener(headerClickListener)
+        }
     }
 
     override fun saveState(): Bundle {
         val bundle = Bundle()
         bundle.putInt(PARCEL_CURRENT_TYPE, currentType)
-        return Bundle()
+        return bundle
     }
 
     companion object {

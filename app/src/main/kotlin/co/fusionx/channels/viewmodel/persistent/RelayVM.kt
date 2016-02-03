@@ -1,4 +1,4 @@
-package co.fusionx.channels.viewmodel
+package co.fusionx.channels.viewmodel.persistent
 
 import android.content.Context
 import android.databinding.ObservableField
@@ -16,6 +16,7 @@ public class RelayVM @Inject constructor(private val context: Context) {
     public val clients: ObservableSortedList<ClientVM> = ObservableSortedList(
             ClientVM::class.java, SortedListCallbackRegistry(ClientComparator.instance))
     public val selectedClient: ObservableField<ClientVM?> = ObservableField(null)
+    public val clientCount: ObservableField<Int> = ObservableField(0)
 
     init {
         context.connectionDb.getConfigurations()
@@ -29,10 +30,15 @@ public class RelayVM @Inject constructor(private val context: Context) {
     }
 
     public fun select(client: ClientVM): Boolean {
-        if (selectedClient.get() == client) return true
-
+        if (selectedClient.get() == client) {
+            return true
+        }
         selectedClient.set(client)
-        client.onSelected()
+
+        val newConnect = client.onSelected()
+        if (newConnect) {
+            clientCount.set(clientCount.get() + 1)
+        }
         return false
     }
 

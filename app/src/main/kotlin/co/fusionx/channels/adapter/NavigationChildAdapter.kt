@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationClientChildrenBinding
 import co.fusionx.channels.model.ClientChild
-import co.fusionx.channels.viewmodel.ClientChildVM
-import co.fusionx.channels.viewmodel.ClientVM
+import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.persistent.ClientVM
 
 class NavigationChildAdapter(
         private val context: Context,

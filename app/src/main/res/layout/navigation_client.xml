@@ -6,7 +6,7 @@
 
         <variable
             name="client"
-            type="co.fusionx.channels.viewmodel.ClientVM" />
+            type="co.fusionx.channels.viewmodel.persistent.ClientVM" />
     </data>
 
     <LinearLayout

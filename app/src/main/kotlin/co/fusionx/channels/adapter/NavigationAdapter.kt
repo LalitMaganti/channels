@@ -7,13 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationHeaderBinding
-import co.fusionx.channels.databinding.ViewClickListener
+import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 
 public class NavigationAdapter(
         private val context: Context,
         private var contentAdapter: RecyclerView.Adapter<NavigationAdapter.ViewHolder>,
-        private val headerClickListener: () -> Unit) :
-        RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
+        private val headerVM: NavigationHeaderVM) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
 
@@ -22,7 +21,6 @@ public class NavigationAdapter(
         get() = contentAdapter.itemCount
 
     private val observer = ChildAdapterObserver()
-    private val viewClickListener = ViewClickListener()
 
     init {
         inflater = LayoutInflater.from(context)
@@ -38,14 +36,6 @@ public class NavigationAdapter(
 
         adapter.notifyItemRangeInserted(headerCount, contentCount)
         adapter.registerAdapterDataObserver(observer)
-    }
-
-    public fun updateHeader() {
-        if (context.relayVM.selectedClient.get() == null) {
-            viewClickListener.headerListener = null
-        } else {
-            viewClickListener.headerListener = View.OnClickListener { headerClickListener() }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, type: Int): ViewHolder? = when (type) {
@@ -78,7 +68,7 @@ public class NavigationAdapter(
             private val binding: NavigationHeaderBinding) : ViewHolder(binding.root) {
 
         override fun bind(position: Int) {
-            binding.header = viewClickListener
+            binding.headerVm = headerVM
         }
     }
 

@@ -1,4 +1,4 @@
-package co.fusionx.channels.viewmodel
+package co.fusionx.channels.viewmodel.persistent
 
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
@@ -38,9 +38,10 @@ public class ClientVM(private val client: Client) {
         selectedChild.set(child)
     }
 
-    fun onSelected() {
-        client.startIfStopped()
+    fun onSelected(): Boolean {
+        val newConnect = client.startIfStopped()
         selectedChild.set(server)
+        return newConnect
     }
 
     fun areItemsTheSame(item2: ClientVM): Boolean {

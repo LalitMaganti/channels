@@ -38,11 +38,12 @@ public class Client(
         client.addEventListener(BasicEventListener(client))
     }
 
-    fun startIfStopped() {
+    fun startIfStopped(): Boolean {
         if (statusEnum == Client.STOPPED) {
             statusEnum = CONNECTING
             client.start()
         }
+        return statusEnum == Client.STOPPED
     }
 
     private inner class DispatchingEventListener : EventListener {

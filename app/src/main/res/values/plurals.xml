@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="connected_client_count">
+        <item quantity="one">%d client connected</item>
+        <item quantity="other">%d clients connected</item>
+    </plurals>
+</resources>

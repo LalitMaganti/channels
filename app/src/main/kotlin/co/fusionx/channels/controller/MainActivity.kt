@@ -20,8 +20,8 @@ import co.fusionx.channels.model.Client
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
-import co.fusionx.channels.viewmodel.ClientChildVM
-import co.fusionx.channels.viewmodel.ClientVM
+import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.persistent.ClientVM
 
 public class MainActivity : AppCompatActivity() {
 

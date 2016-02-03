@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="header"
-            type="co.fusionx.channels.databinding.ViewClickListener" />
+            name="headerVm"
+            type="co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM" />
     </data>
 
     <co.fusionx.channels.view.ServerCarouselView
@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryDark"
+            android:onClick="@{headerVm.headerListener}"
             android:scaleType="fitXY"
-            android:src="?selectableItemBackground"
-            android:onClick="@{header.headerListener}"/>
+            android:src="?selectableItemBackground" />
 
         <TextView
             android:id="@+id/header_subtitle"
@@ -30,7 +30,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="16dp"
             android:padding="4dp"
-            android:text="@string/app_name"
+            android:text="@{headerVm.subtitle}"
             android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
 
         <TextView
@@ -40,8 +40,9 @@
             android:layout_above="@id/header_subtitle"
             android:layout_marginStart="16dp"
             android:padding="4dp"
-            android:text="@string/app_name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
+            android:text="@{headerVm.title}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+            android:textColor="?android:textColorPrimaryInverse" />
 
         <co.fusionx.channels.view.BezelImageView
             android:id="@+id/profile_image"

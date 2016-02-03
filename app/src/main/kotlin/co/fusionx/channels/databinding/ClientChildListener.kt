@@ -4,8 +4,8 @@ import android.content.Context
 import android.databinding.Observable
 import android.databinding.ObservableField
 import co.fusionx.channels.base.relayVM
-import co.fusionx.channels.viewmodel.ClientChildVM
-import co.fusionx.channels.viewmodel.ClientVM
+import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.persistent.ClientVM
 
 public class ClientChildListener(private val context: Context,
                                  private val callback: () -> Unit) {
