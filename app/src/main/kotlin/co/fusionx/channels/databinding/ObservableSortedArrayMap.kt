@@ -73,7 +73,7 @@ public class ObservableSortedArrayMap<K, V>(
         contentSize++
         keyArray[insertionIndex] = key
         valueArray[insertionIndex] = value
-        registry?.notifyItemInserted(this, index, key, value)
+        registry?.notifyItemInserted(this, insertionIndex, key, value)
 
         return null
     }

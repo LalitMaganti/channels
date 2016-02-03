@@ -116,6 +116,5 @@ public class NavigationAdapter(
 
     companion object {
         const val VIEW_TYPE_HEADER: Int = 0
-        const val VIEW_TYPE_CONTENT: Int = 1
     }
 }
