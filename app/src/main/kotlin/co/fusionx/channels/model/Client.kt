@@ -1,68 +1,76 @@
 package co.fusionx.channels.model
 
-import android.databinding.*
+import android.databinding.BaseObservable
+import android.databinding.ObservableArrayMap
 import android.os.Handler
-import android.support.v4.util.SimpleArrayMap
-import co.fusionx.channels.BR
+import android.os.Looper
+import co.fusionx.channels.R
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
 import co.fusionx.relay.protocol.ClientGenerator
 import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
+import rx.subjects.BehaviorSubject
 
-public class Client(public val configuration: Configuration) : BaseObservable() {
-    public val name: CharSequence get() = configuration.name
-    public val children: ObservableList<ClientChild> = ObservableArrayList()
+public class Client(
+        public val configuration: Configuration) : BaseObservable() {
+    public val name: CharSequence
+        get() = configuration.name
+    public var server: Server = Server("Server")
+    public val channels: ObservableArrayMap<String, Channel> = ObservableArrayMap()
 
     private val client: RelayClient = RelayClient.create(configuration.connectionConfiguration,
             AndroidMessageLoop.create())
-    private val channels: SimpleArrayMap<String, Channel> = SimpleArrayMap()
-    private var server: Server = Server(name)
+    private var statusEnum: Int = STOPPED
+        set(it) {
+            field = it
+            status.onNext(it)
+        }
 
     // Bindable properties.
-    public var selectedChild: ObservableField<ClientChild> = ObservableField(server)
-    public var status: ObservableLong = ObservableLong(STOPPED)
     // TODO(tilal6991) Fix this to do the correct thing.
-    public var nick: ObservableField<String> = ObservableField("tilal6993")
+    public val nick: BehaviorSubject<String> = BehaviorSubject.create("tilal6993")
+    public val status: BehaviorSubject<Int> = BehaviorSubject.create(statusEnum)
 
     init {
         client.addEventListener(DispatchingEventListener())
         client.addEventListener(BasicEventListener(client))
-
-        children.add(server)
     }
 
-    public fun select(child: ClientChild) {
-        if (selectedChild == child) return
-        selectedChild.set(child)
+    fun startIfStopped() {
+        if (statusEnum == Client.STOPPED) {
+            statusEnum = CONNECTING
+            client.start()
+        }
     }
 
     private inner class DispatchingEventListener : EventListener {
-        private val handler: Handler = Handler()
+        private val handler: Handler = Handler(Looper.getMainLooper())
 
         override fun onSocketConnect() {
             handler.post {
-                status.set(SOCKET_CONNECTED)
+                statusEnum = SOCKET_CONNECTED
                 server.onSocketConnect()
             }
         }
 
         override fun onNames(channelName: String, nickList: List<String>) {
-            handler.post { channels.get(channelName).onNames(nickList) }
+            handler.post { channels[channelName]?.onNames(nickList) ?: return@post }
         }
 
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
-                val c: Channel
-                if (PrefixExtractor.nick(prefix) == nick.get()) {
-                    c = Channel(channel)
-                    children.add(c)
-                    channels.put(channel, c)
-                } else {
-                    c = channels.get(channel)
+                nick.subscribe {
+                    val c: Channel
+                    if (PrefixExtractor.nick(prefix) == it) {
+                        c = Channel(channel)
+                        channels.put(channel, c)
+                    } else {
+                        c = channels[channel] ?: return@subscribe
+                    }
+                    c.onJoin(prefix)
                 }
-                c.onJoin(prefix)
             }
         }
 
@@ -72,17 +80,17 @@ public class Client(public val configuration: Configuration) : BaseObservable() 
 
         public override fun onWelcome(target: String, text: String) {
             handler.post {
-                status.set(CONNECTED)
+                statusEnum = CONNECTED
                 server.onWelcome(target, text)
 
-                nick.set(target)
+                nick.onNext(target)
             }
         }
 
         override fun onPrivmsg(prefix: String, target: String, message: String) {
             handler.post {
                 if (target.isChannel()) {
-                    channels[target].onPrivmsg(prefix, message)
+                    channels[target]?.onPrivmsg(prefix, message) ?: return@post
                 }
                 // TODO(tilal6991) handle the private message case
             }
@@ -101,21 +109,12 @@ public class Client(public val configuration: Configuration) : BaseObservable() 
         }
     }
 
-    fun onSelected() {
-        selectedChild.set(server)
-
-        if (status.get() == STOPPED) {
-            status.set(CONNECTING)
-            client.start()
-        }
-    }
-
     companion object {
-        public const val STOPPED: Long = 0
-        public const val CONNECTING: Long = 1
-        public const val SOCKET_CONNECTED: Long = 2
-        public const val CONNECTED: Long = 3
-        public const val RECONNECTING: Long = 4
-        public const val DISCONNECTED: Long = 5
+        public const val STOPPED: Int = R.string.status_stopped
+        public const val CONNECTING: Int = R.string.status_connecting
+        public const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
+        public const val CONNECTED: Int = R.string.status_connected
+        public const val RECONNECTING: Int = R.string.status_reconnecting
+        public const val DISCONNECTED: Int = R.string.status_disconnected
     }
 }

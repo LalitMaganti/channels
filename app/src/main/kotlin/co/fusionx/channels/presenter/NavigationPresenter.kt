@@ -5,12 +5,12 @@ import android.os.Bundle
 import co.fusionx.channels.adapter.NavigationAdapter
 import co.fusionx.channels.adapter.NavigationChildAdapter
 import co.fusionx.channels.adapter.NavigationClientAdapter
-import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.databinding.SortedListAdapterProxy
-import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.view.NavigationDrawerView
+import co.fusionx.channels.viewmodel.ClientChildVM
 import timber.log.Timber
 
 public class NavigationPresenter(override val activity: MainActivity,
@@ -23,12 +23,12 @@ public class NavigationPresenter(override val activity: MainActivity,
     private lateinit var clientAdapter: NavigationClientAdapter
     private lateinit var clientListener: SortedListAdapterProxy
     private lateinit var childAdapter: NavigationChildAdapter
-    private lateinit var childListener: ObservableListAdapterProxy<ClientChild>
+    private lateinit var childListener: ObservableListAdapterProxy<ClientChildVM>
     private lateinit var adapter: NavigationAdapter
 
     private val selectedClientCallback = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            val client = relayHost.selectedClient.get()
+            val client = relayVM.selectedClient.get()
             updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
             adapter.updateHeader()
         }
@@ -46,7 +46,7 @@ public class NavigationPresenter(override val activity: MainActivity,
         childAdapter = NavigationChildAdapter(view.context) {
             activity.onChildClick(it)
         }
-        childListener = ObservableListAdapterProxy<ClientChild>(childAdapter)
+        childListener = ObservableListAdapterProxy<ClientChildVM>(childAdapter)
 
         adapter = NavigationAdapter(view.context, clientAdapter) {
             if (currentType == VIEW_TYPE_CHILD) {
@@ -63,9 +63,9 @@ public class NavigationPresenter(override val activity: MainActivity,
 
         // Stop observing everything old.
         if (currentType == VIEW_TYPE_CLIENT) {
-            relayHost.removeClientObserver(clientListener)
+            relayVM.clients.removeObserver(clientListener)
         } else if (currentType == VIEW_TYPE_CHILD) {
-            relayHost.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
+            relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
         } else {
             Timber.e("This should not be happening.")
         }
@@ -76,10 +76,10 @@ public class NavigationPresenter(override val activity: MainActivity,
         // Start observing everything new.
         if (currentType == VIEW_TYPE_CLIENT) {
             adapter.updateContentAdapter(clientAdapter)
-            relayHost.addClientObserver(clientListener)
+            relayVM.clients.addObserver(clientListener)
         } else if (currentType == VIEW_TYPE_CHILD) {
             adapter.updateContentAdapter(childAdapter)
-            relayHost.selectedClient.get()!!.children.addOnListChangedCallback(childListener)
+            relayVM.selectedClient.get()!!.children.addOnListChangedCallback(childListener)
         } else {
             Timber.e("This should not be happening.")
         }
@@ -90,17 +90,17 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     override fun bind() {
-        relayHost.addClientObserver(clientListener)
-        relayHost.selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
+        relayVM.clients.addObserver(clientListener)
+        relayVM.selectedClient.addOnPropertyChangedCallback(selectedClientCallback)
     }
 
     override fun unbind() {
         if (currentType == VIEW_TYPE_CHILD) {
-            relayHost.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
+            relayVM.selectedClient.get()?.children?.removeOnListChangedCallback(childListener)
         } else {
-            relayHost.removeClientObserver(clientListener)
+            relayVM.clients.removeObserver(clientListener)
         }
-        relayHost.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
+        relayVM.selectedClient.removeOnPropertyChangedCallback(selectedClientCallback)
     }
 
     override fun saveState(): Bundle {

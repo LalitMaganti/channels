@@ -5,13 +5,19 @@ import co.fusionx.relay.protocol.ReplyCodes
 import co.fusionx.relay.util.join
 
 class Server(override val name: CharSequence) : ClientChild(), EventListener {
-    override fun onSocketConnect() = add("Connection was successful.")
-
-    override fun onOtherCode(code: Int, arguments: List<String>) {
-        if (displayedCodes.contains(code)) add(" ".join(arguments))
+    override fun onSocketConnect() {
+        add("Connection was successful.")
     }
 
-    override fun onWelcome(target: String, text: String) = add(text)
+    override fun onOtherCode(code: Int, arguments: List<String>) {
+        if (displayedCodes.contains(code)) {
+            add(" ".join(arguments))
+        }
+    }
+
+    override fun onWelcome(target: String, text: String) {
+        add(text)
+    }
 
     companion object {
         private val displayedCodes: Set<Int> = setOf(

@@ -1,14 +1,14 @@
 package co.fusionx.channels.model
 
-import android.support.v7.util.SortedList
+import co.fusionx.channels.databinding.ObservableSortedList
 import co.fusionx.channels.databinding.SortedListCallbackRegistry
 import co.fusionx.channels.util.compareTo
 import co.fusionx.relay.util.PrefixExtractor
 
 public class Channel(override val name: CharSequence) : ClientChild() {
 
-    private val registry = SortedListCallbackRegistry(UserComparator.instance)
-    val users: SortedList<CharSequence> = SortedList(CharSequence::class.java, registry)
+    public val users: ObservableSortedList<CharSequence> = ObservableSortedList(
+            CharSequence::class.java, SortedListCallbackRegistry(UserComparator.instance))
 
     fun onPrivmsg(prefix: String, message: String) {
         add("${PrefixExtractor.nick(prefix)}: $message")
@@ -23,14 +23,6 @@ public class Channel(override val name: CharSequence) : ClientChild() {
 
     fun onNames(nickList: List<String>) {
         users.addAll(nickList)
-    }
-
-    public fun addUsersCallback(callback: SortedListCallbackRegistry.Callback) {
-        registry.addCallback(callback)
-    }
-
-    public fun removeUsersCallback(callback: SortedListCallbackRegistry.Callback) {
-        registry.removeCallback(callback)
     }
 
     private class UserComparator private constructor() : SortedListCallbackRegistry.Comparator<CharSequence> {

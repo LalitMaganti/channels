@@ -1,6 +1,6 @@
 package co.fusionx.channels.inject
 
-import co.fusionx.channels.model.RelayHost
+import co.fusionx.channels.viewmodel.RelayVM
 import dagger.Component
 import javax.inject.Singleton
 
@@ -9,5 +9,5 @@ import javax.inject.Singleton
         RelayModule::class
 ))
 public interface ChannelsObjectProvider {
-    public fun relayHost(): RelayHost
+    public fun relayViewModel(): RelayVM
 }

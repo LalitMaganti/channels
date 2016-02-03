@@ -1,6 +1,20 @@
 package co.fusionx.channels.util
 
-public fun CharSequence.compareTo(other: CharSequence): Int {
+import java.util.*
+
+public val charSequenceComparator by lazy {
+    Comparator<CharSequence?> { lhs, rhs -> lhs.compareTo(rhs) }
+}
+
+public fun CharSequence?.compareTo(other: CharSequence?): Int {
+    if (this == null && other == null) {
+        return 0
+    } else if (this == null) {
+        return 1
+    } else if (other == null) {
+        return -1
+    }
+
     for (i in 0..length - 1) {
         val a = this[i]
         val b = other[i]

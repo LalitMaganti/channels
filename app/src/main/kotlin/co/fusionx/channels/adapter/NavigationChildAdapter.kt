@@ -1,26 +1,23 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import co.fusionx.channels.R
-import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationClientChildrenBinding
-import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.model.ClientChild
-import co.fusionx.channels.model.Client
+import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientVM
 
 class NavigationChildAdapter(
         private val context: Context,
-        private val childClickListener: (ClientChild) -> Unit) :
+        private val childClickListener: (ClientChildVM) -> Unit) :
         RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
-    private val selectedClient: Client?
-        get() = context.relayHost.selectedClient.get()
+    private val selectedClient: ClientVM?
+        get() = context.relayVM.selectedClient.get()
 
     init {
         inflater = LayoutInflater.from(context)

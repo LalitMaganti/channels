@@ -7,13 +7,14 @@ import co.fusionx.channels.databinding.ClientChildListener
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.view.EventRecyclerView
+import co.fusionx.channels.viewmodel.ClientChildVM
 
 class EventPresenter(override val activity: MainActivity,
                      private val eventRecyclerView: EventRecyclerView) : Presenter {
     override val id: String
         get() = "events"
 
-    private var displayedChild: ClientChild? = null
+    private var displayedChild: ClientChildVM? = null
     private val childListener = ClientChildListener(activity) { switchContent() }
 
     private val adapter: MainItemAdapter = MainItemAdapter(activity)

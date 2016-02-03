@@ -10,7 +10,7 @@ import android.util.ArraySet
 import android.view.MenuItem
 import butterknife.bindView
 import co.fusionx.channels.R
-import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.EventPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
@@ -20,6 +20,8 @@ import co.fusionx.channels.model.Client
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
+import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientVM
 
 public class MainActivity : AppCompatActivity() {
 
@@ -49,15 +51,15 @@ public class MainActivity : AppCompatActivity() {
         presenters.forEach { it.setup() }
     }
 
-    fun onClientClick(client: Client) {
-        val alreadySelected = relayHost.select(client)
+    fun onClientClick(clientVM: ClientVM) {
+        val alreadySelected = relayVM.select(clientVM)
         if (!alreadySelected) {
             drawerLayout.closeDrawers()
         }
     }
 
-    fun onChildClick(child: ClientChild) {
-        relayHost.selectedClient.get()!!.select(child)
+    fun onChildClick(child: ClientChildVM) {
+        relayVM.selectedClient.get()!!.select(child)
         drawerLayout.closeDrawers()
     }
 

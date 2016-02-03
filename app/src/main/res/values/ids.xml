@@ -2,4 +2,5 @@
 <resources>
     <item name="toolbar" type="id"/>
     <item name="appbar" type="id"/>
+    <item name="dynamicText" type="id"/>
 </resources>

@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.databinding.NavigationHeaderClientsBinding
+import co.fusionx.channels.base.relayVM
+import co.fusionx.channels.databinding.NavigationHeaderBinding
 import co.fusionx.channels.databinding.ViewClickListener
 
 public class NavigationAdapter(
@@ -41,7 +41,7 @@ public class NavigationAdapter(
     }
 
     public fun updateHeader() {
-        if (context.relayHost.selectedClient.get() == null) {
+        if (context.relayVM.selectedClient.get() == null) {
             viewClickListener.headerListener = null
         } else {
             viewClickListener.headerListener = View.OnClickListener { headerClickListener() }
@@ -50,7 +50,7 @@ public class NavigationAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup?, type: Int): ViewHolder? = when (type) {
         VIEW_TYPE_HEADER ->
-            HeaderViewHolder(NavigationHeaderClientsBinding.inflate(inflater, parent, false))
+            HeaderViewHolder(NavigationHeaderBinding.inflate(inflater, parent, false))
         else -> contentAdapter.onCreateViewHolder(parent, type)
     }
 
@@ -75,7 +75,7 @@ public class NavigationAdapter(
     }
 
     inner class HeaderViewHolder(
-            private val binding: NavigationHeaderClientsBinding) : ViewHolder(binding.root) {
+            private val binding: NavigationHeaderBinding) : ViewHolder(binding.root) {
 
         override fun bind(position: Int) {
             binding.header = viewClickListener

@@ -3,15 +3,15 @@ package co.fusionx.channels.databinding
 import android.content.Context
 import android.databinding.Observable
 import android.databinding.ObservableField
-import co.fusionx.channels.base.relayHost
-import co.fusionx.channels.model.ClientChild
-import co.fusionx.channels.model.Client
+import co.fusionx.channels.base.relayVM
+import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientVM
 
 public class ClientChildListener(private val context: Context,
                                  private val callback: () -> Unit) {
-    private val selectedClient: ObservableField<Client?>
-        get() = context.relayHost.selectedClient
-    private val selectedChild: ObservableField<ClientChild>?
+    private val selectedClient: ObservableField<ClientVM?>
+        get() = context.relayVM.selectedClient
+    private val selectedChild: ObservableField<ClientChildVM>?
         get() = selectedClient.get()?.selectedChild
 
     private val clientListener = object : Observable.OnPropertyChangedCallback() {

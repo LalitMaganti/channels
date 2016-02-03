@@ -1,23 +1,23 @@
 package co.fusionx.channels.adapter
 
 import android.content.Context
-import android.databinding.OnRebindCallback
-import android.databinding.ViewDataBinding
 import android.support.v7.util.SortedList
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import co.fusionx.channels.base.relayHost
+import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationClientBinding
 import co.fusionx.channels.model.Client
+import co.fusionx.channels.viewmodel.ClientVM
 
 class NavigationClientAdapter(
         private val context: Context,
-        private val clientClickListener: (Client) -> Unit) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
+        private val clientClickListener: (ClientVM) -> Unit) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater
 
-    private val clients: SortedList<Client> get() = context.relayHost.clients
+    private val clients: SortedList<ClientVM>
+        get() = context.relayVM.clients
 
     init {
         inflater = LayoutInflater.from(context)

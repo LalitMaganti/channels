@@ -9,5 +9,11 @@
 
     <string name="navigation_font_family" translatable="false">sans-serif</string>
     <string name="subheader_font_family" translatable="false">sans-serif-medium</string>
+
+    <string name="status_stopped">Stopped</string>
+    <string name="status_connecting">Connecting</string>
+    <string name="status_socket_connected">Socket Connected</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_reconnecting">Reconnecting</string>
     <string name="status_disconnected">Disconnected</string>
 </resources>
