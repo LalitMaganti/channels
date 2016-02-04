@@ -9,6 +9,7 @@ import co.fusionx.channels.R
 import co.fusionx.channels.adapter.NavigationAdapter
 import co.fusionx.channels.adapter.NavigationChildAdapter
 import co.fusionx.channels.adapter.NavigationClientAdapter
+import co.fusionx.channels.adapter.SectionAdapter
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ListSectionProxy
@@ -86,6 +87,7 @@ public class NavigationPresenter(override val activity: MainActivity,
         currentHelper = helper
 
         // Start observing everything new.
+        currentHelper.adapter.notifySectionedDataSetChanged()
         adapter.updateContentAdapter(currentHelper.adapter)
         currentHelper.bind()
 
@@ -111,7 +113,7 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     private inner class ClientHelper : Helper {
-        override val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+        override val adapter: SectionAdapter<out RecyclerView.ViewHolder, out RecyclerView.ViewHolder>
             get() = clientAdapter
 
         lateinit var clientAdapter: NavigationClientAdapter
@@ -164,7 +166,7 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     private inner class ChildHelper : Helper {
-        override val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+        override val adapter: SectionAdapter<out RecyclerView.ViewHolder, out RecyclerView.ViewHolder>
             get() = childAdapter
 
         private val selectedClient: ClientVM?
@@ -206,7 +208,7 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     private interface Helper {
-        public val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+        public val adapter: SectionAdapter<out RecyclerView.ViewHolder, out RecyclerView.ViewHolder>
 
         fun setup()
         fun bind()

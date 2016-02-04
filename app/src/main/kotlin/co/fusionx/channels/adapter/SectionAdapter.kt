@@ -61,22 +61,25 @@ public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
                 Timber.asTree().failAssert()
             }
             notifyItemRangeInserted(sectionStart, insertCount + headerOffsetForSection)
-            count += headerOffsetForSection
+
         } else {
             notifyItemRangeInserted(sectionStart + headerOffsetForSection + offset, insertCount)
         }
 
+        for (i in section + 1..getSectionCount() - 1) {
+            sectionAbsolutePositions[i] += insertCount
+        }
         count += insertCount
     }
 
-    fun notifyItemRangeMovedInSection(section: Int, fromPosition: Int, toPosition: Int, itemCount: Int) {
+    public fun notifyItemRangeMovedInSection(section: Int, fromPosition: Int, toPosition: Int, itemCount: Int) {
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
         notifyItemRangeMovedInSection(section, sectionItemStart + fromPosition, sectionItemStart + toPosition, itemCount)
     }
 
-    fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int) {
+    public fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int) {
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
@@ -94,11 +97,14 @@ public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
                 Timber.asTree().failAssert()
             }
             notifyItemRangeRemoved(sectionStart, removeCount + headerOffsetForSection)
-            count -= headerOffsetForSection
         } else {
             notifyItemRangeRemoved(sectionStart + headerOffsetForSection + offset, removeCount)
+
         }
 
+        for (i in section + 1..getSectionCount() - 1) {
+            sectionAbsolutePositions[i] -= removeCount
+        }
         count -= removeCount
     }
 

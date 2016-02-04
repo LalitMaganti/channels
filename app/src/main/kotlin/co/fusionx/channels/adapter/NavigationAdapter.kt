@@ -34,7 +34,7 @@ public class NavigationAdapter(
 
         contentAdapter = adapter
 
-        adapter.notifyItemRangeInserted(headerCount, contentCount)
+        notifyItemRangeInserted(headerCount, contentCount)
         adapter.registerAdapterDataObserver(observer)
     }
 
