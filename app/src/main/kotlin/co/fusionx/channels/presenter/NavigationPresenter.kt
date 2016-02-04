@@ -1,7 +1,8 @@
 package co.fusionx.channels.presenter
 
-import android.databinding.Observable
+import android.databinding.ObservableList
 import android.os.Bundle
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import co.fusionx.channels.R
 import co.fusionx.channels.adapter.NavigationAdapter
@@ -9,124 +10,90 @@ import co.fusionx.channels.adapter.NavigationChildAdapter
 import co.fusionx.channels.adapter.NavigationClientAdapter
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.controller.MainActivity
-import co.fusionx.channels.databinding.ObservableListAdapterProxy
-import co.fusionx.channels.databinding.SortedListAdapterProxy
+import co.fusionx.channels.databinding.ListSectionProxy
 import co.fusionx.channels.view.NavigationDrawerView
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.persistent.ChannelVM
+import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
-import timber.log.Timber
 
 public class NavigationPresenter(override val activity: MainActivity,
                                  private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
-    private var currentType: Int = VIEW_TYPE_CLIENT
-
-    private lateinit var clientAdapter: NavigationClientAdapter
-    private lateinit var clientListener: SortedListAdapterProxy
-    private lateinit var childAdapter: NavigationChildAdapter
-    private lateinit var childListener: ObservableListAdapterProxy<ClientChildVM>
+    private lateinit var currentHelper: Helper
+    private lateinit var clientHelper: ClientHelper
+    private lateinit var childHelper: ChildHelper
     private lateinit var adapter: NavigationAdapter
     private lateinit var headerVM: NavigationHeaderVM
 
     private val selectedClientCallback = object : SelectedClientsVM.OnLatestClientChangedCallback {
         override fun onLatestClientChanged() {
             val client = selectedClientsVM.latest
-            updateCurrentType(if (client == null) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD)
+            updateCurrentType(if (client == null) clientHelper else childHelper)
         }
     }
     private val headerClickListener = View.OnClickListener {
-        if (currentType == VIEW_TYPE_CHILD) {
-            updateCurrentType(VIEW_TYPE_CLIENT)
+        if (currentHelper == childHelper) {
+            updateCurrentType(clientHelper)
         } else {
-            updateCurrentType(VIEW_TYPE_CHILD)
-        }
-    }
-    private val connectedCountCallback = object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            updateHeader()
+            updateCurrentType(childHelper)
         }
     }
 
     override fun setup() {
         headerVM = NavigationHeaderVM()
 
-        clientAdapter = NavigationClientAdapter(view.context) {
-            activity.onClientClick(it)
+        clientHelper = ClientHelper()
+        clientHelper.setup()
 
-            // Make sure we're displaying the child view.
-            updateCurrentType(VIEW_TYPE_CHILD)
-        }
-        clientListener = SortedListAdapterProxy(clientAdapter)
+        childHelper = ChildHelper()
+        childHelper.setup()
 
-        childAdapter = NavigationChildAdapter(view.context) {
-            activity.onChildClick(it)
-        }
-        childListener = ObservableListAdapterProxy<ClientChildVM>(childAdapter)
+        currentHelper = clientHelper
 
-        adapter = NavigationAdapter(view.context, clientAdapter, headerVM, selectedClientsVM)
+        adapter = NavigationAdapter(view.context, clientHelper.clientAdapter, headerVM, selectedClientsVM)
         view.setAdapter(adapter)
     }
 
     override fun restoreState(bundle: Bundle) {
-        updateCurrentType(bundle.getInt(PARCEL_CURRENT_TYPE))
+        val isChild = bundle.getInt(PARCEL_CURRENT_TYPE) == VIEW_TYPE_CHILD
+        updateCurrentType(if (isChild) childHelper else clientHelper)
     }
 
     override fun bind() {
-        relayVM.clients.addObserver(clientListener)
+        currentHelper.bind()
         selectedClientsVM.addOnClientsChangedCallback(selectedClientCallback)
-        relayVM.connectedClientCount.addOnPropertyChangedCallback(connectedCountCallback)
 
+        // Make sure we're displaying the most up to date information.
         updateHeader()
+        adapter.notifyDataSetChanged()
     }
 
     override fun unbind() {
         relayVM.selectedClients.removeOnClientsChangedCallback(selectedClientCallback)
-        if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClients.latest?.children?.removeOnListChangedCallback(childListener)
-        } else {
-            relayVM.clients.removeObserver(clientListener)
-        }
-        relayVM.connectedClientCount.removeOnPropertyChangedCallback(connectedCountCallback)
+        currentHelper.unbind()
     }
 
-    private fun updateCurrentType(type: Int) {
-        if (type == currentType) return
+    private fun updateCurrentType(helper: Helper) {
+        if (helper == currentHelper) return
 
         // Stop observing everything old.
-        if (currentType == VIEW_TYPE_CLIENT) {
-            relayVM.clients.removeObserver(clientListener)
-        } else if (currentType == VIEW_TYPE_CHILD) {
-            relayVM.selectedClients.latest?.children?.removeOnListChangedCallback(childListener)
-        } else {
-            Timber.e("This should not be happening. $currentType is not valid.")
-        }
+        currentHelper.unbind()
 
         // Swap the old items out and the new items in.
-        currentType = type
+        currentHelper = helper
 
         // Start observing everything new.
-        if (currentType == VIEW_TYPE_CLIENT) {
-            adapter.updateContentAdapter(clientAdapter)
-            relayVM.clients.addObserver(clientListener)
-        } else if (currentType == VIEW_TYPE_CHILD) {
-            adapter.updateContentAdapter(childAdapter)
-            relayVM.selectedClients.latest!!.children.addOnListChangedCallback(childListener)
-        } else {
-            Timber.e("This should not be happening. $currentType is not valid.")
-        }
+        adapter.updateContentAdapter(currentHelper.adapter)
+        currentHelper.bind()
+
+        // Update the headers as well.
         updateHeader()
     }
 
     private fun updateHeader() {
-        if (currentType == VIEW_TYPE_CLIENT) {
-            headerVM.updateText(getString(R.string.app_name),
-                    getQuantityString(R.plurals.connected_client_count, relayVM.connectedClientCount.get())
-                            .format(relayVM.connectedClientCount.get()))
-        } else {
-            headerVM.updateText(selectedClientsVM.latest!!.name, selectedChild!!.get()!!.name)
-        }
+        currentHelper.updateHeader()
 
         if (selectedClientsVM.latest == null) {
             headerVM.updateListener(null)
@@ -137,8 +104,101 @@ public class NavigationPresenter(override val activity: MainActivity,
 
     override fun saveState(): Bundle {
         val bundle = Bundle()
-        bundle.putInt(PARCEL_CURRENT_TYPE, currentType)
+        val value = if (currentHelper == clientHelper) VIEW_TYPE_CLIENT else VIEW_TYPE_CHILD
+        bundle.putInt(PARCEL_CURRENT_TYPE, value)
         return bundle
+    }
+
+    private inner class ClientHelper : Helper {
+        override val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+            get() = clientAdapter
+
+        lateinit var clientAdapter: NavigationClientAdapter
+        private lateinit var activeClientListener: ListSectionProxy<ClientVM>
+        private lateinit var inactiveClientListener: ListSectionProxy<ClientVM>
+
+        override fun setup() {
+            clientAdapter = NavigationClientAdapter(view.context, relayVM) {
+                activity.onClientClick(it)
+
+                // Make sure we're displaying the child view.
+                updateCurrentType(childHelper)
+            }
+            clientAdapter.setup()
+
+            activeClientListener = object : ListSectionProxy<ClientVM>(0, clientAdapter) {
+                override fun onItemRangeInserted(sender: ObservableList<ClientVM>, positionStart: Int, itemCount: Int) {
+                    this@NavigationPresenter.updateHeader()
+                    super.onItemRangeInserted(sender, positionStart, itemCount)
+                }
+
+                override fun onChanged(sender: ObservableList<ClientVM>) {
+                    this@NavigationPresenter.updateHeader()
+                    super.onChanged(sender)
+                }
+
+                override fun onItemRangeRemoved(sender: ObservableList<ClientVM>, positionStart: Int, itemCount: Int) {
+                    this@NavigationPresenter.updateHeader()
+                    super.onItemRangeRemoved(sender, positionStart, itemCount)
+                }
+            }
+            inactiveClientListener = ListSectionProxy<ClientVM>(1, clientAdapter)
+        }
+
+        override fun bind() {
+            relayVM.activeClients.addOnListChangedCallback(activeClientListener)
+            relayVM.inactiveClients.addOnListChangedCallback(inactiveClientListener)
+        }
+
+        override fun unbind() {
+            relayVM.activeClients.removeOnListChangedCallback(activeClientListener)
+            relayVM.inactiveClients.removeOnListChangedCallback(inactiveClientListener)
+        }
+
+        override fun updateHeader() {
+            val count = relayVM.activeClients.size
+            headerVM.updateText(getString(R.string.app_name),
+                    getQuantityString(R.plurals.connected_client_count, count).format(count))
+        }
+    }
+
+    private inner class ChildHelper : Helper {
+
+        override val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+            get() = childAdapter
+
+        private lateinit var childAdapter: NavigationChildAdapter
+        private lateinit var childListener: ListSectionProxy<ChannelVM>
+
+        override fun setup() {
+            childAdapter = NavigationChildAdapter(view.context) {
+                activity.onChildClick(it)
+            }
+            childAdapter.setup()
+
+            childListener = ListSectionProxy<ChannelVM>(1, childAdapter)
+        }
+
+        override fun bind() {
+            relayVM.selectedClients.latest!!.channels.addOnListChangedCallback(childListener)
+        }
+
+        override fun unbind() {
+            relayVM.selectedClients.latest?.channels?.removeOnListChangedCallback(childListener)
+        }
+
+        override fun updateHeader() {
+            headerVM.updateText(selectedClientsVM.latest!!.name, selectedChild!!.get()!!.name)
+        }
+    }
+
+    private interface Helper {
+        public val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+
+        fun setup()
+        fun bind()
+        fun unbind()
+        fun updateHeader()
     }
 
     companion object {

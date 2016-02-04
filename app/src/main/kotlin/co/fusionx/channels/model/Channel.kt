@@ -1,14 +1,13 @@
 package co.fusionx.channels.model
 
 import co.fusionx.channels.databinding.ObservableSortedList
-import co.fusionx.channels.databinding.SortedListCallbackRegistry
 import co.fusionx.channels.util.compareTo
 import co.fusionx.relay.util.PrefixExtractor
 
 public class Channel(override val name: CharSequence) : ClientChild() {
 
     public val users: ObservableSortedList<CharSequence> = ObservableSortedList(
-            CharSequence::class.java, SortedListCallbackRegistry(UserComparator.instance))
+            CharSequence::class.java, UserComparator.instance)
 
     fun onPrivmsg(prefix: String, message: String) {
         add("${PrefixExtractor.nick(prefix)}: $message")
@@ -25,7 +24,7 @@ public class Channel(override val name: CharSequence) : ClientChild() {
         users.addAll(nickList)
     }
 
-    private class UserComparator private constructor() : SortedListCallbackRegistry.Comparator<CharSequence> {
+    private class UserComparator private constructor() : ObservableSortedList.HyperComparator<CharSequence> {
         override fun areContentsTheSame(oldItem: CharSequence, newItem: CharSequence): Boolean {
             return oldItem == newItem
         }

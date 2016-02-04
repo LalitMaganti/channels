@@ -1,18 +1,21 @@
 package co.fusionx.channels.databinding
 
+import android.databinding.ListChangeRegistry
+import android.databinding.ObservableList
+import java.lang.ref.WeakReference
 import java.util.*
 
 @Suppress("CAST_NEVER_SUCCEEDS")
 public class ObservableSortedArrayMap<K, V>(
         private val keyComparator: Comparator<K?>,
         private val valueHyperComparator: HyperComparator<V>) : ObservableIndexedMap<K, V> {
-
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
         get() = throw UnsupportedOperationException()
     override val keys: MutableSet<K>
         get() = throw UnsupportedOperationException()
     override val values: MutableCollection<V>
         get() = throw UnsupportedOperationException()
+
     override val size: Int
         get() = contentSize
 
@@ -21,7 +24,9 @@ public class ObservableSortedArrayMap<K, V>(
 
     private var contentSize: Int
 
-    private @Transient var registry: IndexedMapChangeRegistry<ObservableIndexedMap<K, V>, K, V>? = null
+    private @Transient var registry: IndexedMapChangeRegistry<ObservableSortedArrayMap<K, V>, K, V>? = null
+
+    private var valuesObservableList: ValuesObservableList? = null
 
     init {
         contentSize = 0
@@ -168,12 +173,19 @@ public class ObservableSortedArrayMap<K, V>(
         return if (index < 0) ObservableIndexedMap.NO_POSITION else index
     }
 
+    override fun valuesAsObservableList(): ObservableList<V> {
+        if (valuesObservableList == null) {
+            valuesObservableList = ValuesObservableList()
+        }
+        return valuesObservableList!!
+    }
+
     override fun addOnIndexedMapChangedCallback(
             callback: ObservableIndexedMap.OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>) {
         if (registry == null) {
             registry = IndexedMapChangeRegistry()
         }
-        registry!!.add(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableIndexedMap<K, V>, K, V>)
+        registry!!.add(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V>)
     }
 
     override fun removeOnIndexedMapChangedCallback(
@@ -181,7 +193,50 @@ public class ObservableSortedArrayMap<K, V>(
         if (registry == null) {
             registry = IndexedMapChangeRegistry()
         }
-        registry!!.remove(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableIndexedMap<K, V>, K, V>)
+        registry!!.remove(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V>)
+    }
+
+    public inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(), ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
+        private val registry = ListChangeRegistry()
+
+        override val size: Int
+            get() = this@ObservableSortedArrayMap.size
+
+        init {
+            addOnIndexedMapChangedCallback(this)
+        }
+
+        override fun get(index: Int): V? {
+            return getAtIndex(index)
+        }
+
+        override fun onChanged(sender: ObservableSortedArrayMap<K, V>) {
+            registry.notifyChanged(this)
+        }
+
+        override fun onItemChanged(sender: ObservableSortedArrayMap<K, V>, position: Int, key: K, oldValue: V, newValue: V) {
+            registry.notifyChanged(this, position, 1)
+        }
+
+        override fun onItemInserted(sender: ObservableSortedArrayMap<K, V>, position: Int, key: K, value: V) {
+            registry.notifyInserted(this, position, 1)
+        }
+
+        override fun onItemMoved(sender: ObservableSortedArrayMap<K, V>, fromPosition: Int, toPosition: Int, key: K, value: V) {
+            registry.notifyMoved(this, fromPosition, toPosition, 1)
+        }
+
+        override fun onItemRemoved(sender: ObservableSortedArrayMap<K, V>, position: Int, key: K, value: V) {
+            registry.notifyRemoved(this, position, 1)
+        }
+
+        override fun addOnListChangedCallback(callback: ObservableList.OnListChangedCallback<out ObservableList<V>>?) {
+            registry.add(callback)
+        }
+
+        override fun removeOnListChangedCallback(callback: ObservableList.OnListChangedCallback<out ObservableList<V>>?) {
+            registry.remove(callback)
+        }
     }
 
     companion object {

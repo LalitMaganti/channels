@@ -1,8 +1,12 @@
 package co.fusionx.channels.databinding
 
+import android.databinding.ObservableList
+
 public interface ObservableIndexedMap<K, V> : MutableMap<K, V> {
     public fun getAtIndex(index: Int): V?
     public fun indexOf(key: K): Int
+
+    public fun valuesAsObservableList(): ObservableList<V>
 
     fun addOnIndexedMapChangedCallback(
             callback: OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>)

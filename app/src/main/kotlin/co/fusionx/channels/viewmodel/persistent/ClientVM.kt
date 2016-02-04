@@ -15,22 +15,21 @@ public class ClientVM(private val client: Client) {
     public val name: CharSequence
         get() = client.name
     public val status: ObservableInt = ObservableInt()
+    public val isActive: Boolean
+        get() = status.get() != Client.STOPPED
 
     public val selectedChild: ObservableField<ClientChildVM>
-    public val children: ObservableList<ClientChildVM>
+    public val server: ServerVM
+    public val channels: ObservableList<ChannelVM>
 
-    private val server: ServerVM
-    private val channels: ObservableSortedArrayMap<CharSequence, ChannelVM>
-
-    private val isActive: Boolean
-        get() = status.get() != Client.STOPPED
+    private val channelMap: ObservableSortedArrayMap<CharSequence, ChannelVM>
 
     init {
         server = ServerVM(client.server)
-        channels = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator())
+        channelMap = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator())
 
         selectedChild = ObservableField(server)
-        children = ClientChildVMList(server, channels)
+        channels = channelMap.valuesAsObservableList()
 
         client.status.subscribe { status.set(it) }
         client.channels.addOnMapChangedCallback(ObservableMapObserver())
@@ -56,12 +55,7 @@ public class ClientVM(private val client: Client) {
     }
 
     fun compareTo(o2: ClientVM): Int {
-        if (isActive == o2.isActive) {
-            return client.name.compareTo(o2.client.name)
-        } else if (isActive) {
-            return -1
-        }
-        return 1
+        return client.name.compareTo(o2.client.name)
     }
 
     private inner class ObservableMapObserver :
@@ -74,11 +68,11 @@ public class ClientVM(private val client: Client) {
 
             val channel = sender[key]
             if (channel == null) {
-                channels.remove(key)
+                channelMap.remove(key)
             } else {
-                val channelVM = channels[key]
+                val channelVM = channelMap[key]
                 if (channelVM == null) {
-                    channels.put(key, ChannelVM(channel))
+                    channelMap.put(key, ChannelVM(channel))
                 } else {
                     // TODO(tilla6991) figure out if this needs to be handled.
                     Timber.d("This case should not occur")

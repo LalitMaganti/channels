@@ -3,18 +3,16 @@ package co.fusionx.channels.adapter
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationHeaderBinding
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 
 public class NavigationAdapter(
         private val context: Context,
-        private var contentAdapter: RecyclerView.Adapter<NavigationAdapter.ViewHolder>,
+        private var contentAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
         private val headerVM: NavigationHeaderVM,
-        private val selectedClientsVM: SelectedClientsVM) : RecyclerView.Adapter<NavigationAdapter.ViewHolder>() {
+        private val selectedClientsVM: SelectedClientsVM) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val inflater: LayoutInflater
 
@@ -30,7 +28,7 @@ public class NavigationAdapter(
         contentAdapter.registerAdapterDataObserver(observer)
     }
 
-    public fun updateContentAdapter(adapter: RecyclerView.Adapter<NavigationAdapter.ViewHolder>) {
+    public fun updateContentAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
         contentAdapter.unregisterAdapterDataObserver(observer)
         notifyItemRangeRemoved(headerCount, contentCount)
 
@@ -40,16 +38,16 @@ public class NavigationAdapter(
         adapter.registerAdapterDataObserver(observer)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, type: Int): ViewHolder? = when (type) {
+    override fun onCreateViewHolder(parent: ViewGroup?, type: Int): RecyclerView.ViewHolder? = when (type) {
         VIEW_TYPE_HEADER ->
             HeaderViewHolder(NavigationHeaderBinding.inflate(inflater, parent, false))
         else -> contentAdapter.onCreateViewHolder(parent, type)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val viewType = getItemViewType(position)
         if (viewType == VIEW_TYPE_HEADER) {
-            holder.bind(position)
+            (holder as HeaderViewHolder).bind()
         } else {
             contentAdapter.onBindViewHolder(holder, position - headerCount)
         }
@@ -63,22 +61,18 @@ public class NavigationAdapter(
         if (position < headerCount) {
             return VIEW_TYPE_HEADER
         }
-        return contentAdapter.getItemViewType(position)
+        return contentAdapter.getItemViewType(position - headerCount)
     }
 
     inner class HeaderViewHolder(
-            private val binding: NavigationHeaderBinding) : ViewHolder(binding.root) {
+            private val binding: NavigationHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        override fun bind(position: Int) {
+        fun bind() {
             binding.headerVm = headerVM
             binding.viewNavigationDrawerServerCarousel.setAdapter(selectedClientsVM)
 
             binding.executePendingBindings()
         }
-    }
-
-    abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        public abstract fun bind(position: Int)
     }
 
     private inner class ChildAdapterObserver : RecyclerView.AdapterDataObserver() {

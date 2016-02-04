@@ -1,5 +1,6 @@
 package co.fusionx.channels.util
 
+import timber.log.Timber
 import java.util.*
 
 public val charSequenceComparator by lazy {
@@ -28,3 +29,5 @@ public fun CharSequence?.compareTo(other: CharSequence?): Int {
 }
 
 public fun <T> MutableCollection<T>.addAll(vararg data: T) = addAll(data)
+
+public fun Timber.Tree.failAssert() = e(IllegalArgumentException(), "This is a bug.")

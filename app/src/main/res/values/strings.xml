@@ -16,4 +16,10 @@
     <string name="status_connected">Connected</string>
     <string name="status_reconnecting">Reconnecting</string>
     <string name="status_disconnected">Disconnected</string>
+
+    <string name="header_channels">Channels</string>
+    <string name="header_private_messages">PMs</string>
+
+    <string name="header_active_clients">Active connections</string>
+    <string name="header_inactive_clients">Inactive connections</string>
 </resources>
