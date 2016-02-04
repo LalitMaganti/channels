@@ -1,9 +1,8 @@
 package co.fusionx.channels.viewmodel.persistent
 
-import android.databinding.ObservableField
-import android.databinding.ObservableInt
-import android.databinding.ObservableList
-import android.databinding.ObservableMap
+import android.content.Context
+import android.databinding.*
+import co.fusionx.channels.BR
 import co.fusionx.channels.databinding.ObservableSortedArrayMap
 import co.fusionx.channels.model.Channel
 import co.fusionx.channels.model.Client
@@ -11,12 +10,16 @@ import co.fusionx.channels.util.charSequenceComparator
 import co.fusionx.channels.util.compareTo
 import timber.log.Timber
 
-public class ClientVM(private val client: Client) {
+public class ClientVM(private val context: Context,
+                      private val client: Client) : BaseObservable() {
     public val name: CharSequence
         get() = client.name
-    public val status: ObservableInt = ObservableInt()
+    public val hostname: CharSequence
+        get() = client.configuration.connectionConfiguration.hostname
+
+    public val status: ObservableField<String> = ObservableField()
     public val isActive: Boolean
-        get() = status.get() != Client.STOPPED
+        @Bindable get() = client.status.value != Client.STOPPED
 
     public val selectedChild: ObservableField<ClientChildVM>
     public val server: ServerVM
@@ -31,7 +34,10 @@ public class ClientVM(private val client: Client) {
         selectedChild = ObservableField(server)
         channels = channelMap.valuesAsObservableList()
 
-        client.status.subscribe { status.set(it) }
+        client.status.subscribe {
+            status.set(context.getString(it))
+            notifyPropertyChanged(BR.active)
+        }
         client.channels.addOnMapChangedCallback(ObservableMapObserver())
     }
 

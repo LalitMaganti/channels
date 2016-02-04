@@ -8,11 +8,12 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.ArraySet
 import android.view.MenuItem
+import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.presenter.ActionBarPresenter
-import co.fusionx.channels.presenter.EventPresenter
+import co.fusionx.channels.presenter.ClientChildPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
 import co.fusionx.channels.model.ClientChild
@@ -29,6 +30,7 @@ public class MainActivity : AppCompatActivity() {
     private val eventRecycler: EventRecyclerView by bindView(R.id.event_recycler)
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
+    private val messageBox: EditText by bindView(R.id.message)
 
     private val presenters: MutableCollection<Presenter> = ArraySet()
 
@@ -44,7 +46,7 @@ public class MainActivity : AppCompatActivity() {
 
         presenters.addAll(
                 NavigationPresenter(this, navDrawerView),
-                EventPresenter(this, eventRecycler),
+                ClientChildPresenter(this, messageBox, eventRecycler),
                 ActionBarPresenter(this)
         )
 

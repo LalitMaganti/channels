@@ -6,12 +6,13 @@ import android.os.Parcelable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
+import kotlin.properties.Delegates
 
 public class EventRecyclerView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null) : RecyclerView(context, attrs) {
 
-    lateinit var layoutManager: LinearLayoutManager
+    private var layoutManager: LinearLayoutManager by Delegates.notNull<LinearLayoutManager>()
 
     private var firstVisible = -1
     private var lastVisible = -1

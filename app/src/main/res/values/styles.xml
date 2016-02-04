@@ -5,6 +5,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowBackground">@null</item>
     </style>
 
     <style name="Base.Theme.Channels.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
@@ -17,17 +19,17 @@
 
     <style name="Base.Theme.Channels.NavDrawerItem">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="Base.Theme.Channels.TwoLineListPrimary">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="Base.Theme.Channels.TwoLineListSecondary">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/secondary_text_default_material_light</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
     <style name="Theme.Channels" parent="Base.Theme.Channels">
@@ -61,5 +63,9 @@
     <style name="Theme.Channels.NavigationDrawer.Secondary"
            parent="Base.Theme.Channels.TwoLineListSecondary">
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Widget.Channels.EditText" parent="">
+
     </style>
 </resources>

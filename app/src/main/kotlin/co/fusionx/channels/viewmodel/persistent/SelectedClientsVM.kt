@@ -13,6 +13,14 @@ public class SelectedClientsVM {
     private val callbacks: MutableCollection<OnClientsChangedCallback> = ArraySet<OnClientsChangedCallback>()
 
     fun select(client: ClientVM) {
+        if (client == latest) {
+            return
+        } else if (client == penultimate) {
+            return selectPenultimate()
+        } else if (client == antepenultimate) {
+            return selectAntePenultimate()
+        }
+
         antepenultimate = penultimate
         penultimate = latest
         latest = client

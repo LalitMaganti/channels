@@ -22,7 +22,7 @@ public class RelayVM @Inject constructor(private val context: Context) {
         /* TODO(lrm113) deal with handling constantly updating databases */
         context.connectionDb.getConfigurations()
                 .first()
-                .map { it -> it.map { ClientVM(Client(it)) } }
+                .map { it -> it.map { ClientVM(context, Client(it)) } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {

@@ -1,16 +1,20 @@
 package co.fusionx.channels.presenter
 
 import android.databinding.ObservableList
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.view.View
+import android.widget.EditText
 import co.fusionx.channels.adapter.MainItemAdapter
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ClientChildListener
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
-import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 
-class EventPresenter(override val activity: MainActivity,
-                     private val eventRecyclerView: EventRecyclerView) : Presenter {
+class ClientChildPresenter(override val activity: MainActivity,
+                           private val messageInput: EditText,
+                           private val eventRecyclerView: EventRecyclerView) : Presenter {
     override val id: String
         get() = "events"
 
@@ -39,19 +43,27 @@ class EventPresenter(override val activity: MainActivity,
     }
 
     private fun switchContent() {
-        if (displayedChild == selectedChild?.get()) return
+        val newChild = selectedChild?.get()
+        if (displayedChild == newChild) return
 
-        val buffer = selectedChild?.get()?.buffer
+        displayedChild?.buffer?.removeOnListChangedCallback(listener)
+
+        val buffer = newChild?.buffer
         adapter.setBuffer(buffer)
         adapter.notifyDataSetChanged()
 
         // Scroll to the bottom once the items are present.
-        if (buffer != null) {
+        if (buffer == null) {
+            eventRecyclerView.visibility = View.GONE
+            messageInput.visibility = View.GONE
+        } else {
+            eventRecyclerView.visibility = View.VISIBLE
+            messageInput.visibility = View.VISIBLE
+
             eventRecyclerView.forceScroll(buffer.size - 1)
+            buffer.addOnListChangedCallback(listener)
         }
 
-        displayedChild?.buffer?.removeOnListChangedCallback(listener)
-        displayedChild = selectedChild?.get()
-        displayedChild?.buffer?.addOnListChangedCallback(listener)
+        displayedChild = newChild
     }
 }

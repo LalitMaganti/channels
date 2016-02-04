@@ -4,32 +4,42 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_50"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context=".controller.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/message"
+        <FrameLayout
+            android:id="@+id/message_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/white">
+
+            <EditText
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/message">
+            android:layout_above="@id/message_wrapper">
 
             <co.fusionx.channels.view.EventRecyclerView
                 android:id="@+id/event_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/white"
                 android:clipToPadding="false"
                 android:padding="8dp"
+                android:visibility="gone"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
             <android.support.design.widget.AppBarLayout

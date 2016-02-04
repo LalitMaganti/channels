@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import org.jetbrains.anko.db.*
 
 class ConnectionDBHelper private constructor(private val context: Context) :
-        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 3) {
+        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 4) {
     override fun onCreate(db: SQLiteDatabase) {
         createTables(db)
     }
@@ -31,6 +31,14 @@ class ConnectionDBHelper private constructor(private val context: Context) :
         // TODO(tilal6991) remove this
         db.insert(ConnectionDBColumns.TABLE_NAME,
                 ConnectionDBColumns.NAME to "Freenode",
+                ConnectionDBColumns.HOSTNAME to "irc.freenode.net",
+                ConnectionDBColumns.PORT to 6667)
+        db.insert(ConnectionDBColumns.TABLE_NAME,
+                ConnectionDBColumns.NAME to "Techtronix",
+                ConnectionDBColumns.HOSTNAME to "irc.techtronix.net",
+                ConnectionDBColumns.PORT to 6667)
+        db.insert(ConnectionDBColumns.TABLE_NAME,
+                ConnectionDBColumns.NAME to "Freenode2",
                 ConnectionDBColumns.HOSTNAME to "irc.freenode.net",
                 ConnectionDBColumns.PORT to 6667)
     }

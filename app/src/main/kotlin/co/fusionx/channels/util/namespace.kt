@@ -16,7 +16,8 @@ public fun CharSequence?.compareTo(other: CharSequence?): Int {
         return -1
     }
 
-    for (i in 0..length - 1) {
+    val count = Math.min(length, other.length)
+    for (i in 0..count - 1) {
         val a = this[i]
         val b = other[i]
         if (a < b) {
