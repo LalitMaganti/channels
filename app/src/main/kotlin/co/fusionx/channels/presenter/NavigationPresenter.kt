@@ -1,5 +1,6 @@
 package co.fusionx.channels.presenter
 
+import android.databinding.Observable
 import android.databinding.ObservableList
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
@@ -163,12 +164,17 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     private inner class ChildHelper : Helper {
-
         override val adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
             get() = childAdapter
 
+        private val selectedClient: ClientVM?
+            get()  = relayVM.selectedClients.latest
+        private val channels: ObservableList<ChannelVM>?
+            get() = selectedClient?.channels
+
         private lateinit var childAdapter: NavigationChildAdapter
-        private lateinit var childListener: ListSectionProxy<ChannelVM>
+        private lateinit var channelsListener: ListSectionProxy<ChannelVM>
+        private lateinit var selectedChildChanged: Observable.OnPropertyChangedCallback
 
         override fun setup() {
             childAdapter = NavigationChildAdapter(view.context) {
@@ -176,15 +182,22 @@ public class NavigationPresenter(override val activity: MainActivity,
             }
             childAdapter.setup()
 
-            childListener = ListSectionProxy<ChannelVM>(1, childAdapter)
+            selectedChildChanged = object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                    this@NavigationPresenter.updateHeader()
+                }
+            }
+            channelsListener = ListSectionProxy<ChannelVM>(1, childAdapter)
         }
 
         override fun bind() {
-            relayVM.selectedClients.latest!!.channels.addOnListChangedCallback(childListener)
+            channels!!.addOnListChangedCallback(channelsListener)
+            selectedClient!!.selectedChild.addOnPropertyChangedCallback(selectedChildChanged)
         }
 
         override fun unbind() {
-            relayVM.selectedClients.latest?.channels?.removeOnListChangedCallback(childListener)
+            channels?.removeOnListChangedCallback(channelsListener)
+            selectedClient?.selectedChild?.removeOnPropertyChangedCallback(selectedChildChanged)
         }
 
         override fun updateHeader() {
