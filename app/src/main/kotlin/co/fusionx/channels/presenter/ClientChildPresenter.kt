@@ -9,6 +9,7 @@ import co.fusionx.channels.adapter.MainItemAdapter
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.presenter.helper.ClientChildListener
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
+import co.fusionx.channels.presenter.helper.MessageTextHandler
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 
@@ -17,6 +18,8 @@ class ClientChildPresenter(override val activity: MainActivity,
                            private val eventRecyclerView: EventRecyclerView) : Presenter {
     override val id: String
         get() = "events"
+
+    private lateinit var messageHandler: Bindable
 
     private var displayedChild: ClientChildVM? = null
     private val childListener = ClientChildListener(activity) { switchContent() }
@@ -30,16 +33,25 @@ class ClientChildPresenter(override val activity: MainActivity,
     }
 
     override fun setup() {
+        messageHandler = MessageTextHandler(messageInput)
+        messageHandler.setup()
+
         eventRecyclerView.adapter = adapter
         switchContent()
     }
 
     override fun bind() {
+        messageHandler.bind()
         childListener.bind()
     }
 
     override fun unbind() {
+        messageHandler.unbind()
         childListener.unbind()
+    }
+
+    override fun teardown() {
+        messageHandler.teardown()
     }
 
     private fun switchContent() {

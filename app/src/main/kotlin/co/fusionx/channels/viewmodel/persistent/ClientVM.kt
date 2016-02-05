@@ -6,10 +6,12 @@ import co.fusionx.channels.BR
 import co.fusionx.channels.databinding.ObservableSortedArrayMap
 import co.fusionx.channels.model.Channel
 import co.fusionx.channels.model.Client
+import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.util.charSequenceComparator
 import co.fusionx.channels.util.compareTo
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
+import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import timber.log.Timber
 
 public class ClientVM(private val context: Context,
@@ -41,6 +43,11 @@ public class ClientVM(private val context: Context,
             notifyPropertyChanged(BR.active)
         }
         client.channels.addOnMapChangedCallback(ObservableMapObserver())
+    }
+
+    fun sendUserMessage(userMessage: String, context: ClientChildVM) {
+        val message = UserMessageParser.parse(userMessage, context, server) ?: return
+        client.send(message)
     }
 
     public fun select(child: ClientChildVM) {

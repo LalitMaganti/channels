@@ -47,6 +47,10 @@ public class Client(
         return stopped
     }
 
+    fun send(message: String) {
+        client.send(message)
+    }
+
     private inner class DispatchingEventListener : EventListener {
         private val handler: Handler = Handler(Looper.getMainLooper())
 
@@ -58,26 +62,28 @@ public class Client(
         }
 
         override fun onNames(channelName: String, nickList: List<String>) {
-            handler.post { channels[channelName]?.onNames(nickList) ?: return@post }
+            handler.post {
+                channels[channelName]?.onNames(nickList) ?: return@post
+            }
         }
 
         public override fun onJoin(prefix: String, channel: String) {
             handler.post {
-                nick.subscribe {
-                    val c: Channel
-                    if (PrefixExtractor.nick(prefix) == it) {
-                        c = Channel(channel)
-                        channels.put(channel, c)
-                    } else {
-                        c = channels[channel] ?: return@subscribe
-                    }
-                    c.onJoin(prefix)
+                val c: Channel
+                if (PrefixExtractor.nick(prefix) == nick.value) {
+                    c = Channel(channel)
+                    channels.put(channel, c)
+                } else {
+                    c = channels[channel] ?: return@post
                 }
+                c.onJoin(prefix)
             }
         }
 
         public override fun onOtherCode(code: Int, arguments: List<String>) {
-            handler.post { server.onOtherCode(code, arguments) }
+            handler.post {
+                server.onOtherCode(code, arguments)
+            }
         }
 
         public override fun onWelcome(target: String, text: String) {

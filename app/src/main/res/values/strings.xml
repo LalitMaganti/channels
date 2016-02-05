@@ -22,4 +22,5 @@
 
     <string name="header_active_clients">Active connections</string>
     <string name="header_inactive_clients">Inactive connections</string>
+    <string name="message_hint">Message</string>
 </resources>

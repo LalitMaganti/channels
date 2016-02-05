@@ -23,8 +23,11 @@
                 android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:imeOptions="actionSend"
+                android:inputType="textAutoComplete|textCapSentences"
+                android:padding="8dp"
+                android:hint="@string/message_hint"
+                android:singleLine="true"
                 android:visibility="gone" />
         </FrameLayout>
 
