@@ -56,7 +56,7 @@
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/person_image_empty"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
 
         <co.fusionx.channels.view.BezelImageView
@@ -69,7 +69,7 @@
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/person_image_empty"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
 
         <co.fusionx.channels.view.BezelImageView
@@ -82,7 +82,7 @@
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/person_image_empty"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
     </co.fusionx.channels.view.ClientCarouselView>
 </layout>

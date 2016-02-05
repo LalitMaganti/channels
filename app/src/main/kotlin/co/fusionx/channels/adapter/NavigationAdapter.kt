@@ -17,8 +17,9 @@ public class NavigationAdapter(
     private val inflater: LayoutInflater
 
     private val headerCount = 1
-    private val contentCount: Int
+    private val latestContentCount: Int
         get() = contentAdapter.itemCount
+    private var cachedContentCount: Int = 0
 
     private val observer = ChildAdapterObserver()
 
@@ -30,11 +31,12 @@ public class NavigationAdapter(
 
     public fun updateContentAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
         contentAdapter.unregisterAdapterDataObserver(observer)
-        notifyItemRangeRemoved(headerCount, contentCount)
+        notifyItemRangeRemoved(headerCount, latestContentCount)
 
         contentAdapter = adapter
 
-        notifyItemRangeInserted(headerCount, contentCount)
+        cachedContentCount = latestContentCount
+        notifyItemRangeInserted(headerCount, latestContentCount)
         adapter.registerAdapterDataObserver(observer)
     }
 
@@ -54,7 +56,8 @@ public class NavigationAdapter(
     }
 
     override fun getItemCount(): Int {
-        return headerCount + contentCount
+        cachedContentCount = latestContentCount
+        return headerCount + cachedContentCount
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -77,7 +80,9 @@ public class NavigationAdapter(
 
     private inner class ChildAdapterObserver : RecyclerView.AdapterDataObserver() {
         override fun onChanged() {
-            notifyDataSetChanged()
+            notifyItemRangeRemoved(headerCount, cachedContentCount)
+            cachedContentCount = latestContentCount
+            notifyItemRangeInserted(headerCount, cachedContentCount)
         }
 
         override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
@@ -90,10 +95,14 @@ public class NavigationAdapter(
 
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
             notifyItemRangeInserted(positionStart + headerCount, itemCount)
+
+            cachedContentCount += itemCount
         }
 
         override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
             notifyItemRangeRemoved(positionStart + headerCount, itemCount)
+
+            cachedContentCount -= itemCount
         }
 
         override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {

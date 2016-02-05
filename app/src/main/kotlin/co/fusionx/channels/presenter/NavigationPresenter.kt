@@ -15,6 +15,7 @@ import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.databinding.ListSectionProxy
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ChannelVM
+import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
@@ -69,7 +70,7 @@ public class NavigationPresenter(override val activity: MainActivity,
 
         // Make sure we're displaying the most up to date information.
         updateHeader()
-        adapter.notifyDataSetChanged()
+        clientHelper.adapter.notifySectionedDataSetChanged()
     }
 
     override fun unbind() {
@@ -78,7 +79,12 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     private fun updateCurrentType(helper: Helper) {
-        if (helper == currentHelper) return
+        if (helper == currentHelper) {
+            // Although the type data displayed might not have changed, we might have changed
+            // clients in child view.
+            helper.rebind()
+            return
+        }
 
         // Stop observing everything old.
         currentHelper.unbind()
@@ -153,9 +159,7 @@ public class NavigationPresenter(override val activity: MainActivity,
             relayVM.inactiveClients.addOnListChangedCallback(inactiveClientListener)
         }
 
-        override fun unbind() {
-            relayVM.activeClients.removeOnListChangedCallback(activeClientListener)
-            relayVM.inactiveClients.removeOnListChangedCallback(inactiveClientListener)
+        override fun rebind() {
         }
 
         override fun updateHeader() {
@@ -163,16 +167,20 @@ public class NavigationPresenter(override val activity: MainActivity,
             headerVM.updateText(getString(R.string.app_name),
                     getQuantityString(R.plurals.connected_client_count, count).format(count))
         }
+
+        override fun unbind() {
+            relayVM.activeClients.removeOnListChangedCallback(activeClientListener)
+            relayVM.inactiveClients.removeOnListChangedCallback(inactiveClientListener)
+        }
     }
 
     private inner class ChildHelper : Helper {
         override val adapter: SectionAdapter<out RecyclerView.ViewHolder, out RecyclerView.ViewHolder>
             get() = childAdapter
 
-        private val selectedClient: ClientVM?
-            get()  = relayVM.selectedClients.latest
-        private val channels: ObservableList<ChannelVM>?
-            get() = selectedClient?.channels
+        private var displayedClient: ClientVM? = null
+        private val displayedChannels: ObservableList<ChannelVM>?
+            get() = displayedClient?.channels
 
         private lateinit var childAdapter: NavigationChildAdapter
         private lateinit var channelsListener: ListSectionProxy<ChannelVM>
@@ -193,17 +201,33 @@ public class NavigationPresenter(override val activity: MainActivity,
         }
 
         override fun bind() {
-            channels!!.addOnListChangedCallback(channelsListener)
-            selectedClient!!.selectedChild.addOnPropertyChangedCallback(selectedChildChanged)
+            displayedClient = relayVM.selectedClients.latest
+
+            displayedChannels!!.addOnListChangedCallback(channelsListener)
+            displayedClient!!.selectedChild.addOnPropertyChangedCallback(selectedChildChanged)
         }
 
-        override fun unbind() {
-            channels?.removeOnListChangedCallback(channelsListener)
-            selectedClient?.selectedChild?.removeOnPropertyChangedCallback(selectedChildChanged)
+        override fun rebind() {
+            if (displayedClient == relayVM.selectedClients.latest) {
+                return
+            }
+
+            unbind()
+            bind()
+
+            this@NavigationPresenter.updateHeader()
+            childAdapter.notifySectionedDataSetChanged()
         }
 
         override fun updateHeader() {
             headerVM.updateText(selectedClientsVM.latest!!.name, selectedChild!!.get()!!.name)
+        }
+
+        override fun unbind() {
+            displayedChannels?.removeOnListChangedCallback(channelsListener)
+            displayedClient?.selectedChild?.removeOnPropertyChangedCallback(selectedChildChanged)
+
+            displayedClient = null
         }
     }
 
@@ -212,8 +236,9 @@ public class NavigationPresenter(override val activity: MainActivity,
 
         fun setup()
         fun bind()
-        fun unbind()
+        fun rebind()
         fun updateHeader()
+        fun unbind()
     }
 
     companion object {

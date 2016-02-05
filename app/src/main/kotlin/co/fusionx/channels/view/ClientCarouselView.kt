@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import co.fusionx.channels.R
 import co.fusionx.channels.viewmodel.persistent.ClientVM
@@ -56,7 +57,7 @@ public class ClientCarouselView(
         val newFront = viewArray[newFrontIndex]
 
         val frontX = ViewCompat.getX(oldFront)
-        val frontY = ViewCompat.getX(oldFront)
+        val frontY = ViewCompat.getY(oldFront)
 
         fadeAndMoveToNewPosition(oldFront, ViewCompat.getX(newFront), ViewCompat.getY(newFront))
         expandAndMoveToNewPosition(newFront, frontX, frontY)
@@ -71,6 +72,12 @@ public class ClientCarouselView(
         selectedClientsVM?.addOnClientsChangedCallback(callback)
 
         resetClientViews()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        selectedClientsVM?.removeOnClientsChangedCallback(callback)
     }
 
     private fun resetClientViews() {
@@ -114,11 +121,12 @@ public class ClientCarouselView(
                 .setInterpolator(AccelerateDecelerateInterpolator())
                 .withStartAction {
                     imageView.visibility = VISIBLE
+                    imageView.setOnClickListener(clickListener)
                 }
     }
 
     private fun hide(imageView: ImageView) {
-        if (imageView.visibility == GONE) {
+        if (imageView.visibility == INVISIBLE) {
             return
         }
 
@@ -127,13 +135,14 @@ public class ClientCarouselView(
                 .setDuration(250)
                 .setInterpolator(AccelerateDecelerateInterpolator())
                 .withEndAction {
-                    imageView.visibility = GONE
+                    imageView.visibility = INVISIBLE
                 }
+        imageView.setOnClickListener(null)
     }
 
     private fun expandAndMoveToNewPosition(view: View, oldCurrentX: Float, oldCurrentY: Float) {
         // Update the new elevation
-        // ViewCompat.setElevation(view, 5f)
+        ViewCompat.setElevation(view, 5f)
 
         // Expand to 1.75x times while moving to the new position and
         // readd the listener when done

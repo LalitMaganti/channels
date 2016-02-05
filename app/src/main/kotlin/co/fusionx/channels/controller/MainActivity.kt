@@ -54,10 +54,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     fun onClientClick(clientVM: ClientVM) {
-        val alreadySelected = relayVM.select(clientVM)
-        if (!alreadySelected) {
-            drawerLayout.closeDrawers()
-        }
+        relayVM.select(clientVM)
     }
 
     fun onChildClick(child: ClientChildVM) {
