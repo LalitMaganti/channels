@@ -5,10 +5,10 @@ import android.databinding.ObservableArrayMap
 import android.os.Handler
 import android.os.Looper
 import co.fusionx.channels.R
+import co.fusionx.channels.model.helper.BasicEventListener
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
-import co.fusionx.relay.protocol.ClientGenerator
 import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
 import rx.subjects.BehaviorSubject
@@ -96,22 +96,6 @@ public class Client(
                 }
                 // TODO(tilal6991) handle the private message case
             }
-        }
-    }
-
-    private class BasicEventListener(private val client: RelayClient) : EventListener {
-        override fun onPing(server: String) {
-            client.send(ClientGenerator.pong(server))
-        }
-
-        // TODO(tilal6991) fix this to work correctly.
-        override fun onSocketConnect() {
-            client.send(ClientGenerator.nick("tilal6993"))
-            client.send(ClientGenerator.user("tilal6993", "Lalit"))
-        }
-
-        override fun onWelcome(target: String, text: String) {
-            client.send(ClientGenerator.join("#channels"))
         }
     }
 

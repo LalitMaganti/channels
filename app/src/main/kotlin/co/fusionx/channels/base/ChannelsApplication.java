@@ -25,6 +25,14 @@ public class ChannelsApplication extends Application {
         provider = DaggerChannelsObjectProvider.builder()
                 .relayModule(new RelayModule(this))
                 .build();
-        Timber.plant(new Timber.DebugTree());
+        Timber.plant(new Timber.DebugTree() {
+            @Override
+            protected void log(int priority, String tag, String message, Throwable t) {
+                if (t != null) {
+                    throw new RuntimeException(t);
+                }
+                super.log(priority, tag, message, t);
+            }
+        });
     }
 }

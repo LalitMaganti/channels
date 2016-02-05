@@ -8,6 +8,7 @@ import co.fusionx.channels.model.Channel
 import co.fusionx.channels.model.Client
 import co.fusionx.channels.util.charSequenceComparator
 import co.fusionx.channels.util.compareTo
+import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import timber.log.Timber
 
@@ -52,8 +53,7 @@ public class ClientVM(private val context: Context,
         return newConnect
     }
 
-    private inner class ObservableMapObserver :
-            ObservableMap.OnMapChangedCallback<ObservableMap<String, Channel>, String, Channel>() {
+    private inner class ObservableMapObserver : ObservableMap.OnMapChangedCallback<ObservableMap<String, Channel>, String, Channel>() {
         override fun onMapChanged(sender: ObservableMap<String, Channel>, key: String?) {
             // TODO(tilla6991) figure out if this needs to be handled.
             if (key == null) {
@@ -69,7 +69,7 @@ public class ClientVM(private val context: Context,
                     channelMap.put(key, ChannelVM(channel))
                 } else {
                     // TODO(tilla6991) figure out if this needs to be handled.
-                    Timber.d("This case should not occur")
+                    Timber.asTree().failAssert()
                 }
             }
         }
