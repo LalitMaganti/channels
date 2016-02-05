@@ -6,22 +6,22 @@ import android.databinding.ObservableField
 import android.view.View
 import co.fusionx.channels.BR
 
-public class NavigationHeaderVM : BaseObservable() {
-    public val title: ObservableField<CharSequence> = ObservableField("")
-    public val subtitle: ObservableField<CharSequence> = ObservableField("")
-    public var headerListener: View.OnClickListener? = null
+class NavigationHeaderVM : BaseObservable() {
+    val title: ObservableField<CharSequence> = ObservableField("")
+    val subtitle: ObservableField<CharSequence> = ObservableField("")
+    var headerListener: View.OnClickListener? = null
         @Bindable get
         set(it) {
             field = it
             notifyPropertyChanged(BR.headerListener)
         }
 
-    public fun updateText(title: CharSequence, subtitle: CharSequence) {
+    fun updateText(title: CharSequence, subtitle: CharSequence) {
         this.title.set(title)
         this.subtitle.set(subtitle)
     }
 
-    public fun updateListener(listener: View.OnClickListener?) {
+    fun updateListener(listener: View.OnClickListener?) {
         headerListener = listener
     }
 }

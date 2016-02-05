@@ -10,14 +10,13 @@ import rx.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-public class RelayVM @Inject constructor(private val context: Context) {
+@Singleton class RelayVM @Inject constructor(private val context: Context) {
 
-    public val activeClients: ObservableSortedList<ClientVM> = ObservableSortedList(
+    val activeClients: ObservableSortedList<ClientVM> = ObservableSortedList(
             ClientVM::class.java, ClientComparator.instance)
-    public val inactiveClients: ObservableSortedList<ClientVM> = ObservableSortedList(
+    val inactiveClients: ObservableSortedList<ClientVM> = ObservableSortedList(
             ClientVM::class.java, ClientComparator.instance)
-    public val selectedClients: SelectedClientsVM = SelectedClientsVM()
+    val selectedClients: SelectedClientsVM = SelectedClientsVM()
 
     init {
         /* TODO(lrm113) deal with handling constantly updating databases */
@@ -33,7 +32,7 @@ public class RelayVM @Inject constructor(private val context: Context) {
                 }
     }
 
-    public fun select(client: ClientVM): Boolean {
+    fun select(client: ClientVM): Boolean {
         val index = inactiveClients.indexOf(client)
         if (selectedClients.latest == client) {
             return true

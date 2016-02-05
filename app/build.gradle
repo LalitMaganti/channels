@@ -7,9 +7,8 @@ buildscript {
 }
 
 repositories {
-    maven {
-        url 'http://dl.bintray.com/amulyakhare/maven'
-    }
+    maven { url 'http://dl.bintray.com/amulyakhare/maven' }
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 apply plugin: 'com.android.application'
@@ -62,9 +61,10 @@ dependencies {
     compile project(rootProject.ext.relayAndroid)
 
     compile 'com.squareup.sqlbrite:sqlbrite:0.5.0'
-    compile 'org.jetbrains.anko:anko-sqlite:0.8.1'
+    compile 'org.jetbrains.anko:anko-sqlite:0.8.2'
 
-    compile 'org.jetbrains.anko:anko-sdk21:0.8.1'
+    compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
+    compile 'org.jetbrains.anko:anko-sdk21:0.8.2'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     kapt 'com.android.databinding:compiler:1.0-rc5'
 

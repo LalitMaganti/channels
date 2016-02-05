@@ -10,7 +10,7 @@ allprojects {
 }
 
 ext {
-    kotlinVersion = '1.0.0-beta-4589'
+    kotlinVersion = '1.0.0-rc-1036'
     kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     kotlinAndroid = "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"

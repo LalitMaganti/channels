@@ -19,11 +19,11 @@ open class ObservableSortedList<T>(
         wrapped = SortedList(klass, CallbackWrapper())
     }
 
-    public fun beginBatchedUpdates() {
+    fun beginBatchedUpdates() {
         wrapped.beginBatchedUpdates()
     }
 
-    public fun endBatchedUpdates() {
+    fun endBatchedUpdates() {
         wrapped.endBatchedUpdates()
     }
 
@@ -113,7 +113,7 @@ open class ObservableSortedList<T>(
         }
     }
 
-    public interface HyperComparator<T> : Comparator<T> {
+    interface HyperComparator<T> : Comparator<T> {
         fun areItemsTheSame(item1: T, item2: T): Boolean
         fun areContentsTheSame(oldItem: T, newItem: T): Boolean
     }

@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import co.fusionx.channels.util.failAssert
 import timber.log.Timber
 
-public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
+abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         HVH : RecyclerView.ViewHolder> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var setupComplete = false
@@ -12,32 +12,32 @@ public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
     private lateinit var sectionAbsolutePositions: Array<Int>
     private var count: Int = 0
 
-    public fun setup() {
+    fun setup() {
         setupComplete = true
         sectionAbsolutePositions = Array(getSectionCount()) { 0 }
 
         notifySectionedDataSetChanged()
     }
 
-    public abstract fun isHeaderDisplayedForSection(section: Int): Boolean
+    abstract fun isHeaderDisplayedForSection(section: Int): Boolean
 
-    public abstract fun onBindItemViewHolder(holder: CVH, section: Int, offset: Int)
+    abstract fun onBindItemViewHolder(holder: CVH, section: Int, offset: Int)
 
-    public abstract fun onBindHeaderViewHolder(holder: HVH, section: Int)
+    abstract fun onBindHeaderViewHolder(holder: HVH, section: Int)
 
-    public abstract fun getSectionCount(): Int
+    abstract fun getSectionCount(): Int
 
-    public abstract fun getItemCountInSection(section: Int): Int
+    abstract fun getItemCountInSection(section: Int): Int
 
-    public open fun getSectionedItemViewType(section: Int, sectionOffset: Int): Int {
+    open fun getSectionedItemViewType(section: Int, sectionOffset: Int): Int {
         return ITEM_VIEW_TYPE
     }
 
-    public open fun getHeaderViewType(section: Int): Int {
+    open fun getHeaderViewType(section: Int): Int {
         return HEADER_VIEW_TYPE
     }
 
-    public fun notifySectionedDataSetChanged() {
+    fun notifySectionedDataSetChanged() {
         checkSetup()
 
         count = 0
@@ -50,7 +50,7 @@ public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         notifyDataSetChanged()
     }
 
-    public fun notifyItemRangeInsertedInSection(section: Int, offset: Int, insertCount: Int) {
+    fun notifyItemRangeInsertedInSection(section: Int, offset: Int, insertCount: Int) {
         checkSetup()
 
         val sectionStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section)
@@ -72,21 +72,21 @@ public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         count += insertCount
     }
 
-    public fun notifyItemRangeMovedInSection(section: Int, fromPosition: Int, toPosition: Int, itemCount: Int) {
+    fun notifyItemRangeMovedInSection(section: Int, fromPosition: Int, toPosition: Int, itemCount: Int) {
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
         notifyItemRangeMovedInSection(section, sectionItemStart + fromPosition, sectionItemStart + toPosition, itemCount)
     }
 
-    public fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int) {
+    fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int) {
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
         notifyItemRangeChanged(section, sectionItemStart + positionStart, itemCount)
     }
 
-    public fun notifyItemRangeRemovedInSection(section: Int, offset: Int, removeCount: Int) {
+    fun notifyItemRangeRemovedInSection(section: Int, offset: Int, removeCount: Int) {
         checkSetup()
 
         val sectionStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section)
@@ -180,7 +180,7 @@ public abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
     }
 
     companion object {
-        public const val HEADER_VIEW_TYPE = 5
-        public const val ITEM_VIEW_TYPE = 10
+        const val HEADER_VIEW_TYPE = 5
+        const val ITEM_VIEW_TYPE = 10
     }
 }

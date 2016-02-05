@@ -4,9 +4,9 @@ import co.fusionx.channels.databinding.ObservableSortedList
 import co.fusionx.channels.util.compareTo
 import co.fusionx.relay.util.PrefixExtractor
 
-public class Channel(override val name: CharSequence) : ClientChild() {
+class Channel(override val name: CharSequence) : ClientChild() {
 
-    public val users: ObservableSortedList<CharSequence> = ObservableSortedList(
+    val users: ObservableSortedList<CharSequence> = ObservableSortedList(
             CharSequence::class.java, UserComparator.instance)
 
     fun onPrivmsg(prefix: String, message: String) {
@@ -38,7 +38,7 @@ public class Channel(override val name: CharSequence) : ClientChild() {
         }
 
         companion object {
-            public val instance by lazy { UserComparator() }
+            val instance by lazy { UserComparator() }
         }
     }
 }

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import co.fusionx.channels.R
 
-public class MainItemAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainItemAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val layoutInflater = LayoutInflater.from(context)
     private var buffer: ObservableList<CharSequence>? = null

@@ -8,7 +8,7 @@ import co.fusionx.channels.databinding.NavigationHeaderBinding
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 
-public class NavigationAdapter(
+class NavigationAdapter(
         private val context: Context,
         private var contentAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>,
         private val headerVM: NavigationHeaderVM,
@@ -29,7 +29,7 @@ public class NavigationAdapter(
         contentAdapter.registerAdapterDataObserver(observer)
     }
 
-    public fun updateContentAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
+    fun updateContentAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
         contentAdapter.unregisterAdapterDataObserver(observer)
         notifyItemRangeRemoved(headerCount, latestContentCount)
 

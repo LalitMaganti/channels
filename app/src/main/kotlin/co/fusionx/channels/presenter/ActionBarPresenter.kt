@@ -4,14 +4,14 @@ import android.support.v7.app.ActionBar
 import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.presenter.helper.ClientChildListener
 
-public class ActionBarPresenter(override val activity: MainActivity) : Presenter {
+class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     override val id: String
         get() = "toolbar"
 
     private val childListener = ClientChildListener(activity) { updateActionBar() }
 
     private val actionBar: ActionBar
-        get() = activity.supportActionBar
+        get() = activity.supportActionBar!!
 
     private fun updateActionBar() {
         actionBar.title = selectedClientsVM.latest?.name ?: "Channels"

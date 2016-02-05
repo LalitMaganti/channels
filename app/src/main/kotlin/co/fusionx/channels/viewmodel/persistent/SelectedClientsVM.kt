@@ -2,12 +2,12 @@ package co.fusionx.channels.viewmodel.persistent
 
 import android.util.ArraySet
 
-public class SelectedClientsVM {
-    public var latest: ClientVM? = null
+class SelectedClientsVM {
+    var latest: ClientVM? = null
         private set
-    public var penultimate: ClientVM? = null
+    var penultimate: ClientVM? = null
         private set
-    public var antepenultimate: ClientVM? = null
+    var antepenultimate: ClientVM? = null
         private set
 
     private val callbacks: MutableCollection<OnClientsChangedCallback> = ArraySet<OnClientsChangedCallback>()
@@ -28,7 +28,7 @@ public class SelectedClientsVM {
         callbacks.forEach { it.onNewClientAdded() }
     }
 
-    public fun selectPenultimate() {
+    fun selectPenultimate() {
         var oldLatest = latest
         latest = penultimate
         penultimate = oldLatest
@@ -36,7 +36,7 @@ public class SelectedClientsVM {
         callbacks.forEach { it.onLatestPenultimateSwap() }
     }
 
-    public fun selectAntePenultimate() {
+    fun selectAntePenultimate() {
         var oldLatest = latest
         latest = antepenultimate
         antepenultimate = oldLatest
@@ -44,33 +44,33 @@ public class SelectedClientsVM {
         callbacks.forEach { it.onLatestAntePenultimateSwap() }
     }
 
-    public fun addOnClientsChangedCallback(callback: OnClientsChangedCallback) {
+    fun addOnClientsChangedCallback(callback: OnClientsChangedCallback) {
         callbacks.add(callback)
     }
 
-    public fun removeOnClientsChangedCallback(callback: OnClientsChangedCallback) {
+    fun removeOnClientsChangedCallback(callback: OnClientsChangedCallback) {
         callbacks.remove(callback)
     }
 
-    public interface OnClientsChangedCallback {
-        public fun onNewClientAdded()
-        public fun onLatestPenultimateSwap()
-        public fun onLatestAntePenultimateSwap()
+    interface OnClientsChangedCallback {
+        fun onNewClientAdded()
+        fun onLatestPenultimateSwap()
+        fun onLatestAntePenultimateSwap()
     }
 
-    public interface OnLatestClientChangedCallback : OnClientsChangedCallback {
-        public override fun onNewClientAdded() {
+    interface OnLatestClientChangedCallback : OnClientsChangedCallback {
+        override fun onNewClientAdded() {
             onLatestClientChanged()
         }
 
-        public override fun onLatestPenultimateSwap() {
+        override fun onLatestPenultimateSwap() {
             onLatestClientChanged()
         }
 
-        public override fun onLatestAntePenultimateSwap() {
+        override fun onLatestAntePenultimateSwap() {
             onLatestClientChanged()
         }
 
-        public fun onLatestClientChanged()
+        fun onLatestClientChanged()
     }
 }

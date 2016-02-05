@@ -41,16 +41,16 @@ class IndexedMapChangeRegistry<T : ObservableIndexedMap<K, V>, K, V> :
         }
     }
 
-    public class MapChanges<K, V> private constructor() {
-        public var oldPosition = -1
-        public var position = -1
-        public var key: K? = null
-        public var oldValue: V? = null
-        public var value: V? = null
+    class MapChanges<K, V> private constructor() {
+        var oldPosition = -1
+        var position = -1
+        var key: K? = null
+        var oldValue: V? = null
+        var value: V? = null
 
-        public companion object {
+        companion object {
             private val mapChanges: MapChanges<Any, Any> by lazy { MapChanges<Any, Any>() }
-            public fun <K, V> acquire(oldPosition: Int = -1, position: Int = -1, key: K? = null, oldValue: V? = null, value: V? = null): MapChanges<K, V> {
+            fun <K, V> acquire(oldPosition: Int = -1, position: Int = -1, key: K? = null, oldValue: V? = null, value: V? = null): MapChanges<K, V> {
                 mapChanges.oldPosition = oldPosition
                 mapChanges.position = position
                 mapChanges.key = key

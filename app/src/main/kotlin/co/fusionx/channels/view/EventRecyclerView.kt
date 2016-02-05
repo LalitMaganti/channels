@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import kotlin.properties.Delegates
 
-public class EventRecyclerView @JvmOverloads constructor(
+class EventRecyclerView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null) : RecyclerView(context, attrs) {
 

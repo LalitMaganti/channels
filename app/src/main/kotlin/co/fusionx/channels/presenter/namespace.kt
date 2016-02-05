@@ -8,14 +8,14 @@ import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
-public interface Bindable {
-    public fun setup() = Unit
-    public fun bind() = Unit
-    public fun unbind() = Unit
-    public fun teardown() = Unit
+interface Bindable {
+    fun setup() = Unit
+    fun bind() = Unit
+    fun unbind() = Unit
+    fun teardown() = Unit
 }
 
-public interface Presenter : Bindable {
+interface Presenter : Bindable {
     val activity: MainActivity
     val id: String
 
@@ -24,18 +24,18 @@ public interface Presenter : Bindable {
     val selectedChild: ObservableField<ClientChildVM>?
         get() = selectedClientsVM.latest?.selectedChild
 
-    public fun restoreState(bundle: Bundle) = Unit
-    public fun saveState(): Bundle = Bundle.EMPTY
+    fun restoreState(bundle: Bundle) = Unit
+    fun saveState(): Bundle = Bundle.EMPTY
 
-    public fun getString(id: Int): String {
+    fun getString(id: Int): String {
         return activity.getString(id)
     }
 
-    public fun getString(id: Int, vararg args: Any): String {
+    fun getString(id: Int, vararg args: Any): String {
         return activity.getString(id, args)
     }
 
-    public fun getQuantityString(id: Int, quantity: Int): String {
+    fun getQuantityString(id: Int, quantity: Int): String {
         return activity.resources.getQuantityString(id, quantity)
     }
 }

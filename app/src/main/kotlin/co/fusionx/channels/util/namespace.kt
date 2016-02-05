@@ -3,11 +3,11 @@ package co.fusionx.channels.util
 import timber.log.Timber
 import java.util.*
 
-public val charSequenceComparator by lazy {
+val charSequenceComparator by lazy {
     Comparator<CharSequence?> { lhs, rhs -> lhs.compareTo(rhs) }
 }
 
-public fun CharSequence?.compareTo(other: CharSequence?): Int {
+fun CharSequence?.compareTo(other: CharSequence?): Int {
     if (this == null && other == null) {
         return 0
     } else if (this == null) {
@@ -29,6 +29,6 @@ public fun CharSequence?.compareTo(other: CharSequence?): Int {
     return length - other.length
 }
 
-public fun <T> MutableCollection<T>.addAll(vararg data: T) = addAll(data)
+fun <T> MutableCollection<T>.addAll(vararg data: T) = addAll(data)
 
-public fun Timber.Tree.failAssert() = e(IllegalArgumentException(), "This is a bug.")
+fun Timber.Tree.failAssert() = e(IllegalArgumentException(), "This is a bug.")

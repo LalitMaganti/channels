@@ -20,7 +20,7 @@ import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 
-public class NavigationPresenter(override val activity: MainActivity,
+class NavigationPresenter(override val activity: MainActivity,
                                  private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
@@ -232,7 +232,7 @@ public class NavigationPresenter(override val activity: MainActivity,
     }
 
     private interface Helper {
-        public val adapter: SectionAdapter<out RecyclerView.ViewHolder, out RecyclerView.ViewHolder>
+        val adapter: SectionAdapter<out RecyclerView.ViewHolder, out RecyclerView.ViewHolder>
 
         fun setup()
         fun bind()

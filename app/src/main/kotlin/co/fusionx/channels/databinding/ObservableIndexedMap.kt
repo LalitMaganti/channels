@@ -2,11 +2,11 @@ package co.fusionx.channels.databinding
 
 import android.databinding.ObservableList
 
-public interface ObservableIndexedMap<K, V> : MutableMap<K, V> {
-    public fun getAtIndex(index: Int): V?
-    public fun indexOf(key: K): Int
+interface ObservableIndexedMap<K, V> : MutableMap<K, V> {
+    fun getAtIndex(index: Int): V?
+    fun indexOf(key: K): Int
 
-    public fun valuesAsObservableList(): ObservableList<V>
+    fun valuesAsObservableList(): ObservableList<V>
 
     fun addOnIndexedMapChangedCallback(
             callback: OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>)
@@ -14,7 +14,7 @@ public interface ObservableIndexedMap<K, V> : MutableMap<K, V> {
     fun removeOnIndexedMapChangedCallback(
             callback: OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>)
 
-    public interface OnIndexedMapChangedCallback<T : ObservableIndexedMap<K, V>, K, V> {
+    interface OnIndexedMapChangedCallback<T : ObservableIndexedMap<K, V>, K, V> {
         fun onChanged(sender: T)
         fun onItemChanged(sender: T, position: Int, key: K, oldValue: V, newValue: V)
         fun onItemInserted(sender: T, position: Int, key: K, value: V)
@@ -23,6 +23,6 @@ public interface ObservableIndexedMap<K, V> : MutableMap<K, V> {
     }
 
     companion object {
-        public const val NO_POSITION = -1
+        const val NO_POSITION = -1
     }
 }

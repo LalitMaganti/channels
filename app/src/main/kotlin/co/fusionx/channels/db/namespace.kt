@@ -4,13 +4,13 @@ import android.content.Context
 import android.support.v4.app.Fragment
 import android.view.View
 
-public object ConnectionDBColumns {
-    public const val TABLE_NAME: String = "connections"
+object ConnectionDBColumns {
+    const val TABLE_NAME: String = "connections"
 
-    public const val _ID: String = "_id"
-    public const val NAME: String = "name"
-    public const val HOSTNAME: String = "hostname"
-    public const val PORT: String = "port"
+    const val _ID: String = "_id"
+    const val NAME: String = "name"
+    const val HOSTNAME: String = "hostname"
+    const val PORT: String = "port"
 }
 
 val Context.connectionDb: ConnectionDatabase

@@ -16,7 +16,7 @@ import com.amulyakhare.textdrawable.TextDrawable
 /**
  * BUGS: selecting one image and then another very quickly
  */
-public class ClientCarouselView(
+class ClientCarouselView(
         context: Context, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
     private lateinit var viewArray: Array<ImageView>
 
@@ -151,8 +151,7 @@ public class ClientCarouselView(
                 .scaleY(1.75f)
                 .x(oldCurrentX)
                 .y(oldCurrentY)
-                .setDuration(250)
-                .setInterpolator(AccelerateDecelerateInterpolator())
+                .setDuration(250).interpolator = AccelerateDecelerateInterpolator()
     }
 
     private fun fadeAndMoveToNewPosition(currentView: ImageView,
@@ -178,8 +177,7 @@ public class ClientCarouselView(
                     // Fade the image back in and re-add the listener
                     ViewCompat.animate(currentView)
                             .setDuration(100)
-                            .alpha(1f)
-                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .alpha(1f).interpolator = AccelerateDecelerateInterpolator()
                 }
     }
 }

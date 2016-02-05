@@ -8,7 +8,7 @@ import co.fusionx.channels.presenter.Bindable
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
-public class ClientChildListener(private val context: Context,
+class ClientChildListener(private val context: Context,
                                  private val callback: () -> Unit) : Bindable {
     private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClients

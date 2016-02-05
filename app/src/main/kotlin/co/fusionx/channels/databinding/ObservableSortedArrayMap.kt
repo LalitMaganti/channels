@@ -5,8 +5,7 @@ import android.databinding.ObservableList
 import java.lang.ref.WeakReference
 import java.util.*
 
-@Suppress("CAST_NEVER_SUCCEEDS")
-public class ObservableSortedArrayMap<K, V>(
+@Suppress("CAST_NEVER_SUCCEEDS") class ObservableSortedArrayMap<K, V>(
         private val keyComparator: Comparator<K?>,
         private val valueHyperComparator: HyperComparator<V>) : ObservableIndexedMap<K, V> {
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
@@ -197,7 +196,7 @@ public class ObservableSortedArrayMap<K, V>(
         registry!!.remove(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V>)
     }
 
-    public inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(), ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
+    inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(), ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
         private val registry = ListChangeRegistry()
 
         override val size: Int
@@ -241,10 +240,10 @@ public class ObservableSortedArrayMap<K, V>(
     }
 
     companion object {
-        public const val BASE_SIZE = 10
+        const val BASE_SIZE = 10
     }
 
-    public interface HyperComparator<T> {
+    interface HyperComparator<T> {
         fun areItemsTheSame(item1: T, item2: T): Boolean
         fun areContentsTheSame(oldItem: T, newItem: T): Boolean
     }

@@ -6,10 +6,10 @@ import android.databinding.ObservableList
 import co.fusionx.channels.BR
 import co.fusionx.channels.model.ClientChild
 
-public abstract class ClientChildVM(private val child: ClientChild) : BaseObservable() {
-    public val name: CharSequence
+abstract class ClientChildVM(private val child: ClientChild) : BaseObservable() {
+    val name: CharSequence
         get() = child.name
-    public val buffer: ObservableList<CharSequence>
+    val buffer: ObservableList<CharSequence>
         get() = child.buffer
     val message: CharSequence
         @Bindable get() = child.buffer.lastOrNull() ?: "No message to show"

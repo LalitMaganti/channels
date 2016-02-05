@@ -13,12 +13,12 @@ import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
 import rx.subjects.BehaviorSubject
 
-public class Client(
-        public val configuration: Configuration) : BaseObservable() {
-    public val name: CharSequence
+class Client(
+        val configuration: Configuration) : BaseObservable() {
+    val name: CharSequence
         get() = configuration.name
-    public var server: Server = Server("Server")
-    public val channels: ObservableArrayMap<String, Channel> = ObservableArrayMap()
+    var server: Server = Server("Server")
+    val channels: ObservableArrayMap<String, Channel> = ObservableArrayMap()
 
     private val client: RelayClient = RelayClient.create(configuration.connectionConfiguration,
             AndroidMessageLoop.create())
@@ -30,8 +30,8 @@ public class Client(
 
     // Bindable properties.
     // TODO(tilal6991) Fix this to do the correct thing.
-    public val nick: BehaviorSubject<String> = BehaviorSubject.create("tilal6993")
-    public val status: BehaviorSubject<Int> = BehaviorSubject.create(statusEnum)
+    val nick: BehaviorSubject<String> = BehaviorSubject.create("tilal6993")
+    val status: BehaviorSubject<Int> = BehaviorSubject.create(statusEnum)
 
     init {
         client.addEventListener(DispatchingEventListener())
@@ -67,7 +67,7 @@ public class Client(
             }
         }
 
-        public override fun onJoin(prefix: String, channel: String) {
+        override fun onJoin(prefix: String, channel: String) {
             handler.post {
                 val c: Channel
                 if (PrefixExtractor.nick(prefix) == nick.value) {
@@ -80,13 +80,13 @@ public class Client(
             }
         }
 
-        public override fun onOtherCode(code: Int, arguments: List<String>) {
+        override fun onOtherCode(code: Int, arguments: List<String>) {
             handler.post {
                 server.onOtherCode(code, arguments)
             }
         }
 
-        public override fun onWelcome(target: String, text: String) {
+        override fun onWelcome(target: String, text: String) {
             handler.post {
                 statusEnum = CONNECTED
                 server.onWelcome(target, text)
@@ -106,11 +106,11 @@ public class Client(
     }
 
     companion object {
-        public const val STOPPED: Int = R.string.status_stopped
-        public const val CONNECTING: Int = R.string.status_connecting
-        public const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
-        public const val CONNECTED: Int = R.string.status_connected
-        public const val RECONNECTING: Int = R.string.status_reconnecting
-        public const val DISCONNECTED: Int = R.string.status_disconnected
+        const val STOPPED: Int = R.string.status_stopped
+        const val CONNECTING: Int = R.string.status_connecting
+        const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
+        const val CONNECTED: Int = R.string.status_connected
+        const val RECONNECTING: Int = R.string.status_reconnecting
+        const val DISCONNECTED: Int = R.string.status_disconnected
     }
 }

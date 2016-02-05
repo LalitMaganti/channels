@@ -24,7 +24,7 @@ import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 
-public class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val navDrawerView: NavigationDrawerView by bindView(R.id.navdrawer_view)
     private val eventRecycler: EventRecyclerView by bindView(R.id.event_recycler)

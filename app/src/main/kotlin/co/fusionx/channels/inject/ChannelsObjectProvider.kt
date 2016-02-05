@@ -7,7 +7,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = arrayOf(
         RelayModule::class
-))
-public interface ChannelsObjectProvider {
-    public fun relayViewModel(): RelayVM
+)) interface ChannelsObjectProvider {
+    fun relayViewModel(): RelayVM
 }

@@ -30,7 +30,7 @@ import co.fusionx.channels.R
  * drawable on top. This is useful for applying a beveled look to image contents, but is also
  * flexible enough for use with other desired aesthetics.
  */
-public class BezelImageView @JvmOverloads constructor(
+class BezelImageView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyle: Int = 0) : ImageView(context, attrs, defStyle) {
@@ -71,7 +71,7 @@ public class BezelImageView @JvmOverloads constructor(
         mBlackPaint.color = -16777216
 
         mMaskedPaint = Paint()
-        mMaskedPaint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
+        mMaskedPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 
         // Always want a cache allocated.
         mCacheBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
@@ -125,17 +125,17 @@ public class BezelImageView @JvmOverloads constructor(
             if (mMaskDrawable != null) {
                 val sc = cacheCanvas.save()
                 mMaskDrawable.draw(cacheCanvas)
-                mMaskedPaint.setColorFilter(if ((mDesaturateOnPress && isPressed))
+                mMaskedPaint.colorFilter = if ((mDesaturateOnPress && isPressed))
                     mDesaturateColorFilter
                 else
-                    null)
+                    null
                 cacheCanvas.saveLayer(mBoundsF, mMaskedPaint, Canvas.HAS_ALPHA_LAYER_SAVE_FLAG or Canvas.FULL_COLOR_LAYER_SAVE_FLAG)
                 super.onDraw(cacheCanvas)
                 cacheCanvas.restoreToCount(sc)
             } else if (mDesaturateOnPress && isPressed) {
                 val sc = cacheCanvas.save()
                 cacheCanvas.drawRect(0f, 0f, mCachedWidth.toFloat(), mCachedHeight.toFloat(), mBlackPaint)
-                mMaskedPaint.setColorFilter(mDesaturateColorFilter)
+                mMaskedPaint.colorFilter = mDesaturateColorFilter
                 cacheCanvas.saveLayer(mBoundsF, mMaskedPaint, Canvas.HAS_ALPHA_LAYER_SAVE_FLAG or Canvas.FULL_COLOR_LAYER_SAVE_FLAG)
                 super.onDraw(cacheCanvas)
                 cacheCanvas.restoreToCount(sc)
@@ -153,10 +153,10 @@ public class BezelImageView @JvmOverloads constructor(
     override fun drawableStateChanged() {
         super.drawableStateChanged()
         if (mBorderDrawable != null && mBorderDrawable.isStateful) {
-            mBorderDrawable.setState(drawableState)
+            mBorderDrawable.state = drawableState
         }
         if (mMaskDrawable != null && mMaskDrawable.isStateful) {
-            mMaskDrawable.setState(drawableState)
+            mMaskDrawable.state = drawableState
         }
         if (isDuplicateParentStateEnabled) {
             ViewCompat.postInvalidateOnAnimation(this)

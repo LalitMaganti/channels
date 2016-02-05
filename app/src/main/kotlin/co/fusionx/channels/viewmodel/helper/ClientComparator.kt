@@ -4,7 +4,7 @@ import co.fusionx.channels.databinding.ObservableSortedList
 import co.fusionx.channels.util.compareTo
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 
-public class ClientComparator private constructor() : ObservableSortedList.HyperComparator<ClientVM> {
+class ClientComparator private constructor() : ObservableSortedList.HyperComparator<ClientVM> {
     override fun areItemsTheSame(item1: ClientVM, item2: ClientVM): Boolean {
         return item1.name == item2.name
     }
@@ -18,6 +18,6 @@ public class ClientComparator private constructor() : ObservableSortedList.Hyper
     }
 
     companion object {
-        public val instance by lazy { ClientComparator() }
+        val instance by lazy { ClientComparator() }
     }
 }

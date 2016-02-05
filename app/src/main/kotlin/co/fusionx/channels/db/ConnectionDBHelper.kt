@@ -44,7 +44,7 @@ class ConnectionDBHelper private constructor(private val context: Context) :
     }
 
     companion object {
-        public val DB_NAME = "DB_CONNECTIONS"
+        val DB_NAME = "DB_CONNECTIONS"
         private var instance: ConnectionDBHelper? = null
 
         @Synchronized fun instance(ctx: Context): ConnectionDBHelper {

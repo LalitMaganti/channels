@@ -14,20 +14,20 @@ import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import timber.log.Timber
 
-public class ClientVM(private val context: Context,
+class ClientVM(private val context: Context,
                       private val client: Client) : BaseObservable() {
-    public val name: CharSequence
+    val name: CharSequence
         get() = client.name
-    public val hostname: CharSequence
+    val hostname: CharSequence
         get() = client.configuration.connectionConfiguration.hostname
 
-    public val status: ObservableField<String> = ObservableField()
-    public val isActive: Boolean
+    val status: ObservableField<String> = ObservableField()
+    val isActive: Boolean
         @Bindable get() = client.status.value != Client.STOPPED
 
-    public val selectedChild: ObservableField<ClientChildVM>
-    public val server: ServerVM
-    public val channels: ObservableList<ChannelVM>
+    val selectedChild: ObservableField<ClientChildVM>
+    val server: ServerVM
+    val channels: ObservableList<ChannelVM>
 
     private val channelMap: ObservableSortedArrayMap<CharSequence, ChannelVM>
 
@@ -50,11 +50,11 @@ public class ClientVM(private val context: Context,
         client.send(message)
     }
 
-    public fun select(child: ClientChildVM) {
+    fun select(child: ClientChildVM) {
         selectedChild.set(child)
     }
 
-    public fun onSelected(): Boolean {
+    fun onSelected(): Boolean {
         val newConnect = client.startIfStopped()
         selectedChild.set(server)
         return newConnect

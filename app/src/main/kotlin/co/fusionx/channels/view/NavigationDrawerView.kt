@@ -9,7 +9,7 @@ import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.adapter.NavigationAdapter
 
-public class NavigationDrawerView @JvmOverloads constructor(
+class NavigationDrawerView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null) : ScrimInsetsFrameLayout(context, attrs) {
 

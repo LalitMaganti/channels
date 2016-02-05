@@ -3,7 +3,7 @@ package co.fusionx.channels.databinding
 import android.databinding.ObservableList
 import co.fusionx.channels.adapter.SectionAdapter
 
-public open class ListSectionProxy<T>(
+open class ListSectionProxy<T>(
         private val section: Int,
         private val adapter: SectionAdapter<*, *>) : ObservableList.OnListChangedCallback<ObservableList<T>>() {
 

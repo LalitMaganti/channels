@@ -7,14 +7,14 @@ import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
 import rx.Observable
 
-public class ConnectionDatabase(private val context: Context) {
+class ConnectionDatabase(private val context: Context) {
     private val briteDb: BriteDatabase
 
     init {
         briteDb = SqlBrite.create().wrapDatabaseHelper(ConnectionDBHelper.instance(context))
     }
 
-    public fun getConfigurations(): Observable<List<Configuration>> {
+    fun getConfigurations(): Observable<List<Configuration>> {
         return briteDb.createQuery(ConnectionDBColumns.TABLE_NAME, "SELECT * from ${ConnectionDBColumns.TABLE_NAME}")
                 .mapToList {
                     Configuration(

@@ -7,7 +7,7 @@ import android.widget.TextView
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.presenter.Bindable
 
-public class MessageTextHandler(private val editText: EditText) : Bindable {
+class MessageTextHandler(private val editText: EditText) : Bindable {
 
     private val listener = TextView.OnEditorActionListener { textView, actionId, event ->
         if (actionId == EditorInfo.IME_ACTION_SEND ||
@@ -31,11 +31,11 @@ public class MessageTextHandler(private val editText: EditText) : Bindable {
         editText.setText("")
     }
 
-    public override fun bind() {
+    override fun bind() {
         editText.setOnEditorActionListener(listener)
     }
 
-    public override fun unbind() {
+    override fun unbind() {
         editText.setOnEditorActionListener(null)
     }
 }
