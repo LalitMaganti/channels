@@ -4,6 +4,7 @@ import android.content.Context
 import co.fusionx.channels.databinding.ObservableSortedList
 import co.fusionx.channels.db.connectionDb
 import co.fusionx.channels.model.Client
+import co.fusionx.channels.viewmodel.helper.ClientComparator
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import javax.inject.Inject
@@ -45,23 +46,5 @@ public class RelayVM @Inject constructor(private val context: Context) {
             activeClients.add(item)
         }
         return false
-    }
-
-    private class ClientComparator private constructor() : ObservableSortedList.HyperComparator<ClientVM> {
-        override fun areItemsTheSame(item1: ClientVM, item2: ClientVM): Boolean {
-            return item1.areItemsTheSame(item2)
-        }
-
-        override fun areContentsTheSame(oldItem: ClientVM, newItem: ClientVM): Boolean {
-            return oldItem.areContentsTheSame(newItem)
-        }
-
-        override fun compare(o1: ClientVM, o2: ClientVM): Int {
-            return o1.compareTo(o2)
-        }
-
-        companion object {
-            public val instance by lazy { ClientComparator() }
-        }
     }
 }

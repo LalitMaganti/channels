@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.EditText
 import co.fusionx.channels.adapter.MainItemAdapter
 import co.fusionx.channels.controller.MainActivity
-import co.fusionx.channels.databinding.ClientChildListener
+import co.fusionx.channels.presenter.helper.ClientChildListener
 import co.fusionx.channels.databinding.ObservableListAdapterProxy
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM

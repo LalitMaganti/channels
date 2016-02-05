@@ -8,7 +8,14 @@ import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
-public interface Presenter {
+public interface Bindable {
+    public fun setup() = Unit
+    public fun bind() = Unit
+    public fun unbind() = Unit
+    public fun teardown() = Unit
+}
+
+public interface Presenter : Bindable {
     val activity: MainActivity
     val id: String
 
@@ -17,12 +24,8 @@ public interface Presenter {
     val selectedChild: ObservableField<ClientChildVM>?
         get() = selectedClientsVM.latest?.selectedChild
 
-    public fun setup() = Unit
     public fun restoreState(bundle: Bundle) = Unit
-    public fun bind() = Unit
-    public fun unbind() = Unit
     public fun saveState(): Bundle = Bundle.EMPTY
-    public fun teardown() = Unit
 
     public fun getString(id: Int): String {
         return activity.getString(id)

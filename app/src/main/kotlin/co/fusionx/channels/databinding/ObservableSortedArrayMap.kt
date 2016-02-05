@@ -48,6 +48,7 @@ public class ObservableSortedArrayMap<K, V>(
             val old = valueArray[index]!!
             valueArray[index] = value
 
+            // TODO(tilal6991) - this might need a resort. Investigate how to fix.
             if (valueHyperComparator.areItemsTheSame(old, value)) {
                 if (!valueHyperComparator.areContentsTheSame(old, value)) {
                     registry?.notifyItemChanged(this, index, key, old, value)

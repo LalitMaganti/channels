@@ -8,6 +8,7 @@ import co.fusionx.channels.model.Channel
 import co.fusionx.channels.model.Client
 import co.fusionx.channels.util.charSequenceComparator
 import co.fusionx.channels.util.compareTo
+import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import timber.log.Timber
 
 public class ClientVM(private val context: Context,
@@ -42,26 +43,13 @@ public class ClientVM(private val context: Context,
     }
 
     public fun select(child: ClientChildVM) {
-        if (selectedChild == child) return
         selectedChild.set(child)
     }
 
-    fun onSelected(): Boolean {
+    public fun onSelected(): Boolean {
         val newConnect = client.startIfStopped()
         selectedChild.set(server)
         return newConnect
-    }
-
-    fun areItemsTheSame(item2: ClientVM): Boolean {
-        return client.name == item2.client.name
-    }
-
-    fun areContentsTheSame(newItem: ClientVM): Boolean {
-        return client.name == newItem.client.name
-    }
-
-    fun compareTo(o2: ClientVM): Int {
-        return client.name.compareTo(o2.client.name)
     }
 
     private inner class ObservableMapObserver :
@@ -84,16 +72,6 @@ public class ClientVM(private val context: Context,
                     Timber.d("This case should not occur")
                 }
             }
-        }
-    }
-
-    private class ChannelComparator : ObservableSortedArrayMap.HyperComparator<ChannelVM> {
-        override fun areItemsTheSame(item1: ChannelVM, item2: ChannelVM): Boolean {
-            return item1.name == item2.name
-        }
-
-        override fun areContentsTheSame(oldItem: ChannelVM, newItem: ChannelVM): Boolean {
-            return oldItem.name == newItem.name
         }
     }
 }

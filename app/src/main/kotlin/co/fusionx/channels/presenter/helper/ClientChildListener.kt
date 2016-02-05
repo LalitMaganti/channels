@@ -1,14 +1,15 @@
-package co.fusionx.channels.databinding
+package co.fusionx.channels.presenter.helper
 
 import android.content.Context
 import android.databinding.Observable
 import android.databinding.ObservableField
 import co.fusionx.channels.base.relayVM
+import co.fusionx.channels.presenter.Bindable
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
 public class ClientChildListener(private val context: Context,
-                                 private val callback: () -> Unit) {
+                                 private val callback: () -> Unit) : Bindable {
     private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClients
     private val selectedChild: ObservableField<ClientChildVM>?
@@ -28,11 +29,11 @@ public class ClientChildListener(private val context: Context,
         }
     }
 
-    fun bind() {
+    override fun bind() {
         selectedClientsVM.addOnClientsChangedCallback(clientListener)
     }
 
-    fun unbind() {
+    override fun unbind() {
         selectedClientsVM.removeOnClientsChangedCallback(clientListener)
     }
 }
