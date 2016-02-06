@@ -6,16 +6,14 @@ import co.fusionx.channels.BR
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.model.Channel
 import co.fusionx.channels.model.Client
-import co.fusionx.channels.model.ClientChild
 import co.fusionx.channels.util.charSequenceComparator
-import co.fusionx.channels.util.compareTo
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import timber.log.Timber
 
 class ClientVM(private val context: Context,
-                      private val client: Client) : BaseObservable() {
+               private val client: Client) : BaseObservable() {
     val name: CharSequence
         get() = client.name
     val hostname: CharSequence
@@ -33,7 +31,7 @@ class ClientVM(private val context: Context,
 
     init {
         server = ServerVM(client.server)
-        channelMap = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator())
+        channelMap = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator.instance)
 
         selectedChild = ObservableField(server)
         channels = channelMap.valuesAsObservableList()

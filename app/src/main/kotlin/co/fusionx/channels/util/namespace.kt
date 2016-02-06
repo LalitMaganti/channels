@@ -4,18 +4,10 @@ import timber.log.Timber
 import java.util.*
 
 val charSequenceComparator by lazy {
-    Comparator<CharSequence?> { lhs, rhs -> lhs.compareTo(rhs) }
+    Comparator<CharSequence> { lhs, rhs -> lhs.compareTo(rhs) }
 }
 
-fun CharSequence?.compareTo(other: CharSequence?): Int {
-    if (this == null && other == null) {
-        return 0
-    } else if (this == null) {
-        return 1
-    } else if (other == null) {
-        return -1
-    }
-
+fun CharSequence.compareTo(other: CharSequence): Int {
     val count = Math.min(length, other.length)
     for (i in 0..count - 1) {
         val a = this[i]

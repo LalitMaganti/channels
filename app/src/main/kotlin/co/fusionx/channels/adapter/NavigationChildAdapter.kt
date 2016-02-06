@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayVM
-import co.fusionx.channels.collections.NavigationClientChildrenBinding
+import co.fusionx.channels.databinding.NavigationClientChildrenBinding
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM

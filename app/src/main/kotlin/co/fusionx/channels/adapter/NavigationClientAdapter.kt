@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.fusionx.channels.R
-import co.fusionx.channels.collections.NavigationClientBinding
+import co.fusionx.channels.databinding.NavigationClientBinding
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.RelayVM

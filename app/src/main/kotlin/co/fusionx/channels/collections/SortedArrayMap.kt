@@ -103,7 +103,7 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
 
     override fun indexOf(key: K): Int {
         val index = indexOfRaw(key)
-        return if (index < 0) ObservableIndexedMap.NO_POSITION else index
+        return if (index < 0) IndexedMap.NO_POSITION else index
     }
 
     protected fun getAtIndexUnchecked(index: Int): V {
