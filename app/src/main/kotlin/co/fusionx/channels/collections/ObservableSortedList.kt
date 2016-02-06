@@ -7,7 +7,7 @@ import java.util.*
 
 open class ObservableSortedList<T>(
         private val klass: Class<T>,
-        private val comparator: HyperComparator<T>) : AbstractList<T>(), ObservableList<T> {
+        private val comparator: HyperComparator<T>) : AbstractList<T>(), RandomAccess, ObservableList<T> {
     override val size: Int
         get() = wrapped.size()
 
@@ -29,6 +29,14 @@ open class ObservableSortedList<T>(
 
     fun addAndGetIndex(item: T): Int {
         return wrapped.add(item)
+    }
+
+    fun updateItemAt(index: Int, item: T) {
+        wrapped.updateItemAt(index, item)
+    }
+
+    fun recalculatePositionOfItemAt(index: Int) {
+        wrapped.recalculatePositionOfItemAt(index)
     }
 
     override fun clear() {

@@ -16,8 +16,6 @@ import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.ClientChildPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.model.ClientChild
-import co.fusionx.channels.model.Client
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView

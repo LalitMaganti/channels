@@ -1,7 +1,8 @@
 package co.fusionx.channels.collections
 
 interface IndexedMap<K, V> : MutableMap<K, V> {
-    fun getAtIndex(index: Int): V?
+    fun getKeyAt(index: Int): K?
+    fun getValueAt(index: Int): V?
     fun indexOf(key: K): Int
 
     companion object {

@@ -5,6 +5,7 @@ import timber.log.Timber
 import java.util.*
 
 class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
+
     override val size: Int
         get() = root.count
     override val entries: MutableSet<MutableMap.MutableEntry<CharSequence, V>>
@@ -29,11 +30,18 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         root.clear()
     }
 
-    override fun getAtIndex(index: Int): V? {
+    override fun getKeyAt(index: Int): CharSequence? {
         if (index < 0) {
             Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
         }
-        return getAtIndex(index, root)
+        return getKeyAt(index, root)
+    }
+
+    override fun getValueAt(index: Int): V? {
+        if (index < 0) {
+            Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
+        }
+        return getValueAt(index, root)
     }
 
     override fun indexOf(key: CharSequence): Int {
@@ -164,12 +172,40 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
 
         val mapIndex = node.mapView.indexOf(key[offset])
-        val child = node.mapView.getAtIndex(mapIndex)
+        val child = node.mapView.getValueAt(mapIndex)
         val absIndex = mapIndex + if (terminalKey != null) 1 else 0
         return absIndex + indexOf(key, child, offset + 1)
     }
 
-    private fun getAtIndex(index: Int, node: Node<V>): V? {
+    private fun getKeyAt(index: Int, node: Node<V>): CharSequence? {
+        if (index >= node.count) {
+            return null
+        }
+
+        var mapIndex = index
+        if (node.terminalKey != null) {
+            if (index == 0) {
+                return node.terminalKey
+            }
+            mapIndex--
+        }
+
+        var runningCount = 0
+        val mapView = node.mapView
+        for (i in 0..mapView.size - 1) {
+            val child = mapView.getValueAt(i)!!
+            if (mapIndex < runningCount + child.count) {
+                return getKeyAt(mapIndex - runningCount)
+            }
+            runningCount += child.count
+        }
+
+        // This means the running count did not match the actual count which is a bug.
+        Timber.asTree().failAssert()
+        return null
+    }
+
+    private fun getValueAt(index: Int, node: Node<V>): V? {
         if (index >= node.count) {
             return null
         }
@@ -185,9 +221,9 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         var runningCount = 0
         val mapView = node.mapView
         for (i in 0..mapView.size - 1) {
-            val child = mapView.getAtIndex(i)!!
+            val child = mapView.getValueAt(i)!!
             if (mapIndex < runningCount + child.count) {
-                return getAtIndex(mapIndex - runningCount)
+                return getValueAt(mapIndex - runningCount)
             }
             runningCount += child.count
         }

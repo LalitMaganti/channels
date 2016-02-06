@@ -94,7 +94,14 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
         return contentSize == 0
     }
 
-    override fun getAtIndex(index: Int): V? {
+    override fun getKeyAt(index: Int): K? {
+        if (index < 0) {
+            Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
+        }
+        return if (index < contentSize) keyArray[index] else null
+    }
+
+    override fun getValueAt(index: Int): V? {
         if (index < 0) {
             Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
         }

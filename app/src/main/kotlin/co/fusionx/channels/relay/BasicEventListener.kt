@@ -1,4 +1,4 @@
-package co.fusionx.channels.model.helper
+package co.fusionx.channels.relay
 
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient

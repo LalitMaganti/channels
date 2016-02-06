@@ -1,7 +1,7 @@
 package co.fusionx.channels.db
 
 import android.content.Context
-import co.fusionx.channels.model.Configuration
+import co.fusionx.channels.relay.Configuration
 import co.fusionx.relay.ConnectionConfiguration
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite

@@ -1,4 +1,4 @@
-package co.fusionx.channels.model
+package co.fusionx.channels.relay
 
 import co.fusionx.relay.ConnectionConfiguration
 

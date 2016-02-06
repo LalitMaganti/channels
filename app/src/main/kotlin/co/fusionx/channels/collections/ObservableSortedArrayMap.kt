@@ -81,7 +81,7 @@ import java.util.*
         }
 
         override fun get(index: Int): V? {
-            return getAtIndex(index)
+            return getValueAt(index)
         }
 
         override fun onChanged(sender: ObservableSortedArrayMap<K, V>) {

@@ -3,7 +3,6 @@ package co.fusionx.channels.viewmodel.persistent
 import android.content.Context
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.db.connectionDb
-import co.fusionx.channels.model.Client
 import co.fusionx.channels.viewmodel.helper.ClientComparator
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -16,13 +15,14 @@ import javax.inject.Singleton
             ClientVM::class.java, ClientComparator.instance)
     val inactiveClients: ObservableSortedList<ClientVM> = ObservableSortedList(
             ClientVM::class.java, ClientComparator.instance)
+
     val selectedClients: SelectedClientsVM = SelectedClientsVM()
 
     init {
         /* TODO(lrm113) deal with handling constantly updating databases */
         context.connectionDb.getConfigurations()
                 .first()
-                .map { it -> it.map { ClientVM(context, Client(it)) } }
+                .map { it -> it.map { ClientVM(context, it) } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {

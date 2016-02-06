@@ -1,46 +1,68 @@
 package co.fusionx.channels.viewmodel.persistent
 
 import android.content.Context
-import android.databinding.*
-import co.fusionx.channels.BR
+import android.databinding.BaseObservable
+import android.databinding.Bindable
+import android.databinding.ObservableField
+import android.databinding.ObservableList
 import co.fusionx.channels.collections.ObservableSortedArrayMap
-import co.fusionx.channels.model.Channel
-import co.fusionx.channels.model.Client
+import co.fusionx.channels.relay.BasicEventListener
+import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.relay.MainThreadEventListener
 import co.fusionx.channels.util.charSequenceComparator
-import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
+import co.fusionx.channels.viewmodel.listener.ChannelDelegatingListener
+import co.fusionx.channels.viewmodel.listener.ClientStateListener
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
-import timber.log.Timber
+import co.fusionx.channels.viewmodel.listener.ServerDelegatingListener
+import co.fusionx.relay.RelayClient
+import co.fusionx.relay.message.AndroidMessageLoop
+import java.util.*
 
 class ClientVM(private val context: Context,
-               private val client: Client) : BaseObservable() {
+               private val configuration: Configuration) : BaseObservable() {
     val name: CharSequence
-        get() = client.name
+        get() = configuration.name
     val hostname: CharSequence
-        get() = client.configuration.connectionConfiguration.hostname
+        get() = configuration.connectionConfiguration.hostname
 
-    val status: ObservableField<String> = ObservableField()
     val isActive: Boolean
-        @Bindable get() = client.status.value != Client.STOPPED
+        @Bindable get() = clientStateListener.isActive
+    val status: String
+        @Bindable get() = clientStateListener.status
+    val user: UserVM
+        get() = clientStateListener.user
 
     val selectedChild: ObservableField<ClientChildVM>
     val server: ServerVM
     val channels: ObservableList<ChannelVM>
 
+    private val client: RelayClient
     private val channelMap: ObservableSortedArrayMap<CharSequence, ChannelVM>
+    private val userMap: MutableMap<String, UserVM>
+    private val clientStateListener: ClientStateListener
 
     init {
-        server = ServerVM(client.server)
+        server = ServerVM("Server")
         channelMap = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator.instance)
-
-        selectedChild = ObservableField(server)
         channels = channelMap.valuesAsObservableList()
+        userMap = HashMap()
+        selectedChild = ObservableField(server)
+        clientStateListener = ClientStateListener(context, configuration, this)
 
-        client.status.subscribe {
-            status.set(context.getString(it))
-            notifyPropertyChanged(BR.active)
-        }
-        client.channels.addOnMapChangedCallback(ObservableMapObserver())
+        client = RelayClient.create(configuration.connectionConfiguration, AndroidMessageLoop.create())
+
+        val basicEventListener = BasicEventListener(client)
+        val mainThreadListener = MainThreadEventListener()
+        client.addEventListener(basicEventListener)
+        client.addEventListener(mainThreadListener)
+
+        val serverListener = ServerDelegatingListener(server)
+        val channelMapListener = ChannelDelegatingListener(user, userMap, channelMap)
+
+        mainThreadListener.addEventListener(clientStateListener)
+        mainThreadListener.addEventListener(serverListener)
+        mainThreadListener.addEventListener(channelMapListener)
     }
 
     fun sendUserMessage(userMessage: String, context: ClientChildVM) {
@@ -53,30 +75,11 @@ class ClientVM(private val context: Context,
     }
 
     fun onSelected(): Boolean {
-        val newConnect = client.startIfStopped()
-        selectedChild.set(server)
-        return newConnect
-    }
-
-    private inner class ObservableMapObserver : ObservableMap.OnMapChangedCallback<ObservableMap<String, Channel>, String, Channel>() {
-        override fun onMapChanged(sender: ObservableMap<String, Channel>, key: String?) {
-            // TODO(tilla6991) figure out if this needs to be handled.
-            if (key == null) {
-                return
-            }
-
-            val channel = sender[key]
-            if (channel == null) {
-                channelMap.remove(key)
-            } else {
-                val channelVM = channelMap[key]
-                if (channelVM == null) {
-                    channelMap.put(key, ChannelVM(channel))
-                } else {
-                    // TODO(tilla6991) figure out if this needs to be handled.
-                    Timber.asTree().failAssert()
-                }
-            }
+        val active = clientStateListener.onSelected()
+        if (!active) {
+            client.start()
         }
+        selectedChild.set(server)
+        return active
     }
 }

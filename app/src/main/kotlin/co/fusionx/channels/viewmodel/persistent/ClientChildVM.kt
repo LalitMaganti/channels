@@ -2,41 +2,18 @@ package co.fusionx.channels.viewmodel.persistent
 
 import android.databinding.BaseObservable
 import android.databinding.Bindable
+import android.databinding.ObservableArrayList
 import android.databinding.ObservableList
 import co.fusionx.channels.BR
-import co.fusionx.channels.model.ClientChild
 
-abstract class ClientChildVM(private val child: ClientChild) : BaseObservable() {
-    val name: CharSequence
-        get() = child.name
-    val buffer: ObservableList<CharSequence>
-        get() = child.buffer
+abstract class ClientChildVM : BaseObservable() {
+    abstract val name: CharSequence
     val message: CharSequence
-        @Bindable get() = child.buffer.lastOrNull() ?: "No message to show"
+        @Bindable get() = buffer.lastOrNull() ?: "No message to show"
+    val buffer: ObservableList<CharSequence> = ObservableArrayList()
 
-    init {
-        child.buffer.addOnListChangedCallback(BufferWatcher())
-    }
-
-    inner class BufferWatcher : ObservableList.OnListChangedCallback<ObservableList<CharSequence>>() {
-        override fun onItemRangeChanged(sender: ObservableList<CharSequence>?, positionStart: Int, itemCount: Int) {
-            notifyPropertyChanged(BR.message)
-        }
-
-        override fun onChanged(sender: ObservableList<CharSequence>?) {
-            notifyPropertyChanged(BR.message)
-        }
-
-        override fun onItemRangeInserted(sender: ObservableList<CharSequence>?, positionStart: Int, itemCount: Int) {
-            notifyPropertyChanged(BR.message)
-        }
-
-        override fun onItemRangeMoved(sender: ObservableList<CharSequence>?, fromPosition: Int, toPosition: Int, itemCount: Int) {
-            notifyPropertyChanged(BR.message)
-        }
-
-        override fun onItemRangeRemoved(sender: ObservableList<CharSequence>?, positionStart: Int, itemCount: Int) {
-            notifyPropertyChanged(BR.message)
-        }
+    fun add(message: String) {
+        buffer.add(message)
+        notifyPropertyChanged(BR.message)
     }
 }
