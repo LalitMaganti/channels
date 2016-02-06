@@ -35,12 +35,12 @@ class ChannelDelegatingListener(
             /*
             val modifier =
             val nick =
+            */
 
             val user = users.getOrPut(it) { UserVM(it) }
-            user.onNames(channel, modifier)
+            // user.onNames(channel, modifier)
 
             user
-            */
         }
         channel.onNames(userList)
     }
