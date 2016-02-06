@@ -8,6 +8,7 @@ import android.databinding.ObservableList
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.relay.BasicEventListener
 import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.relay.ConnectionInformationListener
 import co.fusionx.channels.relay.MainThreadEventListener
 import co.fusionx.channels.util.charSequenceComparator
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
@@ -61,10 +62,12 @@ class ClientVM(private val context: Context,
 
         val serverListener = ServerDelegatingListener(server)
         val channelMapListener = ChannelDelegatingListener(user, userMap, channelMap)
+        val connectionInformationListener = ConnectionInformationListener()
 
         mainThreadListener.addEventListener(clientStateListener)
         mainThreadListener.addEventListener(serverListener)
         mainThreadListener.addEventListener(channelMapListener)
+        mainThreadListener.addEventListener(connectionInformationListener)
     }
 
     fun sendUserMessage(userMessage: String, context: ClientChildVM) {

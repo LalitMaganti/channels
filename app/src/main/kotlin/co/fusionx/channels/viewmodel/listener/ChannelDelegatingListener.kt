@@ -29,9 +29,20 @@ class ChannelDelegatingListener(
         }
     }
 
-    override fun onNames(channelName: String, nickList: List<String>) {
-        val userList = nickList.map { users.getOrPut(it) { UserVM(it) } }
-        getChannelOrFail(channelName)?.onNames(userList) ?: return
+    override fun onNames(channelName: String, namesList: List<String>) {
+        val channel = getChannelOrFail(channelName) ?: return
+        val userList = namesList.map {
+            /*
+            val modifier =
+            val nick =
+
+            val user = users.getOrPut(it) { UserVM(it) }
+            user.onNames(channel, modifier)
+
+            user
+            */
+        }
+        channel.onNames(userList)
     }
 
     override fun onPrivmsg(prefix: String, target: String, message: String) {
