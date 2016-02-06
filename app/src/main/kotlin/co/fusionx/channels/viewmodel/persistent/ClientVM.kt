@@ -3,7 +3,7 @@ package co.fusionx.channels.viewmodel.persistent
 import android.content.Context
 import android.databinding.*
 import co.fusionx.channels.BR
-import co.fusionx.channels.databinding.ObservableSortedArrayMap
+import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.model.Channel
 import co.fusionx.channels.model.Client
 import co.fusionx.channels.model.ClientChild

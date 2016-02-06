@@ -1,7 +1,7 @@
 package co.fusionx.channels.viewmodel.persistent
 
 import android.content.Context
-import co.fusionx.channels.databinding.ObservableSortedList
+import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.db.connectionDb
 import co.fusionx.channels.model.Client
 import co.fusionx.channels.viewmodel.helper.ClientComparator

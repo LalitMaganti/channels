@@ -1,6 +1,6 @@
 package co.fusionx.channels.model
 
-import co.fusionx.channels.databinding.ObservableSortedList
+import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.util.compareTo
 import co.fusionx.relay.util.PrefixExtractor
 

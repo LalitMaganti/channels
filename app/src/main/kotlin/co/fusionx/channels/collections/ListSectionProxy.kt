@@ -1,4 +1,4 @@
-package co.fusionx.channels.databinding
+package co.fusionx.channels.collections
 
 import android.databinding.ObservableList
 import co.fusionx.channels.adapter.SectionAdapter
