@@ -41,6 +41,7 @@ class ClientVM(private val context: Context,
     private val channelMap: ObservableSortedArrayMap<CharSequence, ChannelVM>
     private val userMap: MutableMap<String, UserVM>
     private val clientStateListener: ClientStateListener
+    private val userMessageParser: UserMessageParser
 
     init {
         server = ServerVM("Server")
@@ -49,6 +50,7 @@ class ClientVM(private val context: Context,
         userMap = HashMap()
         selectedChild = ObservableField(server)
         clientStateListener = ClientStateListener(context, configuration, this)
+        userMessageParser = UserMessageParser(Listener())
 
         client = RelayClient.create(configuration.connectionConfiguration, AndroidMessageLoop.create())
 
@@ -66,7 +68,7 @@ class ClientVM(private val context: Context,
     }
 
     fun sendUserMessage(userMessage: String, context: ClientChildVM) {
-        val message = UserMessageParser.parse(userMessage, context, server) ?: return
+        val message = userMessageParser.parse(userMessage, context, server) ?: return
         client.send(message)
     }
 
@@ -81,5 +83,11 @@ class ClientVM(private val context: Context,
         }
         selectedChild.set(server)
         return active
+    }
+
+    private inner class Listener : UserMessageParser.ParserListener {
+        override fun onChannelMessage(channelVM: ChannelVM, message: String) {
+            channelVM.onPrivmsg(user, message)
+        }
     }
 }

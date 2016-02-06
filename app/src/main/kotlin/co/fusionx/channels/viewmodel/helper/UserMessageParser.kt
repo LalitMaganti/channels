@@ -5,7 +5,7 @@ import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ServerVM
 import co.fusionx.relay.protocol.ClientGenerator
 
-object UserMessageParser {
+class UserMessageParser(private val listener: ParserListener) {
     fun parse(userMessage: String, context: ClientChildVM, serverVM: ServerVM): String? {
         if (context is ServerVM) {
             return parseServerMessage(userMessage, serverVM)
@@ -70,6 +70,7 @@ object UserMessageParser {
 
     fun parse(userMessage: String, context: ChannelVM, serverVM: ServerVM): String? {
         if (!userMessage.startsWith("/")) {
+            listener.onChannelMessage(context, userMessage)
             return ClientGenerator.privmsg(context.name.toString(), userMessage)
         }
 
@@ -123,5 +124,9 @@ object UserMessageParser {
 
     private fun onUnknownEvent(rawLine: String): String? {
         return null
+    }
+
+    interface ParserListener {
+        fun onChannelMessage(channelVM: ChannelVM, message: String)
     }
 }
