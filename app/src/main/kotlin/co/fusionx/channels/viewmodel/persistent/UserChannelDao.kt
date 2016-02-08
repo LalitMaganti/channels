@@ -3,17 +3,19 @@ package co.fusionx.channels.viewmodel.persistent
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.relay.ConnectionInformation
 import co.fusionx.channels.util.failAssert
+import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.util.PrefixExtractor
 import co.fusionx.relay.util.isChannel
 import timber.log.Timber
 
-class UserChannelVM(
-        private val initialNick: String,
+class UserChannelDao(
+        initialNick: String,
         private val channels: ObservableSortedArrayMap<String, ChannelVM>,
-        private val connectionInformation: ConnectionInformation) : EventListener {
+        private val connectionInformation: ConnectionInformation) :
+        EventListener, UserMessageParser.ParserListener {
 
-    val selfNick: String = initialNick
+    private var selfNick: String = initialNick
 
     private val isupportValues: ConnectionInformation.ISUPPORTValues
         get() = connectionInformation.isupportValues
@@ -36,7 +38,7 @@ class UserChannelVM(
         for (n in namesList) {
             val mode = isupportValues.channelModes.find { n[0] == it }
             val nick = if (mode == null) n else n.substring(1)
-            channel.onName(n, mode)
+            channel.onName(nick, mode)
         }
     }
 
@@ -49,10 +51,18 @@ class UserChannelVM(
         getChannelOrFail(target)?.onPrivmsg(nick, message) ?: return
     }
 
+    override fun onChannelMessage(channelVM: ChannelVM, message: String) {
+        channelVM.onPrivmsg(selfNick, message)
+    }
+
     override fun onNickChange(oldNick: String, newNick: String) {
         for (i in 0..channels.size - 1) {
             val channel = channels.getValueAt(i)
             channel!!.onNickChange(oldNick, newNick)
+        }
+
+        if (oldNick == selfNick) {
+            selfNick = newNick
         }
     }
 

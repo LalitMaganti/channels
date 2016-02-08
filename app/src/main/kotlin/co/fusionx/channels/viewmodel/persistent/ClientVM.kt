@@ -15,6 +15,7 @@ import co.fusionx.relay.RelayClient
 class ClientVM(private val context: Context,
                private val configuration: Configuration,
                private val client: RelayClient,
+               private val userMessageParser: UserMessageParser,
                val server: ServerVM,
                val channels: ObservableList<ChannelVM>) : BaseObservable(), EventListener {
 
@@ -55,6 +56,10 @@ class ClientVM(private val context: Context,
         }
         selectedChild.set(server)
         return active
+    }
+
+    fun sendUserMessage(message: String, context: ClientChildVM) {
+        userMessageParser.parse(message, context, server)
     }
 
     override fun onSocketConnect() {

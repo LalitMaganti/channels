@@ -10,6 +10,7 @@ import co.fusionx.channels.relay.ConnectionInformation
 import co.fusionx.channels.relay.MainThreadEventListener
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import co.fusionx.channels.viewmodel.helper.ClientComparator
+import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
 import rx.android.schedulers.AndroidSchedulers
@@ -47,10 +48,11 @@ import javax.inject.Singleton
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
         val connectionInformation = ConnectionInformation()
-        val channelMapListener = UserChannelVM("tilal6993", channelMap, connectionInformation)
+        val userChannelVM = UserChannelDao("tilal6993", channelMap, connectionInformation)
         val server = ServerVM("Server")
+        val userMessageParser = UserMessageParser(userChannelVM)
 
-        val clientVM = ClientVM(context, configuration, coreClient, server, channelMap.valuesAsObservableList())
+        val clientVM = ClientVM(context, configuration, coreClient, userMessageParser, server, channelMap.valuesAsObservableList())
 
         val basicEventListener = BasicEventListener(coreClient)
         val mainThreadListener = MainThreadEventListener()
@@ -59,7 +61,7 @@ import javax.inject.Singleton
 
         mainThreadListener.addEventListener(clientVM)
         mainThreadListener.addEventListener(server)
-        mainThreadListener.addEventListener(channelMapListener)
+        mainThreadListener.addEventListener(userChannelVM)
         mainThreadListener.addEventListener(connectionInformation)
         return clientVM
     }
