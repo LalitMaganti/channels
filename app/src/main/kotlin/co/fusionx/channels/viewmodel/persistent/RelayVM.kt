@@ -1,11 +1,20 @@
 package co.fusionx.channels.viewmodel.persistent
 
 import android.content.Context
+import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.db.connectionDb
+import co.fusionx.channels.relay.BasicEventListener
+import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.relay.ConnectionInformation
+import co.fusionx.channels.relay.MainThreadEventListener
+import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import co.fusionx.channels.viewmodel.helper.ClientComparator
+import co.fusionx.relay.RelayClient
+import co.fusionx.relay.message.AndroidMessageLoop
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +31,7 @@ import javax.inject.Singleton
         /* TODO(lrm113) deal with handling constantly updating databases */
         context.connectionDb.getConfigurations()
                 .first()
-                .map { it -> it.map { ClientVM(context, it) } }
+                .map { it -> it.map { createClient(it) } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -30,6 +39,29 @@ import javax.inject.Singleton
                     activeClients.clear()
                     inactiveClients.addAll(it)
                 }
+    }
+
+    private fun createClient(configuration: Configuration): ClientVM {
+        val coreClient = RelayClient.create(configuration.connectionConfiguration, AndroidMessageLoop.create())
+
+        val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
+                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
+        val connectionInformation = ConnectionInformation()
+        val channelMapListener = UserChannelVM("tilal6993", channelMap, connectionInformation)
+        val server = ServerVM("Server")
+
+        val clientVM = ClientVM(context, configuration, coreClient, server, channelMap.valuesAsObservableList())
+
+        val basicEventListener = BasicEventListener(coreClient)
+        val mainThreadListener = MainThreadEventListener()
+        coreClient.addEventListener(basicEventListener)
+        coreClient.addEventListener(mainThreadListener)
+
+        mainThreadListener.addEventListener(clientVM)
+        mainThreadListener.addEventListener(server)
+        mainThreadListener.addEventListener(channelMapListener)
+        mainThreadListener.addEventListener(connectionInformation)
+        return clientVM
     }
 
     fun select(client: ClientVM): Boolean {

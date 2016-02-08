@@ -5,74 +5,42 @@ import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.databinding.ObservableField
 import android.databinding.ObservableList
-import co.fusionx.channels.collections.ObservableSortedArrayMap
-import co.fusionx.channels.relay.BasicEventListener
+import co.fusionx.channels.BR
+import co.fusionx.channels.R
 import co.fusionx.channels.relay.Configuration
-import co.fusionx.channels.relay.ConnectionInformationListener
-import co.fusionx.channels.relay.MainThreadEventListener
-import co.fusionx.channels.util.charSequenceComparator
-import co.fusionx.channels.viewmodel.helper.ChannelComparator
-import co.fusionx.channels.viewmodel.listener.ChannelDelegatingListener
-import co.fusionx.channels.viewmodel.listener.ClientStateListener
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
-import co.fusionx.channels.viewmodel.listener.ServerDelegatingListener
+import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
-import co.fusionx.relay.message.AndroidMessageLoop
-import java.util.*
 
 class ClientVM(private val context: Context,
-               private val configuration: Configuration) : BaseObservable() {
+               private val configuration: Configuration,
+               private val client: RelayClient,
+               val server: ServerVM,
+               val channels: ObservableList<ChannelVM>) : BaseObservable(), EventListener {
+
     val name: CharSequence
         get() = configuration.name
     val hostname: CharSequence
         get() = configuration.connectionConfiguration.hostname
 
     val isActive: Boolean
-        @Bindable get() = clientStateListener.isActive
-    val status: String
-        @Bindable get() = clientStateListener.status
-    val user: UserVM
-        get() = clientStateListener.user
+        @Bindable get() = _status != STOPPED
+    var status: String = context.getString(STOPPED)
+        @Bindable get
 
     val selectedChild: ObservableField<ClientChildVM>
-    val server: ServerVM
-    val channels: ObservableList<ChannelVM>
 
-    private val client: RelayClient
-    private val channelMap: ObservableSortedArrayMap<CharSequence, ChannelVM>
-    private val userMap: MutableMap<String, UserVM>
-    private val clientStateListener: ClientStateListener
-    private val userMessageParser: UserMessageParser
+    private var _status: Int = STOPPED
+        set(it) {
+            field = it
+            status = context.getString(it)
+
+            notifyPropertyChanged(BR.status)
+            notifyPropertyChanged(BR.active)
+        }
 
     init {
-        server = ServerVM("Server")
-        channelMap = ObservableSortedArrayMap(charSequenceComparator, ChannelComparator.instance)
-        channels = channelMap.valuesAsObservableList()
-        userMap = HashMap()
         selectedChild = ObservableField(server)
-        clientStateListener = ClientStateListener(context, configuration, this)
-        userMessageParser = UserMessageParser(Listener())
-
-        client = RelayClient.create(configuration.connectionConfiguration, AndroidMessageLoop.create())
-
-        val basicEventListener = BasicEventListener(client)
-        val mainThreadListener = MainThreadEventListener()
-        client.addEventListener(basicEventListener)
-        client.addEventListener(mainThreadListener)
-
-        val serverListener = ServerDelegatingListener(server)
-        val channelMapListener = ChannelDelegatingListener(user, userMap, channelMap)
-        val connectionInformationListener = ConnectionInformationListener()
-
-        mainThreadListener.addEventListener(clientStateListener)
-        mainThreadListener.addEventListener(serverListener)
-        mainThreadListener.addEventListener(channelMapListener)
-        mainThreadListener.addEventListener(connectionInformationListener)
-    }
-
-    fun sendUserMessage(userMessage: String, context: ClientChildVM) {
-        val message = userMessageParser.parse(userMessage, context, server) ?: return
-        client.send(message)
     }
 
     fun select(child: ClientChildVM) {
@@ -80,17 +48,29 @@ class ClientVM(private val context: Context,
     }
 
     fun onSelected(): Boolean {
-        val active = clientStateListener.onSelected()
+        val active = isActive
         if (!active) {
+            _status = CONNECTING
             client.start()
         }
         selectedChild.set(server)
         return active
     }
 
-    private inner class Listener : UserMessageParser.ParserListener {
-        override fun onChannelMessage(channelVM: ChannelVM, message: String) {
-            channelVM.onPrivmsg(user, message)
-        }
+    override fun onSocketConnect() {
+        _status = SOCKET_CONNECTED
+    }
+
+    override fun onWelcome(target: String, text: String) {
+        _status = CONNECTED
+    }
+
+    companion object {
+        const val STOPPED: Int = R.string.status_stopped
+        const val CONNECTING: Int = R.string.status_connecting
+        const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
+        const val CONNECTED: Int = R.string.status_connected
+        const val RECONNECTING: Int = R.string.status_reconnecting
+        const val DISCONNECTED: Int = R.string.status_disconnected
     }
 }
