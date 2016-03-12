@@ -22,12 +22,12 @@ class MainThreadEventListener : EventListener {
         it.onWelcome(target, text)
     }
 
-    override fun onNames(channelName: String, nickList: List<String>) = postForEach {
-        it.onNames(channelName, nickList)
+    override fun onNames(channelName: String, namesList: List<String>) = postForEach {
+        it.onNames(channelName, namesList)
     }
 
-    override fun onNickChange(oldNick: String, newNick: String) = postForEach {
-        it.onNickChange(oldNick, newNick)
+    override fun onNick(oldNick: String, newNick: String) = postForEach {
+        it.onNick(oldNick, newNick)
     }
 
     override fun onPing(server: String) = postForEach {
@@ -40,6 +40,10 @@ class MainThreadEventListener : EventListener {
 
     override fun onPrivmsg(prefix: String, target: String, message: String) = postForEach {
         it.onPrivmsg(prefix, target, message)
+    }
+
+    override fun onNotice(prefix: String, target: String, message: String) = postForEach {
+        it.onNotice(prefix, target, message)
     }
 
     private inline fun postForEach(crossinline fn: (EventListener) -> Unit) {

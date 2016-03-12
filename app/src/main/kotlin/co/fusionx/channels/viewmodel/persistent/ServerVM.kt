@@ -21,6 +21,10 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
         add(text)
     }
 
+    override fun onNotice(prefix: String, target: String, message: String) {
+        add(message)
+    }
+
     companion object {
         private val displayedCodes: Set<Int> = arrayOf(
                 ReplyCodes.RPL_YOURHOST, ReplyCodes.RPL_CREATED, ReplyCodes.RPL_MYINFO,

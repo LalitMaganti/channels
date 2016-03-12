@@ -55,7 +55,7 @@ class UserChannelDao(
         channelVM.onPrivmsg(selfNick, message)
     }
 
-    override fun onNickChange(oldNick: String, newNick: String) {
+    override fun onNick(oldNick: String, newNick: String) {
         for (i in 0..channels.size - 1) {
             val channel = channels.getValueAt(i)
             channel!!.onNickChange(oldNick, newNick)

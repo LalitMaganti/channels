@@ -7,7 +7,9 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.ArraySet
+import android.view.Gravity
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
@@ -47,8 +49,12 @@ class MainActivity : AppCompatActivity() {
                 ClientChildPresenter(this, messageBox, eventRecycler),
                 ActionBarPresenter(this)
         )
-
         presenters.forEach { it.setup() }
+
+        // If there are no selected server, then start with the drawer open.
+        if (relayVM.selectedClients.latest == null) {
+            drawerLayout.openDrawer(Gravity.START);
+        }
     }
 
     fun onClientClick(clientVM: ClientVM) {
