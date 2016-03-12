@@ -59,7 +59,8 @@ class ClientVM(private val context: Context,
     }
 
     fun sendUserMessage(message: String, context: ClientChildVM) {
-        userMessageParser.parse(message, context, server)
+        val line = userMessageParser.parse(message, context, server) ?: return
+        client.send(line)
     }
 
     override fun onSocketConnect() {

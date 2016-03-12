@@ -11,7 +11,7 @@ class ChannelVM(override val name: String) : ClientChildVM() {
             UserVM::class.java, UserComparator.instance)
 
     fun onPrivmsg(nick: String, message: String) {
-        val user = userMap[userMap.binarySearch { nick.compareTo(it.nick) }]
+        val user = userMap[userMap.binarySearch { it.nick.compareTo(nick) }]
         add("${user.nick}: $message")
     }
 
