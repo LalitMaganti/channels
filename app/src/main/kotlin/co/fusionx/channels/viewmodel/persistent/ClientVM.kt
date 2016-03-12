@@ -7,7 +7,7 @@ import android.databinding.ObservableField
 import android.databinding.ObservableList
 import co.fusionx.channels.BR
 import co.fusionx.channels.R
-import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.relay.configuration.Configuration
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
@@ -49,13 +49,13 @@ class ClientVM(private val context: Context,
     }
 
     fun onSelected(): Boolean {
-        val active = isActive
-        if (!active) {
+        val newConnect = !isActive
+        if (newConnect) {
             _status = CONNECTING
             client.start()
         }
         selectedChild.set(server)
-        return active
+        return newConnect
     }
 
     fun sendUserMessage(message: String, context: ClientChildVM) {

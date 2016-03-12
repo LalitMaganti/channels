@@ -5,7 +5,7 @@ import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.db.connectionDb
 import co.fusionx.channels.relay.BasicEventListener
-import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.relay.configuration.Configuration
 import co.fusionx.channels.relay.ConnectionInformation
 import co.fusionx.channels.relay.MainThreadEventListener
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
@@ -54,7 +54,7 @@ import javax.inject.Singleton
 
         val clientVM = ClientVM(context, configuration, coreClient, userMessageParser, server, channelMap.valuesAsObservableList())
 
-        val basicEventListener = BasicEventListener(coreClient)
+        val basicEventListener = BasicEventListener(coreClient, configuration)
         val mainThreadListener = MainThreadEventListener()
         coreClient.addEventListener(basicEventListener)
         coreClient.addEventListener(mainThreadListener)
