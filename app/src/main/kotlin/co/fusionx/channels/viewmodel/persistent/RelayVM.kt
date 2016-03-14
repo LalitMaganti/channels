@@ -45,8 +45,7 @@ import javax.inject.Singleton
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val connectionInformation = ConnectionInformationListener()
-        val userChannelVM = UserChannelDao(configuration.handshake.nicks[0], channelMap, connectionInformation)
+        val userChannelVM = UserChannelDao(configuration.handshake.nicks[0], channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
 
@@ -63,7 +62,6 @@ import javax.inject.Singleton
         mainThreadListener.addEventListener(clientVM)
         mainThreadListener.addEventListener(server)
         mainThreadListener.addEventListener(userChannelVM)
-        mainThreadListener.addEventListener(connectionInformation)
         return clientVM
     }
 

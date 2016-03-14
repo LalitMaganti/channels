@@ -12,14 +12,10 @@ import java.util.*
 
 class UserChannelDao(
         initialNick: String,
-        private val channels: ObservableSortedArrayMap<String, ChannelVM>,
-        private val connectionInformation: ConnectionInformationListener) :
+        private val channels: ObservableSortedArrayMap<String, ChannelVM>) :
         EventListener, UserMessageParser.ParserListener {
 
     private var selfNick: String = initialNick
-
-    private val isupportValues: ConnectionInformationListener.ISUPPORTValues
-        get() = connectionInformation.isupportValues
 
     override fun onJoin(prefix: String, channel: String) {
         val nick = PrefixExtractor.nick(prefix)
