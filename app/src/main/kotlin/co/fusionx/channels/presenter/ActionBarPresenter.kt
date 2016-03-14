@@ -13,11 +13,6 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     private val actionBar: ActionBar
         get() = activity.supportActionBar!!
 
-    private fun updateActionBar() {
-        actionBar.title = selectedClientsVM.latest?.name ?: "Channels"
-        actionBar.subtitle = selectedChild?.get()?.name
-    }
-
     override fun setup() {
         updateActionBar()
     }
@@ -30,4 +25,8 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
         childListener.unbind()
     }
 
+    private fun updateActionBar() {
+        actionBar.title = selectedClientsVM.latest?.name ?: "Channels"
+        actionBar.subtitle = selectedChild?.get()?.name
+    }
 }

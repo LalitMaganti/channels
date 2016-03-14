@@ -4,13 +4,11 @@ import android.content.Context
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.db.connectionDb
-import co.fusionx.channels.relay.BasicEventListener
-import co.fusionx.channels.relay.configuration.Configuration
-import co.fusionx.channels.relay.ConnectionInformation
-import co.fusionx.channels.relay.MainThreadEventListener
+import co.fusionx.channels.relay.*
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import co.fusionx.channels.viewmodel.helper.ClientComparator
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
+import co.fusionx.relay.ConnectionInformationListener
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
 import rx.android.schedulers.AndroidSchedulers
@@ -43,20 +41,23 @@ import javax.inject.Singleton
     }
 
     private fun createClient(configuration: Configuration): ClientVM {
-        val coreClient = RelayClient.create(configuration.connectionConfiguration, AndroidMessageLoop.create())
+        val coreClient = RelayClient.create(configuration.connection, AndroidMessageLoop.create())
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val connectionInformation = ConnectionInformation()
-        val userChannelVM = UserChannelDao("tilal6993", channelMap, connectionInformation)
+        val connectionInformation = ConnectionInformationListener()
+        val userChannelVM = UserChannelDao(configuration.handshake.nicks[0], channelMap, connectionInformation)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
 
         val clientVM = ClientVM(context, configuration, coreClient, userMessageParser, server, channelMap.valuesAsObservableList())
 
-        val basicEventListener = BasicEventListener(coreClient, configuration)
+        val authHandler = object : AuthHandler {}
+        val basicEventListener = BasicEventListener(coreClient)
+        val handshakeListener = HandshakeEventListener(coreClient, configuration.handshake, authHandler)
         val mainThreadListener = MainThreadEventListener()
         coreClient.addEventListener(basicEventListener)
+        coreClient.addEventListener(handshakeListener)
         coreClient.addEventListener(mainThreadListener)
 
         mainThreadListener.addEventListener(clientVM)

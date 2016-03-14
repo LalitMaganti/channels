@@ -22,8 +22,9 @@ class MainThreadEventListener : EventListener {
         it.onWelcome(target, text)
     }
 
-    override fun onNames(channelName: String, namesList: List<String>) = postForEach {
-        it.onNames(channelName, namesList)
+    override fun onNames(
+            channelName: String, nickList: List<String>, modeList: List<List<Char>>) = postForEach {
+        it.onNames(channelName, nickList, modeList)
     }
 
     override fun onNick(oldNick: String, newNick: String) = postForEach {
@@ -44,6 +45,26 @@ class MainThreadEventListener : EventListener {
 
     override fun onNotice(prefix: String, target: String, message: String) = postForEach {
         it.onNotice(prefix, target, message)
+    }
+
+    override fun onIsupport(supportTokens: List<String>, message: String) = postForEach {
+        it.onIsupport(supportTokens, message)
+    }
+
+    override fun onCapLs(caps: List<String>) = postForEach {
+        it.onCapLs(caps)
+    }
+
+    override fun onCapAck(caps: List<String>) = postForEach {
+        it.onCapAck(caps)
+    }
+
+    override fun onCapNak(caps: List<String>) = postForEach {
+        it.onCapNak(caps)
+    }
+
+    override fun onAuthenticate(data: String) = postForEach {
+        it.onAuthenticate(data)
     }
 
     private inline fun postForEach(crossinline fn: (EventListener) -> Unit) {

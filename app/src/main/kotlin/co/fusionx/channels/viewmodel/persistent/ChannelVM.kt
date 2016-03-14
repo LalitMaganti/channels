@@ -22,7 +22,7 @@ class ChannelVM(override val name: String) : ClientChildVM() {
         add("${userVM.nick} joined the channel")
     }
 
-    fun onName(nick: String, mode: Char?) {
+    fun onName(nick: String, mode: List<Char>) {
         val userVM = UserVM(nick)
         userMap.add(userVM)
     }

@@ -7,7 +7,7 @@ import android.databinding.ObservableField
 import android.databinding.ObservableList
 import co.fusionx.channels.BR
 import co.fusionx.channels.R
-import co.fusionx.channels.relay.configuration.Configuration
+import co.fusionx.channels.relay.Configuration
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
@@ -22,23 +22,14 @@ class ClientVM(private val context: Context,
     val name: CharSequence
         get() = configuration.name
     val hostname: CharSequence
-        get() = configuration.connectionConfiguration.hostname
+        get() = configuration.connection.hostname
 
-    val isActive: Boolean
-        @Bindable get() = _status != STOPPED
+    var isActive: Boolean = false
+        @Bindable get
     var status: String = context.getString(STOPPED)
         @Bindable get
 
     val selectedChild: ObservableField<ClientChildVM>
-
-    private var _status: Int = STOPPED
-        set(it) {
-            field = it
-            status = context.getString(it)
-
-            notifyPropertyChanged(BR.status)
-            notifyPropertyChanged(BR.active)
-        }
 
     init {
         selectedChild = ObservableField(server)
@@ -51,11 +42,19 @@ class ClientVM(private val context: Context,
     fun onSelected(): Boolean {
         val newConnect = !isActive
         if (newConnect) {
-            _status = CONNECTING
+            updateStatus(CONNECTING)
             client.start()
         }
         selectedChild.set(server)
         return newConnect
+    }
+
+    private fun updateStatus(s: Int) {
+        isActive = (s != STOPPED)
+        notifyPropertyChanged(BR.active)
+
+        status = context.getString(s)
+        notifyPropertyChanged(BR.status)
     }
 
     fun sendUserMessage(message: String, context: ClientChildVM) {
@@ -64,11 +63,11 @@ class ClientVM(private val context: Context,
     }
 
     override fun onSocketConnect() {
-        _status = SOCKET_CONNECTED
+        updateStatus(SOCKET_CONNECTED)
     }
 
     override fun onWelcome(target: String, text: String) {
-        _status = CONNECTED
+        updateStatus(CONNECTED)
     }
 
     companion object {
