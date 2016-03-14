@@ -19,7 +19,7 @@ interface AuthHandler : EventListener {
 
 abstract class SASLHandler(protected val client: RelayClient) : AuthHandler {
 
-    var handling = false
+    private var handling = false
 
     override fun onCapLs(caps: List<String>) {
         handling = caps.contains("sasl")
@@ -35,12 +35,22 @@ abstract class SASLHandler(protected val client: RelayClient) : AuthHandler {
 
     override fun onCapNak(caps: List<String>) {
         if (!caps.contains("sasl")) return
-        handling = false
-        client.send(ClientGenerator.cap("END"))
+        endHandling()
+    }
+
+    override fun onOtherCode(code: Int, arguments: List<String>) {
+        when (code) {
+            902, 903, 904, 905, 906, 907 -> endHandling()
+        }
     }
 
     override fun endsCap(caps: List<String>?): Boolean {
         return handling || (caps?.contains("sasl") ?: false)
+    }
+
+    protected fun endHandling() {
+        handling = false
+        client.send(ClientGenerator.cap("END"))
     }
 
     abstract fun onCapAck()
@@ -58,7 +68,7 @@ class PlainSASLHandler(client: RelayClient,
             val authentication = configuration.username + "\\0" +
                     configuration.username + "\\0" + configuration.password
             val authBytes = authentication.toByteArray(StandardCharsets.UTF_8)
-            val encoded = Base64.encodeToString(authBytes, Base64.DEFAULT);
+            val encoded = Base64.encodeToString(authBytes, Base64.DEFAULT)
             client.send(ClientGenerator.authenticate(encoded))
         }
     }

@@ -46,10 +46,6 @@ class HandshakeEventListener(
         client.send(ClientGenerator.cap("END"))
     }
 
-    override fun onWelcome(target: String, text: String) {
-
-    }
-
     data class Configuration(
             val username: String,
             val password: String?,
