@@ -1,6 +1,5 @@
 package co.fusionx.channels.controller
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -18,6 +17,7 @@ import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.ClientChildPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
+import co.fusionx.channels.relay.Configuration
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
@@ -57,8 +57,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onClientClick(clientVM: ClientVM) {
-        relayVM.select(clientVM)
+    fun onClientClick(configuration: Configuration) {
+        relayVM.select(configuration)
     }
 
     fun onChildClick(child: ClientChildVM) {
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
     }
 
-    override fun onConfigurationChanged(config: Configuration) {
+    override fun onConfigurationChanged(config: android.content.res.Configuration) {
         super.onConfigurationChanged(config)
         actionBarDrawerToggle.onConfigurationChanged(config)
     }

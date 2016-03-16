@@ -24,35 +24,21 @@ class ClientVM(private val context: Context,
     val hostname: CharSequence
         get() = configuration.connection.hostname
 
-    var isActive: Boolean = false
-        @Bindable get
-    var status: String = context.getString(STOPPED)
+    var status: String = context.getString(CONNECTING)
         @Bindable get
 
     val selectedChild: ObservableField<ClientChildVM>
 
     init {
         selectedChild = ObservableField(server)
+        client.start()
     }
 
     fun select(child: ClientChildVM) {
         selectedChild.set(child)
     }
 
-    fun onSelected(): Boolean {
-        val newConnect = !isActive
-        if (newConnect) {
-            updateStatus(CONNECTING)
-            client.start()
-        }
-        selectedChild.set(server)
-        return newConnect
-    }
-
     private fun updateStatus(s: Int) {
-        isActive = (s != STOPPED)
-        notifyPropertyChanged(BR.active)
-
         status = context.getString(s)
         notifyPropertyChanged(BR.status)
     }
@@ -71,7 +57,6 @@ class ClientVM(private val context: Context,
     }
 
     companion object {
-        const val STOPPED: Int = R.string.status_stopped
         const val CONNECTING: Int = R.string.status_connecting
         const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
         const val CONNECTED: Int = R.string.status_connected

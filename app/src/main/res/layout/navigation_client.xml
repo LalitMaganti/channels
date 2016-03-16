@@ -9,6 +9,10 @@
         <variable
             name="client"
             type="co.fusionx.channels.viewmodel.persistent.ClientVM" />
+
+        <variable
+            name="configuration"
+            type="co.fusionx.channels.relay.Configuration" />
     </data>
 
     <LinearLayout
@@ -35,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@{client.name}" />
+                android:text="@{configuration.name}" />
 
             <TextView
                 android:id="@+id/drawer_client_status"
@@ -45,7 +49,7 @@
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@{client.isActive ? client.status : client.hostname}" />
+                android:text="@{client == null ? configuration.connection.hostname : client.status}" />
         </LinearLayout>
 
         <ImageView
@@ -57,7 +61,7 @@
             android:clickable="true"
             android:focusable="false"
             android:padding="16dp"
-            android:visibility="@{client.isActive ? View.GONE : View.VISIBLE}"
+            android:visibility="@{client == null ? View.VISIBLE : View.GONE}"
             app:srcCompat="@drawable/ic_settings_black_24dp" />
     </LinearLayout>
 </layout>

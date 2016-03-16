@@ -15,6 +15,7 @@ import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.collections.ListSectionProxy
 import co.fusionx.channels.controller.ConfigurationEditActivity
 import co.fusionx.channels.controller.MainActivity
+import co.fusionx.channels.relay.Configuration
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ChannelVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
@@ -124,19 +125,19 @@ class NavigationPresenter(override val activity: MainActivity,
             get() = clientAdapter
 
         lateinit var clientAdapter: NavigationClientAdapter
-        private lateinit var activeClientListener: ListSectionProxy<ClientVM>
-        private lateinit var inactiveClientListener: ListSectionProxy<ClientVM>
+        private lateinit var activeClientListener: ListSectionProxy<Configuration>
+        private lateinit var inactiveClientListener: ListSectionProxy<Configuration>
 
         override fun setup() {
             val addClick: (View) -> Unit =  {
                 activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
             }
 
-            val manageClick: (ClientVM) -> Unit = {
+            val manageClick: (Configuration) -> Unit = {
                 activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
             }
 
-            val clientClick: (ClientVM) -> Unit =  {
+            val clientClick: (Configuration) -> Unit =  {
                 activity.onClientClick(it)
 
                 // Make sure we're displaying the child view.
@@ -146,42 +147,42 @@ class NavigationPresenter(override val activity: MainActivity,
             clientAdapter = NavigationClientAdapter(view.context, relayVM, addClick, manageClick, clientClick)
             clientAdapter.setup()
 
-            activeClientListener = object : ListSectionProxy<ClientVM>(0, clientAdapter) {
-                override fun onItemRangeInserted(sender: ObservableList<ClientVM>, positionStart: Int, itemCount: Int) {
+            activeClientListener = object : ListSectionProxy<Configuration>(0, clientAdapter) {
+                override fun onItemRangeInserted(sender: ObservableList<Configuration>, positionStart: Int, itemCount: Int) {
                     this@NavigationPresenter.updateHeader()
                     super.onItemRangeInserted(sender, positionStart, itemCount)
                 }
 
-                override fun onChanged(sender: ObservableList<ClientVM>) {
+                override fun onChanged(sender: ObservableList<Configuration>) {
                     this@NavigationPresenter.updateHeader()
                     super.onChanged(sender)
                 }
 
-                override fun onItemRangeRemoved(sender: ObservableList<ClientVM>, positionStart: Int, itemCount: Int) {
+                override fun onItemRangeRemoved(sender: ObservableList<Configuration>, positionStart: Int, itemCount: Int) {
                     this@NavigationPresenter.updateHeader()
                     super.onItemRangeRemoved(sender, positionStart, itemCount)
                 }
             }
-            inactiveClientListener = ListSectionProxy<ClientVM>(1, clientAdapter)
+            inactiveClientListener = ListSectionProxy<Configuration>(1, clientAdapter)
         }
 
         override fun bind() {
-            relayVM.activeClients.addOnListChangedCallback(activeClientListener)
-            relayVM.inactiveClients.addOnListChangedCallback(inactiveClientListener)
+            relayVM.activeConfigs.addOnListChangedCallback(activeClientListener)
+            relayVM.inactiveConfigs.addOnListChangedCallback(inactiveClientListener)
         }
 
         override fun rebind() {
         }
 
         override fun updateHeader() {
-            val count = relayVM.activeClients.size
+            val count = relayVM.activeConfigs.size
             headerVM.updateText(getString(R.string.app_name),
                     getQuantityString(R.plurals.connected_client_count, count).format(count))
         }
 
         override fun unbind() {
-            relayVM.activeClients.removeOnListChangedCallback(activeClientListener)
-            relayVM.inactiveClients.removeOnListChangedCallback(inactiveClientListener)
+            relayVM.activeConfigs.removeOnListChangedCallback(activeClientListener)
+            relayVM.inactiveConfigs.removeOnListChangedCallback(inactiveClientListener)
         }
     }
 

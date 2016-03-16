@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.databinding.NavigationClientBinding
+import co.fusionx.channels.relay.Configuration
 import co.fusionx.channels.util.failAssert
-import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.RelayVM
 import timber.log.Timber
 
@@ -16,8 +16,8 @@ class NavigationClientAdapter(
         private val context: Context,
         private val relayVM: RelayVM,
         private val addClick: (View) -> Unit,
-        private val manageClick: (ClientVM) -> Unit,
-        private val clientClickListener: (ClientVM) -> Unit) :
+        private val manageClick: (Configuration) -> Unit,
+        private val clientClickListener: (Configuration) -> Unit) :
         SectionAdapter<NavigationClientAdapter.ViewHolder, HeaderViewHolder>() {
 
     private val inflater: LayoutInflater
@@ -71,13 +71,13 @@ class NavigationClientAdapter(
         return 3
     }
 
-    private fun getListForSection(section: Int): List<ClientVM> {
+    private fun getListForSection(section: Int): List<Configuration> {
         if (section == 0) {
-            return relayVM.activeClients
+            return relayVM.activeConfigs
         }
 
         if (section != 1) Timber.asTree().failAssert()
-        return relayVM.inactiveClients
+        return relayVM.inactiveConfigs
     }
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -88,7 +88,9 @@ class NavigationClientAdapter(
         override fun bind(section: Int, offset: Int) {
             val item = getListForSection(section)[offset]
 
-            binding.client = item
+            binding.configuration = item
+            binding.client = relayVM.configActiveClients[item]
+
             binding.root.setOnClickListener { clientClickListener(item) }
             binding.drawerClientManage.setOnClickListener { manageClick(item) }
 
