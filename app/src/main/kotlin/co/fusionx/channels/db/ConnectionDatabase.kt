@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.Cursor
 import co.fusionx.channels.relay.Configuration
 import co.fusionx.channels.relay.HandshakeEventListener
-import co.fusionx.relay.ConnectionConfiguration
 import co.fusionx.relay.RelayClient
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite

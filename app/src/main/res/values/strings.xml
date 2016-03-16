@@ -23,4 +23,38 @@
     <string name="header_active_clients">Active connections</string>
     <string name="header_inactive_clients">Inactive connections</string>
     <string name="message_hint">Message</string>
+    <string name="connection_settings">Connection</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="port">Port</string>
+    <string name="default_port">6667</string>
+    <string name="configuration_add_title">Adding new configuration</string>
+    <string name="ssl">SSL</string>
+    <string name="ssl_accept_all">Accept All SSL Certificates</string>
+    <string name="ssl_description">
+        SSL is used to secure your connection but usually requires a special port. Accepting all
+        certificates is VERY dangerous and should not be used unless you understand what you are
+        doing.
+    </string>
+    <string name="user_settings">User</string>
+    <string name="nick">Nick</string>
+    <string name="real_name">Real Name</string>
+    <string name="auto_change_nick">Auto-change nick name</string>
+    <string name="auto_change_nick_desc">
+        If your nick is already being used by someone on the network then a variant of your
+        preferred nick will be used
+    </string>
+    <string name="auth_settings">Auth</string>
+    <string name="server_username">Server Username</string>
+    <string name="server_password">Server Password</string>
+    <string name="server_password_desc">Usually a server password is not required.</string>
+    <string name="default_user_handle">ChannelsUser</string>
+    <string name="port_error">Should be a number between 1 and 65535</string>
+    <string name="auth_mechanism">Authentication Mechanism</string>
+    <string name="user_auth">User</string>
+    <string name="server_auth">Server</string>
+    <string name="nickserv_password">Nickserv Password</string>
+    <string name="sasl_password">SASL Passsword</string>
+    <string name="sasl_username">SASL Username</string>
+    <string name="empty_error">Should not be empty</string>
 </resources>

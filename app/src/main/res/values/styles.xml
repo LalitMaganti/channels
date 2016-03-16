@@ -36,6 +36,9 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="Theme.Channels.StatusBar" parent="Base.Theme.Channels">
+    </style>
+
     <style name="Theme.Channels.ActionBar" parent="Base.Theme.Channels.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
     </style>
@@ -65,7 +68,7 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="Widget.Channels.EditText" parent="">
-
+    <style name="TextAppearance.Channels.Tab.Inverse" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">?android:textColorSecondaryInverse</item>
     </style>
 </resources>

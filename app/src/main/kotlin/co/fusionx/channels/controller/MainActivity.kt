@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
+        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, 0, 0)
 
         presenters.addAll(
                 NavigationPresenter(this, navDrawerView),
