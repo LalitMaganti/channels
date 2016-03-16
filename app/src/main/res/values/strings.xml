@@ -20,8 +20,8 @@
     <string name="header_channels">Channels</string>
     <string name="header_private_messages">PMs</string>
 
-    <string name="header_active_clients">Active connections</string>
-    <string name="header_inactive_clients">Inactive connections</string>
+    <string name="header_active_clients">Active</string>
+    <string name="header_inactive_clients">Inactive</string>
     <string name="message_hint">Message</string>
     <string name="connection_settings">Connection</string>
     <string name="name">Name</string>
@@ -57,4 +57,6 @@
     <string name="sasl_password">SASL Passsword</string>
     <string name="sasl_username">SASL Username</string>
     <string name="empty_error">Should not be empty</string>
+    <string name="add_server">Add New Server</string>
+    <string name="manage_servers">Manage Servers</string>
 </resources>

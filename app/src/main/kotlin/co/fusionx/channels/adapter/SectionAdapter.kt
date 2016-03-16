@@ -61,7 +61,6 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
                 Timber.asTree().failAssert()
             }
             notifyItemRangeInserted(sectionStart, insertCount + headerOffsetForSection)
-
         } else {
             notifyItemRangeInserted(sectionStart + headerOffsetForSection + offset, insertCount)
         }

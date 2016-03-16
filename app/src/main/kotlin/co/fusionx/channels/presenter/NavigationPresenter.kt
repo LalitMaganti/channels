@@ -1,5 +1,6 @@
 package co.fusionx.channels.presenter
 
+import android.content.Intent
 import android.databinding.Observable
 import android.databinding.ObservableList
 import android.os.Bundle
@@ -11,17 +12,17 @@ import co.fusionx.channels.adapter.NavigationChildAdapter
 import co.fusionx.channels.adapter.NavigationClientAdapter
 import co.fusionx.channels.adapter.SectionAdapter
 import co.fusionx.channels.base.relayVM
-import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.collections.ListSectionProxy
+import co.fusionx.channels.controller.ConfigurationEditActivity
+import co.fusionx.channels.controller.MainActivity
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ChannelVM
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
 
 class NavigationPresenter(override val activity: MainActivity,
-                                 private val view: NavigationDrawerView) : Presenter {
+                          private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
     private lateinit var currentHelper: Helper
@@ -127,12 +128,22 @@ class NavigationPresenter(override val activity: MainActivity,
         private lateinit var inactiveClientListener: ListSectionProxy<ClientVM>
 
         override fun setup() {
-            clientAdapter = NavigationClientAdapter(view.context, relayVM) {
+            val addClick: (View) -> Unit =  {
+                activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
+            }
+
+            val manageClick: (ClientVM) -> Unit = {
+                activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
+            }
+
+            val clientClick: (ClientVM) -> Unit =  {
                 activity.onClientClick(it)
 
                 // Make sure we're displaying the child view.
                 updateCurrentType(childHelper)
             }
+
+            clientAdapter = NavigationClientAdapter(view.context, relayVM, addClick, manageClick, clientClick)
             clientAdapter.setup()
 
             activeClientListener = object : ListSectionProxy<ClientVM>(0, clientAdapter) {

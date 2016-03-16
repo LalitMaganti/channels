@@ -2,6 +2,7 @@ package co.fusionx.channels.collections
 
 import android.databinding.CallbackRegistry
 
+@Suppress("CAST_NEVER_SUCCEEDS")
 class IndexedMapChangeRegistry<T : ObservableIndexedMap<K, V>, K, V> :
         CallbackRegistry<ObservableIndexedMap.OnIndexedMapChangedCallback<T, K, V>, T, IndexedMapChangeRegistry.MapChanges<K, V>>(
                 IndexedMapChangeRegistry.NOTIFIER_CALLBACK as CallbackRegistry.NotifierCallback<ObservableIndexedMap.OnIndexedMapChangedCallback<T, K, V>, T, MapChanges<K, V>>) {

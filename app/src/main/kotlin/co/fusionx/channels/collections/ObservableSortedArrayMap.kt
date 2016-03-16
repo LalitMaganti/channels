@@ -54,6 +54,7 @@ import java.util.*
         return valuesObservableList!!
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun addOnIndexedMapChangedCallback(
             callback: ObservableIndexedMap.OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>) {
         if (registry == null) {
@@ -62,6 +63,7 @@ import java.util.*
         registry!!.add(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V>)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun removeOnIndexedMapChangedCallback(
             callback: ObservableIndexedMap.OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>) {
         if (registry == null) {

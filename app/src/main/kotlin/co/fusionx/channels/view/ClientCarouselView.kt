@@ -1,12 +1,12 @@
 package co.fusionx.channels.view
 
 import android.content.Context
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import co.fusionx.channels.R
 import co.fusionx.channels.viewmodel.persistent.ClientVM
@@ -103,10 +103,10 @@ class ClientCarouselView(
             return
         }
 
-        val drawable = TextDrawable.builder()
-                .round()
-                .build(client.name.subSequence(0, 2).toString(), resources.getColor(R.color.colorAccent))
-        imageView.setImageDrawable(drawable)
+        val initials = client.name.subSequence(0, 2).toString()
+        val color = ResourcesCompat.getColor(resources, R.color.colorAccent, null)
+        imageView.setImageDrawable(TextDrawable.builder().round().build(initials, color))
+
         show(imageView)
     }
 

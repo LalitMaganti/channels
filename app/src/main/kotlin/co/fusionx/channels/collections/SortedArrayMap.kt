@@ -3,6 +3,7 @@ package co.fusionx.channels.collections
 import timber.log.Timber
 import java.util.*
 
+@Suppress("CAST_NEVER_SUCCEEDS")
 open class SortedArrayMap<K, V> @JvmOverloads constructor(
         private val keyComparator: Comparator<K>,
         private val baseSize: Int = SortedArrayMap.BASE_SIZE) : AbstractMap<K, V>(), IndexedMap<K, V> {
