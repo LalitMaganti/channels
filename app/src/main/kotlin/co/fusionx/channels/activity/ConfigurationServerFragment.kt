@@ -36,7 +36,9 @@ class ConfigurationServerFragment : Fragment() {
         url.addTextChangedListener(EmptyWatcher(urlContainer))
 
         port.addTextChangedListener(EmptyWatcher(portContainer))
-        port.addTextChangedListener(ErrorWatcher(portContainer, { isValidPort(it) }, R.string.port_error))
+        port.addTextChangedListener(ErrorWatcher(portContainer, R.string.port_error) {
+            isValidPort(it)
+        })
     }
 
     private fun isValidPort(it: CharSequence): Boolean {

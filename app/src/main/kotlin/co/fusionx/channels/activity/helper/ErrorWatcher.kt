@@ -5,8 +5,8 @@ import android.text.Editable
 import android.text.TextWatcher
 
 open class ErrorWatcher(private val layout: TextInputLayout,
-                        private val errorFn: (CharSequence) -> Boolean,
-                        private val errorMsg: Int) : TextWatcher {
+                        private val errorMsg: Int,
+                        private val errorFn: (CharSequence) -> Boolean) : TextWatcher {
     override fun afterTextChanged(s: Editable?) {
     }
 
