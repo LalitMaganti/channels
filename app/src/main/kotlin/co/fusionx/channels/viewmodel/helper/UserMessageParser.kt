@@ -33,6 +33,9 @@ class UserMessageParser(private val listener: ParserListener) {
             "/nick" -> if (message.length >= 1) {
                 return ClientGenerator.nick(message)
             }
+            "/raw", "/quote" -> if (message.length >= 1) {
+                return message
+            }
         // TODO - deal with all the below.
         /*
         "/msg" -> if (arrayLength >= 1) {
@@ -52,10 +55,6 @@ class UserMessageParser(private val listener: ParserListener) {
         "/ns" -> if (arrayLength > 1) {
             val message = IRCUtils.concatenateStringList(parsedArray)
             server.sendQuery("NickServ", message)
-            return
-        }
-        "/raw", "/quote" -> {
-            server.sendRawLine(IRCUtils.concatenateStringList(parsedArray))
             return
         }
         else -> if (command.startsWith("/")) {
