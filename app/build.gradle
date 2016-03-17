@@ -49,16 +49,19 @@ android {
 dependencies {
     compile rootProject.ext.kotlinStdlib
 
-    compile 'com.android.support:support-v4:23.2.1'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
+    compile rootProject.ext.supportv4
+    compile rootProject.ext.appcompat
+    compile rootProject.ext.recyclerview
+    compile rootProject.ext.design
 
     compile 'io.reactivex:rxandroid:1.1.0'
 
     compile rootProject.ext.annotation
     compile rootProject.ext.dagger
     kapt rootProject.ext.daggerCompiler
+
+    compile rootProject.ext.parcellerApi
+    kapt rootProject.ext.parceller
 
     compile project(rootProject.ext.relay)
     compile project(rootProject.ext.relayAndroid)
