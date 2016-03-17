@@ -1,4 +1,4 @@
-package co.fusionx.channels.controller
+package co.fusionx.channels.activity
 
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar
 import android.util.ArraySet
 import android.view.Gravity
 import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
@@ -22,7 +21,6 @@ import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
-import co.fusionx.channels.viewmodel.persistent.ClientVM
 
 class MainActivity : AppCompatActivity() {
 

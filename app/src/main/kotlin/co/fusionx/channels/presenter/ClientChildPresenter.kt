@@ -6,7 +6,7 @@ import android.graphics.PorterDuff
 import android.view.View
 import android.widget.EditText
 import co.fusionx.channels.adapter.MainItemAdapter
-import co.fusionx.channels.controller.MainActivity
+import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.presenter.helper.ClientChildListener
 import co.fusionx.channels.collections.ObservableListAdapterProxy
 import co.fusionx.channels.presenter.helper.MessageTextHandler

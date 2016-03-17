@@ -3,7 +3,7 @@ package co.fusionx.channels.presenter
 import android.databinding.ObservableField
 import android.os.Bundle
 import co.fusionx.channels.base.relayVM
-import co.fusionx.channels.controller.MainActivity
+import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM

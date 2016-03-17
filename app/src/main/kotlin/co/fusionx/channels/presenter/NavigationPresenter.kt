@@ -13,8 +13,8 @@ import co.fusionx.channels.adapter.NavigationClientAdapter
 import co.fusionx.channels.adapter.SectionAdapter
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.collections.ListSectionProxy
-import co.fusionx.channels.controller.ConfigurationEditActivity
-import co.fusionx.channels.controller.MainActivity
+import co.fusionx.channels.activity.ConfigurationEditActivity
+import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.relay.Configuration
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ChannelVM

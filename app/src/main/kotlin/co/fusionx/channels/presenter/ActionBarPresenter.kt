@@ -1,7 +1,7 @@
 package co.fusionx.channels.presenter
 
 import android.support.v7.app.ActionBar
-import co.fusionx.channels.controller.MainActivity
+import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.presenter.helper.ClientChildListener
 
 class ActionBarPresenter(override val activity: MainActivity) : Presenter {
