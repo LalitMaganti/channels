@@ -35,7 +35,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
                   private val fm: FragmentManager) : FragmentPagerAdapter(fm) {
         override fun getItem(position: Int): Fragment? {
             return when (position) {
-                0 -> ConfigurationServerFragment()
+                0 -> ConfigurationServerFragment.create()
                 1 -> ConfigurationUserFragment()
                 2 -> ConfigurationAuthFragment()
                 else -> null
