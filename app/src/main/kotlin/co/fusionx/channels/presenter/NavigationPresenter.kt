@@ -15,12 +15,13 @@ import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.collections.ListSectionProxy
 import co.fusionx.channels.activity.ConfigurationEditActivity
 import co.fusionx.channels.activity.MainActivity
-import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.configuration.Configuration
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ChannelVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
+import org.parceler.Parcels
 
 class NavigationPresenter(override val activity: MainActivity,
                           private val view: NavigationDrawerView) : Presenter {
@@ -46,7 +47,7 @@ class NavigationPresenter(override val activity: MainActivity,
         }
     }
 
-    override fun setup() {
+    override fun setup(savedState: Bundle?) {
         headerVM = NavigationHeaderVM()
 
         clientHelper = ClientHelper()
@@ -134,7 +135,9 @@ class NavigationPresenter(override val activity: MainActivity,
             }
 
             val manageClick: (Configuration) -> Unit = {
-                activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
+                val intent = Intent(activity, ConfigurationEditActivity::class.java)
+                intent.putExtra(ConfigurationEditActivity.CONFIGURATION, Parcels.wrap(it))
+                activity.startActivity(intent)
             }
 
             val clientClick: (Configuration) -> Unit =  {

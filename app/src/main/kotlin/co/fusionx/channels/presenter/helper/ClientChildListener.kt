@@ -9,7 +9,7 @@ import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
 class ClientChildListener(private val context: Context,
-                                 private val callback: () -> Unit) : Bindable {
+                          private val callback: () -> Unit) : Bindable {
     private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClients
     private val selectedChild: ObservableField<ClientChildVM>?

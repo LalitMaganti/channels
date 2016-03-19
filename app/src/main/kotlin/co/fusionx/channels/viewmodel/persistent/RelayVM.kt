@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.util.ArrayMap
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
+import co.fusionx.channels.configuration.Configuration
 import co.fusionx.channels.databinding.NavigationClientBinding
 import co.fusionx.channels.db.connectionDb
 import co.fusionx.channels.relay.*
@@ -43,19 +44,23 @@ import javax.inject.Singleton
     }
 
     private fun createClient(configuration: Configuration): ClientVM {
-        val coreClient = RelayClient.create(configuration.connection, AndroidMessageLoop.create())
+        val relayConfig = RelayClient.Configuration.create {
+            hostname = configuration.connection.hostname!!
+            port = configuration.connection.port
+        }
+
+        val coreClient = RelayClient.create(relayConfig, AndroidMessageLoop.create())
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val userChannelVM = UserChannelDao(configuration.handshake.nicks[0], channelMap)
+        val userChannelVM = UserChannelDao(configuration.user.nicks[0], channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
 
         val clientVM = ClientVM(context, configuration, coreClient, userMessageParser, server, channelMap.valuesAsObservableList())
 
-        val authHandler = object : AuthHandler {}
         val basicEventListener = BasicEventListener(coreClient)
-        val handshakeListener = HandshakeEventListener(coreClient, configuration.handshake, authHandler)
+        val handshakeListener = HandshakeEventListener(coreClient, configuration.user, EMPTY_AUTH_HANDLER)
         val mainThreadListener = MainThreadEventListener()
         coreClient.addEventListener(basicEventListener)
         coreClient.addEventListener(handshakeListener)
@@ -69,7 +74,7 @@ import javax.inject.Singleton
 
     fun select(configuration: Configuration): Boolean {
         val index = inactiveConfigs.indexOf(configuration)
-        if (selectedClients.latest?.name == configuration.name) {
+        if (selectedClients.latest?.name == configuration.connection.name) {
             return true
         }
 

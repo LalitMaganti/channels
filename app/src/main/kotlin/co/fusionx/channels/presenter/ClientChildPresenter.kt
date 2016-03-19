@@ -3,6 +3,7 @@ package co.fusionx.channels.presenter
 import android.databinding.ObservableList
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import co.fusionx.channels.adapter.MainItemAdapter
@@ -32,7 +33,7 @@ class ClientChildPresenter(override val activity: MainActivity,
         }
     }
 
-    override fun setup() {
+    override fun setup(savedState: Bundle?) {
         messageHandler = MessageTextHandler(messageInput)
         messageHandler.setup()
 

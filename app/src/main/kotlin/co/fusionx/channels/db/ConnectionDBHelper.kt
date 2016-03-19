@@ -81,7 +81,6 @@ class ConnectionDBHelper private constructor(private val context: Context) :
         }
     }
 
-
     private fun SQLiteDatabase.insert(tableName: String, vararg values: Pair<String, Any?>): Long {
         return insert(tableName, null, values.toContentValues())
     }

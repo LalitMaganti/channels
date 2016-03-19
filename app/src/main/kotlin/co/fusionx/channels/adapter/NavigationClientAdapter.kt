@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.databinding.NavigationClientBinding
-import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.configuration.Configuration
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.persistent.RelayVM
 import timber.log.Timber

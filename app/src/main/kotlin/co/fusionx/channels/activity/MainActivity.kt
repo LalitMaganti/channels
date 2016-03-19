@@ -16,7 +16,7 @@ import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.ClientChildPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.configuration.Configuration
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 ClientChildPresenter(this, messageBox, eventRecycler),
                 ActionBarPresenter(this)
         )
-        presenters.forEach { it.setup() }
+        presenters.forEach { it.setup(savedInstanceState) }
 
         // If there are no selected server, then start with the drawer open.
         if (relayVM.selectedClients.latest == null) {

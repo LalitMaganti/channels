@@ -17,6 +17,8 @@ interface AuthHandler : EventListener {
     fun endsCap(caps: List<String>? = null): Boolean = false
 }
 
+val EMPTY_AUTH_HANDLER: AuthHandler by lazy { object : AuthHandler {} }
+
 abstract class SASLHandler(protected val client: RelayClient) : AuthHandler {
 
     private var handling = false
@@ -40,7 +42,7 @@ abstract class SASLHandler(protected val client: RelayClient) : AuthHandler {
 
     override fun onOtherCode(code: Int, arguments: List<String>) {
         when (code) {
-            // TODO(tilal6991) utilise the codes specified by Relay
+        // TODO(tilal6991) utilise the codes specified by Relay
             902, 903, 904, 905, 906, 907 -> endHandling()
         }
     }

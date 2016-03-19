@@ -1,70 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:clipToPadding="false"
-    android:padding="8dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <data>
+
+        <variable
+            name="configuration"
+            type="co.fusionx.channels.configuration.ServerConfiguration" />
+    </data>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/nick_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:padding="4dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/nick"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/nick"
-                android:text="@string/default_user_handle" />
-        </android.support.design.widget.TextInputLayout>
+        android:clipToPadding="false"
+        android:padding="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:orientation="vertical"
-            android:padding="4dp">
+            android:orientation="vertical">
 
-            <CheckBox
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/nick_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/auto_change_nick" />
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:padding="4dp">
 
-            <TextView
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/nick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/nick"
+                    android:text="@string/default_user_handle" />
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="4dp"
-                android:text="@string/auto_change_nick_desc" />
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:orientation="vertical"
+                android:padding="4dp">
 
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/auto_change_nick" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/auto_change_nick_desc" />
+
+            </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/real_name_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:padding="4dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/real_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/real_name"
+                    android:text="@string/default_user_handle" />
+            </android.support.design.widget.TextInputLayout>
         </LinearLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/real_name_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:padding="4dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/real_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/real_name"
-                android:text="@string/default_user_handle" />
-        </android.support.design.widget.TextInputLayout>
-    </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.NestedScrollView>
+</layout>

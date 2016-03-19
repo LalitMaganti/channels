@@ -2,9 +2,10 @@ package co.fusionx.channels.db
 
 import android.content.Context
 import android.database.Cursor
-import co.fusionx.channels.relay.Configuration
+import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ServerConfiguration
+import co.fusionx.channels.configuration.UserConfiguration
 import co.fusionx.channels.relay.HandshakeEventListener
-import co.fusionx.relay.RelayClient
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
 import rx.Observable
@@ -23,17 +24,18 @@ class ConnectionDatabase(private val context: Context) {
 
     private fun convertCursorToConfiguration(cursor: Cursor): Configuration {
         val name = cursor.getString(ConnectionTableConstants.NAME)
-        val connection = RelayClient.Configuration.create {
-            hostname = cursor.getString(ConnectionTableConstants.HOSTNAME)
-            port = cursor.getInt(ConnectionTableConstants.PORT)
-        }
-        val handshake = HandshakeEventListener.Configuration(
+        val connection = ServerConfiguration(
+                cursor.getString(ConnectionTableConstants.NAME),
+                cursor.getString(ConnectionTableConstants.HOSTNAME),
+                cursor.getInt(ConnectionTableConstants.PORT)
+        )
+        val handshake = UserConfiguration(
                 cursor.getString(ConnectionTableConstants.USERNAME),
                 cursor.getString(ConnectionTableConstants.SERVER_PASSWORD),
                 getNicks(name),
                 cursor.getString(ConnectionTableConstants.REAL_NAME)
         )
-        return Configuration(name, connection, handshake)
+        return Configuration(connection, handshake)
     }
 
     private fun getNicks(name: String?): List<String> {
