@@ -10,8 +10,8 @@ import co.fusionx.channels.relay.BasicEventListener
 import co.fusionx.channels.relay.EMPTY_AUTH_HANDLER
 import co.fusionx.channels.relay.HandshakeEventListener
 import co.fusionx.channels.relay.MainThreadEventListener
-import co.fusionx.channels.viewmodel.helper.ChannelComparator
-import co.fusionx.channels.viewmodel.helper.ConfigurationComparator
+import co.fusionx.channels.util.ChannelComparator
+import co.fusionx.channels.util.ConfigurationComparator
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
