@@ -1,21 +1,19 @@
 package co.fusionx.channels.viewmodel.helper
 
 import co.fusionx.channels.collections.ObservableSortedList
-import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 
-class ConfigurationComparator private constructor() : ObservableSortedList.HyperComparator<Configuration> {
-    override fun areItemsTheSame(item1: Configuration, item2: Configuration): Boolean {
-        return item1.connection.name == item2.connection.name
+class ConfigurationComparator private constructor() : ObservableSortedList.HyperComparator<ChannelsConfiguration> {
+    override fun areItemsTheSame(item1: ChannelsConfiguration, item2: ChannelsConfiguration): Boolean {
+        return item1.name == item2.name
     }
 
-    override fun areContentsTheSame(oldItem: Configuration, newItem: Configuration): Boolean {
-        return oldItem.connection.name == newItem.connection.name
+    override fun areContentsTheSame(oldItem: ChannelsConfiguration, newItem: ChannelsConfiguration): Boolean {
+        return oldItem.name == newItem.name
     }
 
-    override fun compare(o1: Configuration, o2: Configuration): Int {
-        val name = o1.connection.name
-        val other = o2.connection.name
-        return if (name == null || other == null) 0 else name.compareTo(other)
+    override fun compare(o1: ChannelsConfiguration, o2: ChannelsConfiguration): Int {
+        return o1.name.compareTo(o2.name)
     }
 
     companion object {

@@ -12,7 +12,7 @@
 
         <variable
             name="configuration"
-            type="co.fusionx.channels.configuration.Configuration" />
+            type="co.fusionx.channels.configuration.ChannelsConfiguration" />
     </data>
 
     <LinearLayout
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@{configuration.connection.name}" />
+                android:text="@{configuration.name}" />
 
             <TextView
                 android:id="@+id/drawer_client_status"

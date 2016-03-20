@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import butterknife.bindView
 import co.fusionx.channels.R
-import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.databinding.ConfigurationEditAuthBinding
 import co.fusionx.channels.databinding.ConfigurationEditServerBinding
 import co.fusionx.channels.databinding.ConfigurationEditUserBinding
@@ -36,10 +36,10 @@ class ConfigurationEditActivity : AppCompatActivity() {
         supportActionBar!!.title = getString(R.string.configuration_add_title)
 
         val extras = intent.extras
-        val configuration = if (extras == null) null else Parcels.unwrap<Configuration>(extras.getParcelable(CONFIGURATION))
+        val configuration = if (extras == null) null else Parcels.unwrap<ChannelsConfiguration>(extras.getParcelable(CONFIGURATION))
 
         val serverBinding = ConfigurationEditServerBinding.inflate(layoutInflater, pager, false)
-        val server = ConfigurationServerPresenter(this, serverBinding, configuration?.connection)
+        val server = ConfigurationServerPresenter(this, serverBinding, configuration)
         server.setup(savedInstanceState)
 
         val userBinding = ConfigurationEditUserBinding.inflate(layoutInflater, pager, false)

@@ -7,22 +7,22 @@ import android.databinding.ObservableField
 import android.databinding.ObservableList
 import co.fusionx.channels.BR
 import co.fusionx.channels.R
-import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
 
 class ClientVM(private val context: Context,
-               private val configuration: Configuration,
+               private val configuration: ChannelsConfiguration,
                private val client: RelayClient,
                private val userMessageParser: UserMessageParser,
                val server: ServerVM,
                val channels: ObservableList<ChannelVM>) : BaseObservable(), EventListener {
 
     val name: CharSequence
-        get() = configuration.connection.name!!
+        get() = configuration.name
     val hostname: CharSequence
-        get() = configuration.connection.hostname!!
+        get() = configuration.connection.hostname
 
     var status: String = context.getString(CONNECTING)
         @Bindable get

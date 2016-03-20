@@ -6,7 +6,7 @@
 
         <variable
             name="configuration"
-            type="co.fusionx.channels.configuration.ServerConfiguration" />
+            type="co.fusionx.channels.presenter.ConfigurationServerPresenter.Configuration" />
     </data>
 
     <android.support.v4.widget.NestedScrollView

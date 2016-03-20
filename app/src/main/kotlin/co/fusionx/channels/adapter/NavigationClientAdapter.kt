@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.databinding.NavigationClientBinding
-import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.persistent.RelayVM
 import timber.log.Timber
@@ -16,8 +16,8 @@ class NavigationClientAdapter(
         private val context: Context,
         private val relayVM: RelayVM,
         private val addClick: (View) -> Unit,
-        private val manageClick: (Configuration) -> Unit,
-        private val clientClickListener: (Configuration) -> Unit) :
+        private val manageClick: (ChannelsConfiguration) -> Unit,
+        private val clientClickListener: (ChannelsConfiguration) -> Unit) :
         SectionAdapter<NavigationClientAdapter.ViewHolder, HeaderViewHolder>() {
 
     private val inflater: LayoutInflater
@@ -71,7 +71,7 @@ class NavigationClientAdapter(
         return 3
     }
 
-    private fun getListForSection(section: Int): List<Configuration> {
+    private fun getListForSection(section: Int): List<ChannelsConfiguration> {
         if (section == 0) {
             return relayVM.activeConfigs
         }

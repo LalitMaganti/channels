@@ -2,31 +2,26 @@ package co.fusionx.channels.presenter
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Parcelable
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import co.fusionx.channels.R
 import co.fusionx.channels.activity.ConfigurationEditActivity
 import co.fusionx.channels.activity.helper.EmptyWatcher
 import co.fusionx.channels.activity.helper.ErrorWatcher
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.databinding.ConfigurationEditServerBinding
-import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.configuration.Configuration
-import co.fusionx.channels.configuration.ServerConfiguration
+import org.parceler.Parcel
 import org.parceler.Parcels
 
 class ConfigurationServerPresenter(override val activity: Activity,
                                    override val binding: ConfigurationEditServerBinding,
-                                   private val inputConfig: ServerConfiguration? = null) : ConfigurationEditActivity.Presenter {
+                                   private val inputConfig: ChannelsConfiguration? = null) : ConfigurationEditActivity.Presenter {
     override val id: String
         get() = "configuration_server"
 
-    private lateinit var configuration: ServerConfiguration
+    private lateinit var configuration: Configuration
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {
-            configuration = inputConfig ?: ServerConfiguration()
+            configuration = if (inputConfig == null) Configuration() else Configuration()
         } else {
             configuration = Parcels.unwrap(savedState.getParcelable(CONFIGURATION))
         }
@@ -61,6 +56,22 @@ class ConfigurationServerPresenter(override val activity: Activity,
         } catch (ex: NumberFormatException) {
             return false
         }
+    }
+
+    @Parcel(Parcel.Serialization.BEAN)
+    class Configuration @JvmOverloads constructor(
+            var name: String? = null,
+            var hostname: String? = null,
+            var port: Int = 6667,
+            var ssl: Boolean = false,
+            var sslAllCerts: Boolean = false) {
+
+        constructor(c: ChannelsConfiguration) : this(
+                c.name,
+                c.connection.hostname,
+                c.connection.port,
+                c.connection.ssl,
+                c.connection.sslAllCerts)
     }
 
     companion object {

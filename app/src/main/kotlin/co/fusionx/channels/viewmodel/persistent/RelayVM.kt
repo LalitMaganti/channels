@@ -4,10 +4,12 @@ import android.content.Context
 import android.support.v4.util.ArrayMap
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
-import co.fusionx.channels.configuration.Configuration
-import co.fusionx.channels.databinding.NavigationClientBinding
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.db.connectionDb
-import co.fusionx.channels.relay.*
+import co.fusionx.channels.relay.BasicEventListener
+import co.fusionx.channels.relay.EMPTY_AUTH_HANDLER
+import co.fusionx.channels.relay.HandshakeEventListener
+import co.fusionx.channels.relay.MainThreadEventListener
 import co.fusionx.channels.viewmodel.helper.ChannelComparator
 import co.fusionx.channels.viewmodel.helper.ConfigurationComparator
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
@@ -21,14 +23,14 @@ import javax.inject.Singleton
 
 @Singleton class RelayVM @Inject constructor(private val context: Context) {
 
-    val activeConfigs: ObservableSortedList<Configuration> = ObservableSortedList(
-            Configuration::class.java, ConfigurationComparator.instance)
-    val inactiveConfigs: ObservableSortedList<Configuration> = ObservableSortedList(
-            Configuration::class.java, ConfigurationComparator.instance)
+    val activeConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
+            ChannelsConfiguration::class.java, ConfigurationComparator.instance)
+    val inactiveConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
+            ChannelsConfiguration::class.java, ConfigurationComparator.instance)
 
     val selectedClients: SelectedClientsVM = SelectedClientsVM()
 
-    val configActiveClients = ArrayMap<Configuration, ClientVM>()
+    val configActiveClients = ArrayMap<ChannelsConfiguration, ClientVM>()
 
     init {
         /* TODO(lrm113) deal with handling constantly updating databases */
@@ -43,9 +45,9 @@ import javax.inject.Singleton
                 }
     }
 
-    private fun createClient(configuration: Configuration): ClientVM {
+    private fun createClient(configuration: ChannelsConfiguration): ClientVM {
         val relayConfig = RelayClient.Configuration.create {
-            hostname = configuration.connection.hostname!!
+            hostname = configuration.connection.hostname
             port = configuration.connection.port
         }
 
@@ -72,9 +74,9 @@ import javax.inject.Singleton
         return clientVM
     }
 
-    fun select(configuration: Configuration): Boolean {
+    fun select(configuration: ChannelsConfiguration): Boolean {
         val index = inactiveConfigs.indexOf(configuration)
-        if (selectedClients.latest?.name == configuration.connection.name) {
+        if (selectedClients.latest?.name == configuration.name) {
             return true
         }
 

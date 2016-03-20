@@ -15,7 +15,7 @@ import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.collections.ListSectionProxy
 import co.fusionx.channels.activity.ConfigurationEditActivity
 import co.fusionx.channels.activity.MainActivity
-import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ChannelVM
 import co.fusionx.channels.viewmodel.persistent.ClientVM
@@ -126,21 +126,21 @@ class NavigationPresenter(override val activity: MainActivity,
             get() = clientAdapter
 
         lateinit var clientAdapter: NavigationClientAdapter
-        private lateinit var activeClientListener: ListSectionProxy<Configuration>
-        private lateinit var inactiveClientListener: ListSectionProxy<Configuration>
+        private lateinit var activeClientListener: ListSectionProxy<ChannelsConfiguration>
+        private lateinit var inactiveClientListener: ListSectionProxy<ChannelsConfiguration>
 
         override fun setup() {
             val addClick: (View) -> Unit =  {
                 activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
             }
 
-            val manageClick: (Configuration) -> Unit = {
+            val manageClick: (ChannelsConfiguration) -> Unit = {
                 val intent = Intent(activity, ConfigurationEditActivity::class.java)
                 intent.putExtra(ConfigurationEditActivity.CONFIGURATION, Parcels.wrap(it))
                 activity.startActivity(intent)
             }
 
-            val clientClick: (Configuration) -> Unit =  {
+            val clientClick: (ChannelsConfiguration) -> Unit =  {
                 activity.onClientClick(it)
 
                 // Make sure we're displaying the child view.
@@ -150,23 +150,23 @@ class NavigationPresenter(override val activity: MainActivity,
             clientAdapter = NavigationClientAdapter(view.context, relayVM, addClick, manageClick, clientClick)
             clientAdapter.setup()
 
-            activeClientListener = object : ListSectionProxy<Configuration>(0, clientAdapter) {
-                override fun onItemRangeInserted(sender: ObservableList<Configuration>, positionStart: Int, itemCount: Int) {
+            activeClientListener = object : ListSectionProxy<ChannelsConfiguration>(0, clientAdapter) {
+                override fun onItemRangeInserted(sender: ObservableList<ChannelsConfiguration>, positionStart: Int, itemCount: Int) {
                     this@NavigationPresenter.updateHeader()
                     super.onItemRangeInserted(sender, positionStart, itemCount)
                 }
 
-                override fun onChanged(sender: ObservableList<Configuration>) {
+                override fun onChanged(sender: ObservableList<ChannelsConfiguration>) {
                     this@NavigationPresenter.updateHeader()
                     super.onChanged(sender)
                 }
 
-                override fun onItemRangeRemoved(sender: ObservableList<Configuration>, positionStart: Int, itemCount: Int) {
+                override fun onItemRangeRemoved(sender: ObservableList<ChannelsConfiguration>, positionStart: Int, itemCount: Int) {
                     this@NavigationPresenter.updateHeader()
                     super.onItemRangeRemoved(sender, positionStart, itemCount)
                 }
             }
-            inactiveClientListener = ListSectionProxy<Configuration>(1, clientAdapter)
+            inactiveClientListener = ListSectionProxy<ChannelsConfiguration>(1, clientAdapter)
         }
 
         override fun bind() {

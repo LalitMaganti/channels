@@ -16,7 +16,7 @@ import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.ClientChildPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.configuration.Configuration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun onClientClick(configuration: Configuration) {
+    fun onClientClick(configuration: ChannelsConfiguration) {
         relayVM.select(configuration)
     }
 
