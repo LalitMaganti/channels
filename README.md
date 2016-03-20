@@ -14,3 +14,10 @@ Channels is easy to build with Gradle. It requires the use of Relay, the IRC lib
 git clone https://github.com/tilal6991/relay-jvm.git
 ./gradlew assembleDebug 
 ```
+
+Roadmap
+------
+* Get things to a functional state
+* Alpha Release
+* Beta Release
+* Final Release(!)
