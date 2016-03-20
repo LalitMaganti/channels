@@ -6,7 +6,7 @@
 
         <variable
             name="configuration"
-            type="co.fusionx.channels.configuration.ServerConfiguration" />
+            type="co.fusionx.channels.presenter.ConfigurationUserPresenter.Configuration" />
     </data>
 
     <android.support.v4.widget.NestedScrollView
@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/nick"
-                    android:text="@string/default_user_handle" />
+                    android:text="@{configuration.nicks[0]}" />
             </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
@@ -48,7 +48,7 @@
                 <CheckBox
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checked="true"
+                    android:checked="@{configuration.autoChangeNick}"
                     android:text="@string/auto_change_nick" />
 
                 <TextView
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/real_name"
-                    android:text="@string/default_user_handle" />
+                    android:text="@{configuration.realName}" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
