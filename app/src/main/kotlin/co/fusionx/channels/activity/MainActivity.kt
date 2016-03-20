@@ -2,21 +2,21 @@ package co.fusionx.channels.activity
 
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.Toolbar
 import android.util.ArraySet
-import android.view.Gravity
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayVM
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.presenter.ActionBarPresenter
 import co.fusionx.channels.presenter.ClientChildPresenter
 import co.fusionx.channels.presenter.NavigationPresenter
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
@@ -32,15 +32,14 @@ class MainActivity : AppCompatActivity() {
 
     private val presenters: MutableCollection<Presenter> = ArraySet()
 
-    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, 0, 0)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setHomeAsUpIndicator(DrawerArrowDrawable(this))
 
         presenters.addAll(
                 NavigationPresenter(this, navDrawerView),
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         // If there are no selected server, then start with the drawer open.
         if (relayVM.selectedClients.latest == null) {
-            drawerLayout.openDrawer(Gravity.START);
+            drawerLayout.openDrawer(navDrawerView);
         }
     }
 
@@ -61,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onChildClick(child: ClientChildVM) {
         relayVM.selectedClients.latest!!.select(child)
-        drawerLayout.closeDrawers()
+        drawerLayout.closeDrawer(navDrawerView)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -90,16 +89,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     /* ActionBarDrawerToggle overrides */
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        actionBarDrawerToggle.syncState()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            drawerLayout.toggle(navDrawerView)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
-    override fun onConfigurationChanged(config: android.content.res.Configuration) {
-        super.onConfigurationChanged(config)
-        actionBarDrawerToggle.onConfigurationChanged(config)
+    private fun DrawerLayout.toggle(view: View) {
+        if (isDrawerOpen(view)) {
+            closeDrawer(view)
+        } else {
+            openDrawer(view)
+        }
     }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-            actionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item)
 }
