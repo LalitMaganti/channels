@@ -4,18 +4,19 @@ import android.os.Bundle
 import android.support.v7.app.ActionBar
 import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.presenter.helper.ClientChildListener
+import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 
 class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     override val id: String
         get() = "toolbar"
 
-    private val childListener = ClientChildListener(activity) { updateActionBar() }
+    private val childListener = ClientChildListener(activity) { updateActionBar(it) }
 
     private val actionBar: ActionBar
         get() = activity.supportActionBar!!
 
     override fun setup(savedState: Bundle?) {
-        updateActionBar()
+        updateActionBar(selectedChild?.get())
     }
 
     override fun bind() {
@@ -26,8 +27,8 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
         childListener.unbind()
     }
 
-    private fun updateActionBar() {
+    private fun updateActionBar(it: ClientChildVM?) {
         actionBar.title = selectedClientsVM.latest?.name ?: "Channels"
-        actionBar.subtitle = selectedChild?.get()?.name
+        actionBar.subtitle = it?.name
     }
 }

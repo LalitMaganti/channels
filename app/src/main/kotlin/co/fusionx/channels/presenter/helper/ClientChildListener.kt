@@ -9,7 +9,7 @@ import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
 
 class ClientChildListener(private val context: Context,
-                          private val callback: () -> Unit) : Bindable {
+                          private val callback: (ClientChildVM?) -> Unit) : Bindable {
     private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClients
     private val selectedChild: ObservableField<ClientChildVM>?
@@ -18,14 +18,14 @@ class ClientChildListener(private val context: Context,
     private val clientListener = object : SelectedClientsVM.OnLatestClientChangedCallback {
         override fun onLatestClientChanged() {
             selectedChild?.removeOnPropertyChangedCallback(childListener)
-            callback()
+            callback(selectedChild?.get())
             selectedChild?.addOnPropertyChangedCallback(childListener)
         }
     }
 
     private val childListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            callback()
+            callback(selectedChild?.get())
         }
     }
 

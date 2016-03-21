@@ -3,9 +3,12 @@ package co.fusionx.channels.presenter
 import android.app.Activity
 import android.databinding.ObservableField
 import android.os.Bundle
+import android.view.View
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 interface Bindable {
     fun setup() = Unit
@@ -42,3 +45,24 @@ interface Presenter {
         return activity.resources.getQuantityString(id, quantity)
     }
 }
+
+private fun viewNotFound(id: Int, desc: KProperty<*>): Nothing =
+        throw IllegalStateException("View ID $id for '${desc.name}' not found.")
+
+fun <V : View> View.bindView(id: Int): ReadOnlyProperty<Presenter, V> =
+        Lazy { t, desc -> findViewById(id) as V? ?: viewNotFound(id, desc) }
+
+private class Lazy<T, V>(private val initializer: (T, KProperty<*>) -> V) : ReadOnlyProperty<T, V> {
+    private object EMPTY
+
+    private var value: Any? = EMPTY
+
+    override fun getValue(thisRef: T, property: KProperty<*>): V {
+        if (value == EMPTY) {
+            value = initializer(thisRef, property)
+        }
+        @Suppress("UNCHECKED_CAST")
+        return value as V
+    }
+}
+

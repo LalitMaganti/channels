@@ -1,5 +1,6 @@
 <resources>
     <dimen name="navigation_drawer_width">280dp</dimen>
+    <dimen name="user_drawer_width">300dp</dimen>
     <dimen name="navdrawer_profile_image_size_small">48dp</dimen>
     <dimen name="navigation_drawer_top_margin">48dp</dimen>
 </resources>

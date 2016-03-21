@@ -23,7 +23,7 @@ class ClientChildPresenter(override val activity: MainActivity,
     private lateinit var messageHandler: Bindable
 
     private var displayedChild: ClientChildVM? = null
-    private val childListener = ClientChildListener(activity) { switchContent() }
+    private val childListener = ClientChildListener(activity) { switchContent(it) }
 
     private val adapter: MainItemAdapter = MainItemAdapter(activity)
     private var listener: ObservableListAdapterProxy<CharSequence> = object : ObservableListAdapterProxy<CharSequence>(adapter) {
@@ -38,7 +38,7 @@ class ClientChildPresenter(override val activity: MainActivity,
         messageHandler.setup()
 
         eventRecyclerView.adapter = adapter
-        switchContent()
+        switchContent(selectedChild?.get())
     }
 
     override fun bind() {
@@ -55,8 +55,7 @@ class ClientChildPresenter(override val activity: MainActivity,
         messageHandler.teardown()
     }
 
-    private fun switchContent() {
-        val newChild = selectedChild?.get()
+    private fun switchContent(newChild: ClientChildVM?) {
         if (displayedChild == newChild) return
 
         displayedChild?.buffer?.removeOnListChangedCallback(listener)

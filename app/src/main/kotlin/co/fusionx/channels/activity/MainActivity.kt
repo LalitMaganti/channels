@@ -8,15 +8,13 @@ import android.support.v7.widget.Toolbar
 import android.util.ArraySet
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.configuration.ChannelsConfiguration
-import co.fusionx.channels.presenter.ActionBarPresenter
-import co.fusionx.channels.presenter.ClientChildPresenter
-import co.fusionx.channels.presenter.NavigationPresenter
-import co.fusionx.channels.presenter.Presenter
+import co.fusionx.channels.presenter.*
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
@@ -29,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
     private val messageBox: EditText by bindView(R.id.message)
+    private val userDrawerView: ViewGroup by bindView(R.id.user_drawer_view)
 
     private val presenters: MutableCollection<Presenter> = ArraySet()
 
@@ -44,7 +43,8 @@ class MainActivity : AppCompatActivity() {
         presenters.addAll(
                 NavigationPresenter(this, navDrawerView),
                 ClientChildPresenter(this, messageBox, eventRecycler),
-                ActionBarPresenter(this)
+                ActionBarPresenter(this),
+                UserListPresenter(this, drawerLayout, userDrawerView)
         )
         presenters.forEach { it.setup(savedInstanceState) }
 

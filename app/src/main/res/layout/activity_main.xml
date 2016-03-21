@@ -23,10 +23,10 @@
                 android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/message_hint"
                 android:imeOptions="actionSend"
                 android:inputType="textAutoComplete|textCapSentences"
                 android:padding="8dp"
-                android:hint="@string/message_hint"
                 android:singleLine="true"
                 android:visibility="gone" />
         </FrameLayout>
@@ -65,5 +65,7 @@
 
     <!-- The navigation drawer -->
     <include layout="@layout/view_navigation_drawer" />
+
+    <include layout="@layout/user_list" />
 
 </android.support.v4.widget.DrawerLayout>
