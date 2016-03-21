@@ -1,7 +1,7 @@
 package co.fusionx.channels.viewmodel.persistent
 
 import co.fusionx.channels.collections.ObservableSortedArrayMap
-import co.fusionx.relay.ConnectionInformationListener
+import co.fusionx.relay.protocol.RegistrationInformation
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
