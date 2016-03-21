@@ -10,10 +10,10 @@ import co.fusionx.relay.util.isChannel
 import timber.log.Timber
 import java.util.*
 
-class UserChannelDao(
+class ChannelManagerVM(
         initialNick: String,
         private val channels: ObservableSortedArrayMap<String, ChannelVM>) :
-        EventListener, UserMessageParser.ParserListener {
+        EventListener, UserMessageParser.Listener {
 
     private var selfNick: String = initialNick
 
@@ -42,11 +42,11 @@ class UserChannelDao(
         }
 
         val nick = PrefixExtractor.nick(prefix)
-        getChannelOrFail(target)?.onPrivmsg(nick, message) ?: return
+        getChannelOrFail(target)?.onMessage(nick, message) ?: return
     }
 
     override fun onChannelMessage(channelVM: ChannelVM, message: String) {
-        channelVM.onPrivmsg(selfNick, message)
+        channelVM.onMessage(selfNick, message)
     }
 
     override fun onNick(oldNick: String, newNick: String) {

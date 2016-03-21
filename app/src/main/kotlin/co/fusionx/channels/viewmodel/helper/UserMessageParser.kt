@@ -5,7 +5,8 @@ import co.fusionx.channels.viewmodel.persistent.ClientChildVM
 import co.fusionx.channels.viewmodel.persistent.ServerVM
 import co.fusionx.relay.protocol.ClientGenerator
 
-class UserMessageParser(private val listener: ParserListener) {
+class UserMessageParser(private val listener: Listener) {
+
     fun parse(userMessage: String, context: ClientChildVM, serverVM: ServerVM): String? {
         if (context is ServerVM) {
             return parseServerMessage(userMessage, serverVM)
@@ -125,7 +126,7 @@ class UserMessageParser(private val listener: ParserListener) {
         return null
     }
 
-    interface ParserListener {
+    interface Listener {
         fun onChannelMessage(channelVM: ChannelVM, message: String)
     }
 }

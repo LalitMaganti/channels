@@ -24,24 +24,16 @@ class ConfigurationAuthPresenter(override val activity: Activity,
                 R.layout.support_simple_spinner_dropdown_item,
                 arrayOf("None", "SASL", "NickServ")
         )
-        spinner.setSelection(0)
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(view: AdapterView<*>?) {
             }
 
             override fun onItemSelected(av: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (position == 0) {
-                    hide(binding.nickservContainer)
-                    hide(binding.saslContainer)
-                } else if (position == 1) {
-                    binding.nickservContainer.visibility = View.GONE
-                    show(binding.saslContainer)
-                } else if (position == 2) {
-                    show(binding.nickservContainer)
-                    binding.saslContainer.visibility = View.GONE
-                }
+                onSpinnerPositionChanged(position)
             }
         }
+        spinner.setSelection(0)
+        onSpinnerPositionChanged(0)
 
         binding.nickservContainer.error = getString(R.string.empty_error)
         binding.nickservPassword.addTextChangedListener(EmptyWatcher(binding.nickservContainer))
@@ -53,6 +45,19 @@ class ConfigurationAuthPresenter(override val activity: Activity,
         binding.saslPassword.addTextChangedListener(EmptyWatcher(binding.saslPasswordContainer))
 
         binding.serverUsername.addTextChangedListener(EmptyWatcher(binding.serverUsernameContainer))
+    }
+
+    private fun onSpinnerPositionChanged(position: Int) {
+        if (position == 0) {
+            hide(binding.nickservContainer)
+            hide(binding.saslContainer)
+        } else if (position == 1) {
+            binding.nickservContainer.visibility = View.GONE
+            show(binding.saslContainer)
+        } else if (position == 2) {
+            show(binding.nickservContainer)
+            binding.saslContainer.visibility = View.GONE
+        }
     }
 
     @Suppress("UsePropertyAccessSyntax")

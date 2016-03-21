@@ -55,7 +55,7 @@ import javax.inject.Singleton
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val userChannelVM = UserChannelDao(configuration.user.nicks[0], channelMap)
+        val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
 

@@ -13,7 +13,7 @@ class ChannelVM(override val name: String) : ClientChildVM() {
     val userMap: ObservableSortedArrayMap<UserVM, Char> = ObservableSortedArrayMap(
             UserComparator.instance, CharComparator.instance)
 
-    fun onPrivmsg(nick: String, message: String) {
+    fun onMessage(nick: String, message: String) {
         val index = userMap.binarySearchKey { it.nick.compareTo(nick) }
         if (index < 0) {
             return
