@@ -24,8 +24,6 @@ ext {
 
     relay = ':relay-jvm:relay'
     relayAndroid = ':relay-jvm:android'
-    relayAnnotations = ':relay-jvm:annotations'
-    relayCompiler = ':relay-jvm:compiler'
 
     dagger = 'com.google.dagger:dagger:2.1'
     daggerCompiler = 'com.google.dagger:dagger-compiler:2.1'
