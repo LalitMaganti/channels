@@ -1,11 +1,11 @@
 package co.fusionx.channels.viewmodel.persistent
 
 import co.fusionx.channels.collections.ObservableSortedArrayMap
-import co.fusionx.relay.protocol.RegistrationInformation
+import co.fusionx.relay.RegistrationDao
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
-import co.fusionx.relay.util.PrefixExtractor
+import co.fusionx.relay.protocol.PrefixSplitter
 import co.fusionx.relay.util.isChannel
 import timber.log.Timber
 import java.util.*
@@ -18,7 +18,7 @@ class ChannelManagerVM(
     private var selfNick: String = initialNick
 
     override fun onJoin(prefix: String, channel: String) {
-        val nick = PrefixExtractor.nick(prefix)
+        val nick = PrefixSplitter.nick(prefix)
         val c: ChannelVM
         if (nick == selfNick) {
             c = ChannelVM(channel)
@@ -41,7 +41,7 @@ class ChannelManagerVM(
             return
         }
 
-        val nick = PrefixExtractor.nick(prefix)
+        val nick = PrefixSplitter.nick(prefix)
         getChannelOrFail(target)?.onMessage(nick, message) ?: return
     }
 
