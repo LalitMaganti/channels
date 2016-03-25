@@ -21,7 +21,7 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
         add(text)
     }
 
-    override fun onNotice(prefix: String, target: String, message: String) {
+    override fun onNotice(prefix: String, target: String, message: String, optParams: Map<String, String>) {
         add(message)
     }
 

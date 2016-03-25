@@ -23,7 +23,7 @@ abstract class SASLHandler(protected val client: RelayClient) : AuthHandler {
 
     private var handling = false
 
-    override fun onCapLs(caps: List<String>) {
+    override fun onCapLs(caps: List<String>, values: List<String?>, finalLine: Boolean) {
         handling = caps.contains("sasl")
         if (handling) {
             client.send(ClientGenerator.cap("REQ", listOf("sasl")))

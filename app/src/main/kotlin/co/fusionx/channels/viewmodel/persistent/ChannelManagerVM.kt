@@ -17,7 +17,7 @@ class ChannelManagerVM(
 
     private var selfNick: String = initialNick
 
-    override fun onJoin(prefix: String, channel: String) {
+    override fun onJoin(prefix: String, channel: String, optParams: Map<String, String>) {
         val nick = PrefixSplitter.nick(prefix)
         val c: ChannelVM
         if (nick == selfNick) {
@@ -36,7 +36,7 @@ class ChannelManagerVM(
         }
     }
 
-    override fun onPrivmsg(prefix: String, target: String, message: String) {
+    override fun onPrivmsg(prefix: String, target: String, message: String, optParams: Map<String, String>) {
         if (!target.isChannel()) {
             return
         }

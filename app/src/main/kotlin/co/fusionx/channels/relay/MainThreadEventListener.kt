@@ -31,28 +31,28 @@ class MainThreadEventListener : EventListener {
         it.onNick(oldNick, newNick)
     }
 
-    override fun onPing(server: String) = postForEach {
-        it.onPing(server)
+    override fun onPing(hostName: String?) = postForEach {
+        it.onPing(hostName)
     }
 
-    override fun onJoin(prefix: String, channel: String) = postForEach {
-        it.onJoin(prefix, channel)
+    override fun onJoin(prefix: String, channel: String, optParams: Map<String, String>) = postForEach {
+        it.onJoin(prefix, channel, optParams)
     }
 
-    override fun onPrivmsg(prefix: String, target: String, message: String) = postForEach {
-        it.onPrivmsg(prefix, target, message)
+    override fun onPrivmsg(prefix: String, target: String, message: String, optParams: Map<String, String>) = postForEach {
+        it.onPrivmsg(prefix, target, message, optParams)
     }
 
-    override fun onNotice(prefix: String, target: String, message: String) = postForEach {
-        it.onNotice(prefix, target, message)
+    override fun onNotice(prefix: String, target: String, message: String, optParams: Map<String, String>) = postForEach {
+        it.onNotice(prefix, target, message, optParams)
     }
 
-    override fun onIsupport(supportTokens: List<String>, message: String) = postForEach {
-        it.onIsupport(supportTokens, message)
+    override fun onIsupport(keys: List<String>, values: List<String?>, message: String) = postForEach {
+        it.onIsupport(keys, values, message)
     }
 
-    override fun onCapLs(caps: List<String>) = postForEach {
-        it.onCapLs(caps)
+    override fun onCapLs(caps: List<String>, values: List<String?>, finalLine: Boolean) = postForEach {
+        it.onCapLs(caps, values, finalLine)
     }
 
     override fun onCapAck(caps: List<String>) = postForEach {

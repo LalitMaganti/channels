@@ -7,7 +7,7 @@ import co.fusionx.relay.protocol.ClientGenerator
 class BasicEventListener(
         private val client: RelayClient) : EventListener {
 
-    override fun onPing(server: String) {
-        client.send(ClientGenerator.pong(server))
+    override fun onPing(hostName: String?) {
+        client.send(ClientGenerator.pong(hostName))
     }
 }

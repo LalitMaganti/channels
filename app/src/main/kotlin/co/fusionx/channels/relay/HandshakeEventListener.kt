@@ -23,7 +23,7 @@ class HandshakeEventListener(
     }
 
     // TODO(tilal6991) - only do this when connected.
-    override fun onCapLs(caps: List<String>) {
+    override fun onCapLs(caps: List<String>, values: List<String?>, finalLine: Boolean) {
         val req = caps.intersect(capArray)
         if (req.isEmpty()) {
             if (!authHandler.endsCap(caps)) {
