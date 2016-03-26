@@ -22,7 +22,7 @@ class ClientVM(private val context: Context,
     val name: CharSequence
         get() = configuration.name
     val hostname: CharSequence
-        get() = configuration.connection.hostname
+        get() = configuration.server.hostname
 
     var status: String = context.getString(CONNECTING)
         @Bindable get

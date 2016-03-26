@@ -68,10 +68,10 @@ class ConfigurationServerPresenter(override val activity: Activity,
 
         constructor(c: ChannelsConfiguration) : this(
                 c.name,
-                c.connection.hostname,
-                c.connection.port,
-                c.connection.ssl,
-                c.connection.sslAllCerts)
+                c.server.hostname,
+                c.server.port,
+                c.server.ssl,
+                c.server.sslAllCerts)
     }
 
     companion object {

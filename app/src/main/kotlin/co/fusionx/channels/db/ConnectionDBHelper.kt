@@ -4,10 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import co.fusionx.channels.configuration.UserConfiguration
 import org.jetbrains.anko.db.*
 
 class ConnectionDBHelper private constructor(private val context: Context) :
-        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 74) {
+        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 80) {
     override fun onCreate(db: SQLiteDatabase) {
         createTables(db)
     }
@@ -32,13 +33,17 @@ class ConnectionDBHelper private constructor(private val context: Context) :
                 )
         )
 
-        // TODO(tilal6991) remove this
         db.insert(ConnectionTableConstants.TABLE_NAME,
                 ConnectionTableConstants.NAME to "Freenode",
                 ConnectionTableConstants.HOSTNAME to "irc.freenode.net",
                 ConnectionTableConstants.PORT to 6667,
-                ConnectionTableConstants.USERNAME to "ChannelsUser",
-                ConnectionTableConstants.REAL_NAME to "ChannelsUser")
+                ConnectionTableConstants.SSL to 0,
+                ConnectionTableConstants.SSL_AUTO_CHANGE to 0,
+                ConnectionTableConstants.SERVER_USERNAME to "ChannelsUser",
+
+                ConnectionTableConstants.AUTO_NICK_CHANGE to 1,
+                ConnectionTableConstants.REAL_NAME to "ChannelsUser",
+                ConnectionTableConstants.AUTH_TYPE to UserConfiguration.NONE_AUTH_TYPE)
         db.insert(NickTableConstants.TABLE_NAME,
                 NickTableConstants.NAME to "Freenode",
                 NickTableConstants.NICK to "ChannelsUser")
@@ -47,8 +52,13 @@ class ConnectionDBHelper private constructor(private val context: Context) :
                 ConnectionTableConstants.NAME to "Techtronix",
                 ConnectionTableConstants.HOSTNAME to "irc.techtronix.net",
                 ConnectionTableConstants.PORT to 6667,
-                ConnectionTableConstants.USERNAME to "ChannelsUser",
-                ConnectionTableConstants.REAL_NAME to "ChannelsUser")
+                ConnectionTableConstants.SSL to 0,
+                ConnectionTableConstants.SSL_AUTO_CHANGE to 0,
+                ConnectionTableConstants.SERVER_USERNAME to "ChannelsUser",
+
+                ConnectionTableConstants.AUTO_NICK_CHANGE to 1,
+                ConnectionTableConstants.REAL_NAME to "ChannelsUser",
+                ConnectionTableConstants.AUTH_TYPE to UserConfiguration.NONE_AUTH_TYPE)
         db.insert(NickTableConstants.TABLE_NAME,
                 NickTableConstants.NAME to "Techtronix",
                 NickTableConstants.NICK to "ChannelsUser")
@@ -64,16 +74,21 @@ class ConnectionDBHelper private constructor(private val context: Context) :
 
                 ConnectionTableConstants.HOSTNAME to TEXT + NOT_NULL,
                 ConnectionTableConstants.PORT to INTEGER + NOT_NULL,
-
-                ConnectionTableConstants.USERNAME to TEXT + NOT_NULL,
+                ConnectionTableConstants.SSL to INTEGER + NOT_NULL,
+                ConnectionTableConstants.SSL_AUTO_CHANGE to INTEGER + NOT_NULL,
+                ConnectionTableConstants.SERVER_USERNAME to TEXT + NOT_NULL,
                 ConnectionTableConstants.SERVER_PASSWORD to TEXT,
-                ConnectionTableConstants.REAL_NAME to TEXT + NOT_NULL
-        )
+
+                ConnectionTableConstants.AUTO_NICK_CHANGE to INTEGER + NOT_NULL,
+                ConnectionTableConstants.REAL_NAME to TEXT + NOT_NULL,
+                ConnectionTableConstants.AUTH_TYPE to INTEGER + NOT_NULL,
+                ConnectionTableConstants.AUTH_USERNAME to TEXT,
+                ConnectionTableConstants.AUTH_PASSWORD to TEXT)
+
         private val nickTableColumns = arrayOf(
                 NickTableConstants._ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT + UNIQUE,
                 NickTableConstants.NAME to TEXT + NOT_NULL,
-                NickTableConstants.NICK to TEXT + NOT_NULL
-        )
+                NickTableConstants.NICK to TEXT + NOT_NULL)
 
         @Synchronized fun instance(ctx: Context): ConnectionDBHelper {
             if (instance == null) {
@@ -83,8 +98,31 @@ class ConnectionDBHelper private constructor(private val context: Context) :
         }
     }
 
+    private fun SQLiteDatabase.insert(tableName: String, values: List<Pair<String, Any?>>): Long {
+        return insert(tableName, null, values.toContentValues())
+    }
+
     private fun SQLiteDatabase.insert(tableName: String, vararg values: Pair<String, Any?>): Long {
         return insert(tableName, null, values.toContentValues())
+    }
+
+    private fun List<Pair<String, Any?>>.toContentValues(): ContentValues {
+        val values = ContentValues()
+        for ((key, value) in this) {
+            when (value) {
+                is Boolean -> values.put(key, value)
+                is Byte -> values.put(key, value)
+                is ByteArray -> values.put(key, value)
+                is Double -> values.put(key, value)
+                is Float -> values.put(key, value)
+                is Int -> values.put(key, value)
+                is Long -> values.put(key, value)
+                is Short -> values.put(key, value)
+                is String -> values.put(key, value)
+                else -> throw IllegalArgumentException("Non-supported value type: ${value?.javaClass?.name ?: "null"}")
+            }
+        }
+        return values
     }
 
     private fun Array<out Pair<String, Any?>>.toContentValues(): ContentValues {

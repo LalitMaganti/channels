@@ -10,4 +10,6 @@ class ServerConfiguration @ParcelConstructor constructor(
         @param:ParcelProperty("hostname") override val hostname: String,
         @param:ParcelProperty("port") override val port: Int,
         @param:ParcelProperty("ssl") val ssl: Boolean,
-        @param:ParcelProperty("sslAllCerts") val sslAllCerts: Boolean) : RelayClient.Configuration
+        @param:ParcelProperty("sslAllCerts") val sslAllCerts: Boolean,
+        @param:ParcelProperty("username") val username: String,
+        @param:ParcelProperty("password") val password: String?) : RelayClient.Configuration

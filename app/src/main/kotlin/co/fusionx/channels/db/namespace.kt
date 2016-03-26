@@ -12,10 +12,16 @@ object ConnectionTableConstants {
 
     const val HOSTNAME: String = "hostname"
     const val PORT: String = "port"
-
-    const val USERNAME: String = "username"
+    const val SSL: String = "ssl"
+    const val SSL_AUTO_CHANGE: String = "ssl_auto_change"
+    const val SERVER_USERNAME: String = "server_username"
     const val SERVER_PASSWORD: String = "server_password"
+
+    const val AUTO_NICK_CHANGE: String = "auto_nick_change"
     const val REAL_NAME: String = "real_name"
+    const val AUTH_TYPE: String = "auth_type"
+    const val AUTH_USERNAME: String = "auth_username"
+    const val AUTH_PASSWORD: String = "auth_password"
 }
 
 object NickTableConstants {

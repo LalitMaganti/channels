@@ -19,7 +19,7 @@ class ConfigurationUserPresenter(override val activity: Activity,
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {
-            configuration = if (inputConfig == null) Configuration() else Configuration()
+            configuration = if (inputConfig == null) Configuration() else Configuration(inputConfig)
         } else {
             configuration = Parcels.unwrap(savedState.getParcelable(CONFIGURATION))
         }
@@ -36,7 +36,7 @@ class ConfigurationUserPresenter(override val activity: Activity,
                         val realName: String = "ChannelsUser") {
         constructor(c: ChannelsConfiguration) : this(
                 c.user.nicks,
-                true,
+                c.user.autoChangeNick,
                 c.user.realName)
     }
 

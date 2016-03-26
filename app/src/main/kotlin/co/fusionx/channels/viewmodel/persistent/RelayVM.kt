@@ -47,8 +47,8 @@ import javax.inject.Singleton
 
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {
         val relayConfig = RelayClient.Configuration.create {
-            hostname = configuration.connection.hostname
-            port = configuration.connection.port
+            hostname = configuration.server.hostname
+            port = configuration.server.port
         }
 
         val coreClient = RelayClient.create(relayConfig, AndroidMessageLoop.create())

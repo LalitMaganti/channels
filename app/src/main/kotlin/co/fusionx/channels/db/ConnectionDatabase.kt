@@ -5,7 +5,6 @@ import android.database.Cursor
 import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.configuration.ServerConfiguration
 import co.fusionx.channels.configuration.UserConfiguration
-import co.fusionx.channels.relay.HandshakeEventListener
 import com.squareup.sqlbrite.BriteDatabase
 import com.squareup.sqlbrite.SqlBrite
 import rx.Observable
@@ -27,15 +26,17 @@ class ConnectionDatabase(private val context: Context) {
         val connection = ServerConfiguration(
                 cursor.getString(ConnectionTableConstants.HOSTNAME),
                 cursor.getInt(ConnectionTableConstants.PORT),
-                false,
-                false
-        )
+                cursor.getInt(ConnectionTableConstants.SSL) == 1,
+                cursor.getInt(ConnectionTableConstants.SSL_AUTO_CHANGE) == 1,
+                cursor.getString(ConnectionTableConstants.SERVER_USERNAME),
+                cursor.getString(ConnectionTableConstants.SERVER_PASSWORD))
         val handshake = UserConfiguration(
-                cursor.getString(ConnectionTableConstants.USERNAME),
-                cursor.getString(ConnectionTableConstants.SERVER_PASSWORD),
                 getNicks(name),
-                cursor.getString(ConnectionTableConstants.REAL_NAME)
-        )
+                cursor.getInt(ConnectionTableConstants.AUTO_NICK_CHANGE) == 1,
+                cursor.getString(ConnectionTableConstants.REAL_NAME),
+                cursor.getInt(ConnectionTableConstants.AUTH_TYPE),
+                cursor.getString(ConnectionTableConstants.AUTH_USERNAME),
+                cursor.getString(ConnectionTableConstants.AUTH_PASSWORD))
         return ChannelsConfiguration(name, connection, handshake)
     }
 
