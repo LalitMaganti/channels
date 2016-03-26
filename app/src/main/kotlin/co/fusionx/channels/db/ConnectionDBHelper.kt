@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import org.jetbrains.anko.db.*
 
 class ConnectionDBHelper private constructor(private val context: Context) :
-        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 71) {
+        SQLiteOpenHelper(context, ConnectionDBHelper.DB_NAME, null, 74) {
     override fun onCreate(db: SQLiteDatabase) {
         createTables(db)
     }
@@ -37,19 +37,21 @@ class ConnectionDBHelper private constructor(private val context: Context) :
                 ConnectionTableConstants.NAME to "Freenode",
                 ConnectionTableConstants.HOSTNAME to "irc.freenode.net",
                 ConnectionTableConstants.PORT to 6667,
-                ConnectionTableConstants.USERNAME to "tilal6993")
+                ConnectionTableConstants.USERNAME to "ChannelsUser",
+                ConnectionTableConstants.REAL_NAME to "ChannelsUser")
         db.insert(NickTableConstants.TABLE_NAME,
                 NickTableConstants.NAME to "Freenode",
-                NickTableConstants.NICK to "tilal6993")
+                NickTableConstants.NICK to "ChannelsUser")
 
         db.insert(ConnectionTableConstants.TABLE_NAME,
                 ConnectionTableConstants.NAME to "Techtronix",
                 ConnectionTableConstants.HOSTNAME to "irc.techtronix.net",
                 ConnectionTableConstants.PORT to 6667,
-                ConnectionTableConstants.USERNAME to "tilal6993")
+                ConnectionTableConstants.USERNAME to "ChannelsUser",
+                ConnectionTableConstants.REAL_NAME to "ChannelsUser")
         db.insert(NickTableConstants.TABLE_NAME,
                 NickTableConstants.NAME to "Techtronix",
-                NickTableConstants.NICK to "tilal6993")
+                NickTableConstants.NICK to "ChannelsUser")
     }
 
     companion object {
@@ -65,7 +67,7 @@ class ConnectionDBHelper private constructor(private val context: Context) :
 
                 ConnectionTableConstants.USERNAME to TEXT + NOT_NULL,
                 ConnectionTableConstants.SERVER_PASSWORD to TEXT,
-                ConnectionTableConstants.REAL_NAME to TEXT
+                ConnectionTableConstants.REAL_NAME to TEXT + NOT_NULL
         )
         private val nickTableColumns = arrayOf(
                 NickTableConstants._ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT + UNIQUE,

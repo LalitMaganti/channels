@@ -6,8 +6,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="colorControlNormal">@android:color/white</item>
-
         <item name="android:windowBackground">@color/gray_50</item>
     </style>
 
@@ -36,6 +34,7 @@
 
     <style name="Theme.Channels" parent="Base.Theme.Channels">
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="drawerArrowStyle">@style/Widget.Channels.DrawerArrowToggle</item>
     </style>
 
     <style name="Theme.Channels.StatusBar" parent="Base.Theme.Channels">
@@ -72,5 +71,9 @@
 
     <style name="TextAppearance.Channels.Tab.Inverse" parent="TextAppearance.Design.Tab">
         <item name="android:textColor">?android:textColorSecondaryInverse</item>
+    </style>
+
+    <style name="Widget.Channels.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@android:color/white</item>
     </style>
 </resources>

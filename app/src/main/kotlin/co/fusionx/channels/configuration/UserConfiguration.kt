@@ -6,7 +6,7 @@ import org.parceler.ParcelProperty
 
 @Parcel(Parcel.Serialization.BEAN)
 class UserConfiguration @ParcelConstructor constructor(
-        @param:ParcelProperty("username") val username: String?,
+        @param:ParcelProperty("username") val username: String,
         @param:ParcelProperty("password") val password: String?,
         @param:ParcelProperty("nicks") val nicks: List<String>,
-        @param:ParcelProperty("realName") val realName: String?)
+        @param:ParcelProperty("realName") val realName: String)

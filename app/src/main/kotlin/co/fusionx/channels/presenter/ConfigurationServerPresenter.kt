@@ -21,7 +21,7 @@ class ConfigurationServerPresenter(override val activity: Activity,
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {
-            configuration = if (inputConfig == null) Configuration() else Configuration()
+            configuration = if (inputConfig == null) Configuration() else Configuration(inputConfig)
         } else {
             configuration = Parcels.unwrap(savedState.getParcelable(CONFIGURATION))
         }

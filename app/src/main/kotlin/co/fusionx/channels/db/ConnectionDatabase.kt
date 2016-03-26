@@ -47,7 +47,6 @@ class ConnectionDatabase(private val context: Context) {
                 .first()
     }
 
-
     companion object {
         private var instance: ConnectionDatabase? = null
 
