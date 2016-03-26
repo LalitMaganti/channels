@@ -7,7 +7,7 @@ import org.parceler.ParcelProperty
 @Parcel(Parcel.Serialization.BEAN)
 class ChannelsConfiguration @ParcelConstructor constructor(
         @param:ParcelProperty("name") val name: String,
-        @param:ParcelProperty("connection") val server: ServerConfiguration,
+        @param:ParcelProperty("server") val server: ServerConfiguration,
         @param:ParcelProperty("user") val user: UserConfiguration) {
 
     override fun equals(other: Any?): Boolean {

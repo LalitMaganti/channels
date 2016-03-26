@@ -49,7 +49,7 @@
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@{client == null ? configuration.connection.hostname : client.status}" />
+                android:text="@{client == null ? configuration.server.hostname : client.status}" />
         </LinearLayout>
 
         <ImageView

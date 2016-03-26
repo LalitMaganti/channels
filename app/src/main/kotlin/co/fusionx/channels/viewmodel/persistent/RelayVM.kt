@@ -62,7 +62,7 @@ import javax.inject.Singleton
         val clientVM = ClientVM(context, configuration, coreClient, userMessageParser, server, channelMap.valuesAsObservableList())
 
         val basicEventListener = BasicEventListener(coreClient)
-        val handshakeListener = HandshakeEventListener(coreClient, configuration.user, EMPTY_AUTH_HANDLER)
+        val handshakeListener = HandshakeEventListener(coreClient, configuration, EMPTY_AUTH_HANDLER)
         val mainThreadListener = MainThreadEventListener()
         coreClient.addEventListener(basicEventListener)
         coreClient.addEventListener(handshakeListener)

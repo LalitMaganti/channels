@@ -1,6 +1,8 @@
 package co.fusionx.channels.presenter
 
 import android.app.Activity
+import android.databinding.BaseObservable
+import android.databinding.Bindable
 import android.os.Bundle
 import android.support.v4.view.ViewCompat
 import android.view.View
@@ -26,7 +28,7 @@ class ConfigurationAuthPresenter(override val activity: Activity,
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {
-            configuration = if (inputConfig == null) Configuration() else Configuration()
+            configuration = if (inputConfig == null) Configuration() else Configuration(inputConfig)
         } else {
             configuration = Parcels.unwrap(savedState.getParcelable(CONFIGURATION))
         }
@@ -46,17 +48,26 @@ class ConfigurationAuthPresenter(override val activity: Activity,
                 onSpinnerPositionChanged(position)
             }
         }
-        spinner.setSelection(0)
-        onSpinnerPositionChanged(0)
+        spinner.setSelection(configuration.authIndex)
+        onSpinnerPositionChanged(configuration.authIndex)
 
-        binding.nickservContainer.error = getString(R.string.empty_error)
-        binding.nickservPassword.addTextChangedListener(EmptyWatcher(binding.nickservContainer))
+        if (configuration.authIndex == NICKSERV_INDEX) {
+            if (configuration.password == null) {
+                binding.nickservContainer.error = getString(R.string.empty_error)
+            }
+        } else if (configuration.authIndex == SASL_INDEX) {
+            if (configuration.username == null) {
+                binding.saslUsernameContainer.error = getString(R.string.empty_error)
+            }
+            if (configuration.password == null) {
+                binding.saslPasswordContainer.error = getString(R.string.empty_error)
+            }
+        }
 
-        binding.saslUsernameContainer.error = getString(R.string.empty_error)
         binding.saslUsername.addTextChangedListener(EmptyWatcher(binding.saslUsernameContainer))
-
-        binding.saslPasswordContainer.error = getString(R.string.empty_error)
         binding.saslPassword.addTextChangedListener(EmptyWatcher(binding.saslPasswordContainer))
+
+        binding.nickservPassword.addTextChangedListener(EmptyWatcher(binding.nickservContainer))
 
         binding.serverUsername.addTextChangedListener(EmptyWatcher(binding.serverUsernameContainer))
     }
@@ -105,14 +116,25 @@ class ConfigurationAuthPresenter(override val activity: Activity,
 
     @Parcel(Parcel.Serialization.BEAN)
     class Configuration @JvmOverloads constructor(
-            var authType: Int = UserConfiguration.NONE_AUTH_TYPE,
-            var username: String? = null,
-            var password: String? = null,
-            var serverUsername: String = "ChannelsUser",
-            var serverPassword: String? = null) {
+            authIndex: Int = 0,
+            username: String? = null,
+            password: String? = null,
+            serverUsername: String = "ChannelsUser",
+            serverPassword: String? = null) : BaseObservable() {
+
+        var authIndex: Int = authIndex
+            @Bindable get
+        var username: String? = username
+            @Bindable get
+        var password: String? = password
+            @Bindable get
+        var serverUsername: String = serverUsername
+            @Bindable get
+        var serverPassword: String? = serverPassword
+            @Bindable get
 
         constructor(c: ChannelsConfiguration) : this(
-                c.user.authType,
+                authTypeToIndex(c.user.authType),
                 c.user.authUsername,
                 c.user.authPassword,
                 c.server.username,
@@ -121,5 +143,16 @@ class ConfigurationAuthPresenter(override val activity: Activity,
 
     companion object {
         private const val CONFIGURATION = "configuration"
+
+        const val NONE_INDEX = 0
+        const val SASL_INDEX = 1
+        const val NICKSERV_INDEX = 2
+
+        private fun authTypeToIndex(authType: Int): Int = when (authType) {
+            UserConfiguration.NONE_AUTH_TYPE -> NONE_INDEX
+            UserConfiguration.SASL_AUTH_TYPE -> SASL_INDEX
+            UserConfiguration.NICKSERV_AUTH_TYPE -> NICKSERV_INDEX
+            else -> -1
+        }
     }
 }

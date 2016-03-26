@@ -1,25 +1,26 @@
 package co.fusionx.channels.relay
 
-import co.fusionx.channels.configuration.UserConfiguration
+import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.RelayClient
+import co.fusionx.relay.protocol.Capabilities
 import co.fusionx.relay.protocol.ClientGenerator
 
 class HandshakeEventListener(
         private val client: RelayClient,
-        private val configuration: UserConfiguration,
+        private val configuration: ChannelsConfiguration,
         private val authHandler: AuthHandler) : EventListener {
 
     override fun onSocketConnect() {
         client.send(ClientGenerator.cap("LS"))
-        val password = configuration.password
+        val password = configuration.server.password
         if (password != null) {
             client.send(ClientGenerator.pass(password))
         }
-        client.send(ClientGenerator.nick(configuration.nicks.getOrElse(0) { "ChannelsUser" }))
+        client.send(ClientGenerator.nick(configuration.user.nicks.getOrElse(0) { "ChannelsUser" }))
 
-        val realName = configuration.realName ?: "ChannelsUser"
-        client.send(ClientGenerator.user(configuration.username ?: "ChannelsUser", realName))
+        val realName = configuration.user.realName
+        client.send(ClientGenerator.user(configuration.server.username, realName))
     }
 
     // TODO(tilal6991) - only do this when connected.
@@ -49,6 +50,6 @@ class HandshakeEventListener(
     }
 
     companion object {
-        private val capArray = listOf("multi-prefix")
+        private val capArray = listOf(Capabilities.MULTI_PREFIX)
     }
 }

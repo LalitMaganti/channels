@@ -4,9 +4,11 @@
 
     <data>
 
+        <import type="co.fusionx.channels.presenter.ConfigurationAuthPresenter" />
+
         <variable
             name="configuration"
-            type="co.fusionx.channels.configuration.ServerConfiguration" />
+            type="co.fusionx.channels.presenter.ConfigurationAuthPresenter.Configuration" />
     </data>
 
     <android.support.v4.widget.NestedScrollView
@@ -60,7 +62,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:hint="@string/nickserv_password"
-                        android:inputType="textPassword" />
+                        android:inputType="textPassword"
+                        android:text="@{configuration.authIndex == ConfigurationAuthPresenter.NICKSERV_INDEX ? configuration.password : null}" />
                 </android.support.design.widget.TextInputLayout>
 
                 <LinearLayout
@@ -79,7 +82,8 @@
                             android:id="@+id/sasl_username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/sasl_username" />
+                            android:hint="@string/sasl_username"
+                            android:text="@{configuration.authIndex == ConfigurationAuthPresenter.SASL_INDEX ? configuration.username : null}" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -93,11 +97,10 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
                             android:hint="@string/sasl_password"
-                            android:inputType="textPassword" />
+                            android:inputType="textPassword"
+                            android:text="@{configuration.authIndex == ConfigurationAuthPresenter.SASL_INDEX ? configuration.password : null}" />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
-
-
             </LinearLayout>
 
             <TextView
@@ -120,7 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/server_username"
-                    android:text="@string/default_user_handle" />
+                    android:text="@{configuration.serverUsername}" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -136,7 +139,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:hint="@string/server_password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:text="@{configuration.serverPassword}" />
 
                 <TextView
                     android:layout_width="match_parent"
