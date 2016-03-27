@@ -6,9 +6,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.Toolbar
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
@@ -31,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private val userDrawerView: ViewGroup by bindView(R.id.user_drawer_view)
 
     private lateinit var navigationPresenter: NavigationPresenter
+    private lateinit var actionBarPresenter: ActionBarPresenter
+    private lateinit var actionsPresenter: ActionsPresenter
 
     private val presenters: MutableCollection<Presenter> = ArrayList()
 
@@ -44,12 +44,15 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setHomeAsUpIndicator(DrawerArrowDrawable(this))
 
         navigationPresenter = NavigationPresenter(this, navDrawerView)
+        actionBarPresenter = ActionBarPresenter(this)
+        actionsPresenter = ActionsPresenter(this)
+
         presenters.addAll(
                 navigationPresenter,
                 ClientChildPresenter(this, messageBox, eventRecycler),
-                ActionBarPresenter(this),
+                actionBarPresenter,
                 UserListPresenter(this, drawerLayout, userDrawerView),
-                ActionsPresenter(this)
+                actionsPresenter
         )
         presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
 
@@ -93,10 +96,25 @@ class MainActivity : AppCompatActivity() {
         presenters.forEach { it.teardown() }
     }
 
-    /* ActionBarDrawerToggle overrides */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_activity, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        return actionBarPresenter.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            drawerLayout.toggle(navDrawerView)
+        when (item.itemId) {
+            android.R.id.home -> {
+                drawerLayout.toggle(navDrawerView)
+                return true
+            }
+            R.id.menu_action_button -> {
+                actionsPresenter.toggle()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

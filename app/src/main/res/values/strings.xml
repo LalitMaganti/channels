@@ -62,4 +62,5 @@
     <string name="configuration_not_saved">
         CAUTION: your current configuration cannot be saved. Would you like to continue?
     </string>
+    <string name="actions">Actions</string>
 </resources>

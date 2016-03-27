@@ -7,9 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowBackground">@color/gray_50</item>
+        <item name="actionDrawableColor">@color/material_secondary_text</item>
     </style>
 
-    <style name="Base.Theme.Channels.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="Base.Theme.Channels.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Base.Theme.Channels.SubHeader">
         <item name="android:textSize">14sp</item>
@@ -32,13 +33,19 @@
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
+    <style name="Base.TextAppearance.Channels.Actions" parent="android:TextAppearance">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
     <style name="Theme.Channels" parent="Base.Theme.Channels">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="drawerArrowStyle">@style/Widget.Channels.DrawerArrowToggle</item>
     </style>
 
-    <style name="Theme.Channels.StatusBar" parent="Base.Theme.Channels">
-    </style>
+    <style name="Theme.Channels.StatusBar" parent="Base.Theme.Channels" />
 
     <style name="Theme.Channels.ActionBar" parent="Base.Theme.Channels.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
@@ -52,22 +59,21 @@
         <item name="textAppearanceListItem">@style/Theme.Channels.NavDrawerItem</item>
     </style>
 
-    <style name="Theme.Channels.SubHeader" parent="Base.Theme.Channels.SubHeader"/>
+    <style name="Theme.Channels.SubHeader" parent="Base.Theme.Channels.SubHeader" />
 
     <style name="Theme.Channels.NavDrawerItem" parent="Base.Theme.Channels.NavDrawerItem">
         <item name="android:fontFamily">@string/subheader_font_family</item>
     </style>
 
-    <style name="Theme.Channels.TwoLineListPrimary"
-           parent="Base.Theme.Channels.TwoLineListPrimary"/>
+    <style name="Theme.Channels.TwoLineListPrimary" parent="Base.Theme.Channels.TwoLineListPrimary" />
 
-    <style name="Theme.Channels.TwoLineListSecondary"
-           parent="Base.Theme.Channels.TwoLineListSecondary"/>
+    <style name="Theme.Channels.TwoLineListSecondary" parent="Base.Theme.Channels.TwoLineListSecondary" />
 
-    <style name="Theme.Channels.NavigationDrawer.Secondary"
-           parent="Base.Theme.Channels.TwoLineListSecondary">
+    <style name="Theme.Channels.NavigationDrawer.Secondary" parent="Base.Theme.Channels.TwoLineListSecondary">
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="TextAppearance.Channels.Actions" parent="Base.TextAppearance.Channels.Actions" />
 
     <style name="TextAppearance.Channels.Tab.Inverse" parent="TextAppearance.Design.Tab">
         <item name="android:textColor">?android:textColorSecondaryInverse</item>

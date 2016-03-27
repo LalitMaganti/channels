@@ -5,6 +5,9 @@
     <color name="colorPrimaryDark">@color/blue_700</color>
     <color name="colorAccent">@color/orange_900</color>
 
+    <color name="material_primary_text">#DB000000</color>
+    <color name="material_secondary_text">#8C000000</color>
+
     <color name="gray_50">#FAFAFA</color>
 
     <color name="red_a700">#D50000</color>
