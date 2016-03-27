@@ -96,7 +96,7 @@ class ActionsPresenter(override val activity: MainActivity) : Presenter {
         }
 
         override fun onBindItemViewHolder(holder: ItemViewHolder, section: Int, offset: Int) {
-            holder.bind(R.drawable.ic_cancel_black_72dp to R.string.user_auth)
+            holder.bind(R.drawable.ic_cancel to R.string.user_auth)
         }
 
         override fun getSectionCount(): Int {
