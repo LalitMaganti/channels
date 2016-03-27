@@ -27,6 +27,9 @@ class ClientVM(private val context: Context,
     var status: String = context.getString(CONNECTING)
         @Bindable get
 
+    var statusInt: Int = CONNECTING
+        @Bindable get
+
     val selectedChild: ObservableField<ClientChildVM>
 
     init {
@@ -38,8 +41,9 @@ class ClientVM(private val context: Context,
         selectedChild.set(child)
     }
 
-    private fun updateStatus(s: Int) {
-        status = context.getString(s)
+    private fun updateStatus(newStatus: Int) {
+        statusInt = newStatus
+        status = context.getString(newStatus)
         notifyPropertyChanged(BR.status)
     }
 

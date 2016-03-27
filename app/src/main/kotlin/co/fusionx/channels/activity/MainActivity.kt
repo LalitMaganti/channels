@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navigationPresenter: NavigationPresenter
     private lateinit var actionBarPresenter: ActionBarPresenter
-    private lateinit var actionsPresenter: ActionsPresenter
+    private lateinit var dashboardPresenter: DashboardPresenter
 
     private val presenters: MutableCollection<Presenter> = ArrayList()
 
@@ -45,14 +45,14 @@ class MainActivity : AppCompatActivity() {
 
         navigationPresenter = NavigationPresenter(this, navDrawerView)
         actionBarPresenter = ActionBarPresenter(this)
-        actionsPresenter = ActionsPresenter(this)
+        dashboardPresenter = DashboardPresenter(this)
 
         presenters.addAll(
                 navigationPresenter,
                 ClientChildPresenter(this, messageBox, eventRecycler),
                 actionBarPresenter,
                 UserListPresenter(this, drawerLayout, userDrawerView),
-                actionsPresenter
+                dashboardPresenter
         )
         presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
 
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.menu_action_button -> {
-                actionsPresenter.toggle()
+                dashboardPresenter.toggle()
                 return true
             }
         }

@@ -10,12 +10,12 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
 
     private var setupComplete = false
 
-    private lateinit var sectionAbsolutePositions: Array<Int>
+    private lateinit var sectionAbsolutePositions: IntArray
     private var count: Int = 0
 
     fun setup() {
         setupComplete = true
-        sectionAbsolutePositions = Array(getSectionCount()) { 0 }
+        sectionAbsolutePositions = IntArray(getSectionCount())
 
         notifySectionedDataSetChanged()
     }
@@ -42,6 +42,7 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         checkSetup()
 
         count = 0
+        sectionAbsolutePositions = IntArray(getSectionCount())
         for (i in 0..getSectionCount() - 1) {
             sectionAbsolutePositions[i] = count
             val itemCountInSection = getItemCountInSection(i)

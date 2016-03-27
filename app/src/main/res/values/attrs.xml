@@ -6,5 +6,5 @@
         <attr name="desaturateOnPress" format="boolean" />
     </declare-styleable>
 
-    <attr name="actionDrawableColor" format="color" />
+    <attr name="dashboardDrawableColor" format="color" />
 </resources>

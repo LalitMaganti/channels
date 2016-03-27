@@ -63,4 +63,11 @@
         CAUTION: your current configuration cannot be saved. Would you like to continue?
     </string>
     <string name="actions">Actions</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="disconnect_close">Disconnect and close</string>
+    <string name="close">Close</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="server_actions">Server Actions</string>
+    <string name="channel_actions">Channel Actions</string>
 </resources>

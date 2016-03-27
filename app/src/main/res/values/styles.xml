@@ -7,7 +7,7 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowBackground">@color/gray_50</item>
-        <item name="actionDrawableColor">@color/material_secondary_text</item>
+        <item name="dashboardDrawableColor">@color/material_primary_text</item>
     </style>
 
     <style name="Base.Theme.Channels.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
