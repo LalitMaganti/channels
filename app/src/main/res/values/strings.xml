@@ -58,4 +58,10 @@
     <string name="empty_error">Should not be empty</string>
     <string name="add_server">Add New Server</string>
     <string name="manage_servers">Manage Servers</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="configuration_not_saved">
+        CAUTION: your current configuration cannot be saved. Would you like to continue?
+    </string>
 </resources>

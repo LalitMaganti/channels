@@ -5,7 +5,7 @@ import org.parceler.ParcelConstructor
 import org.parceler.ParcelProperty
 
 @Parcel(Parcel.Serialization.BEAN)
-class UserConfiguration @ParcelConstructor constructor(
+data class UserConfiguration @ParcelConstructor constructor(
         @param:ParcelProperty("nicks") val nicks: List<String>,
         @param:ParcelProperty("autoChangeNick") val autoChangeNick: Boolean,
         @param:ParcelProperty("realName") val realName: String,

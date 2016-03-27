@@ -2,6 +2,7 @@ package co.fusionx.channels.viewmodel.persistent
 
 import android.content.Context
 import android.support.v4.util.ArrayMap
+import android.support.v7.util.SortedList
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.configuration.ChannelsConfiguration
@@ -35,14 +36,68 @@ import javax.inject.Singleton
     init {
         /* TODO(lrm113) deal with handling constantly updating databases */
         context.connectionDb.getConfigurations()
-                .first()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    inactiveConfigs.clear()
-                    activeConfigs.clear()
-                    inactiveConfigs.addAll(it)
+                .subscribe { mergeConfigs(it) }
+    }
+
+    private fun mergeConfigs(new: List<ChannelsConfiguration>) {
+        if (activeConfigs.isEmpty() && inactiveConfigs.isEmpty()) {
+            inactiveConfigs.addAll(new)
+            return
+        }
+
+        val newConfigs = new.toMutableList()
+        newConfigs.sortWith(ConfigurationComparator.instance)
+
+        inactiveConfigs.beginBatchedUpdates()
+
+        // Remove all configs which are no longer present.
+        val indices = ArrayList<Int>()
+        for (i in 0..inactiveConfigs.size - 1) {
+            val c = inactiveConfigs[i]
+            val index = newConfigs.binarySearch { c.name.compareTo(it.name) }
+            if (index == -1) {
+                indices.add(i)
+            }
+        }
+        for (i in 0..indices.size - 1) {
+            inactiveConfigs.removeAt(indices[i] - i)
+        }
+
+        // Add all new items.
+        for (i in 0..newConfigs.size - 1) {
+            val c = newConfigs[i]
+            val index = inactiveConfigs.binarySearch { c.name.compareTo(it.name) }
+            if (index < 0) {
+                val actIndex = activeConfigs.binarySearch { c.name.compareTo(it.name) }
+                if (actIndex < 0) {
+                    inactiveConfigs.add(c)
                 }
+            }
+        }
+
+        inactiveConfigs.endBatchedUpdates()
+    }
+
+    fun select(configuration: ChannelsConfiguration): Boolean {
+        val index = inactiveConfigs.indexOf(configuration)
+        if (selectedClients.latest?.name == configuration.name) {
+            return true
+        }
+
+        var client = configActiveClients[configuration]
+        if (client == null) {
+            client = createClient(configuration)
+            configActiveClients[configuration] = client
+
+            val item = inactiveConfigs.removeAt(index)
+            activeConfigs.add(item)
+        }
+
+        selectedClients.select(client)
+        client.select(client.server)
+        return false
     }
 
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {
@@ -72,25 +127,5 @@ import javax.inject.Singleton
         mainThreadListener.addEventListener(server)
         mainThreadListener.addEventListener(userChannelVM)
         return clientVM
-    }
-
-    fun select(configuration: ChannelsConfiguration): Boolean {
-        val index = inactiveConfigs.indexOf(configuration)
-        if (selectedClients.latest?.name == configuration.name) {
-            return true
-        }
-
-        var client = configActiveClients[configuration]
-        if (client == null) {
-            client = createClient(configuration)
-            configActiveClients[configuration] = client
-
-            val item = inactiveConfigs.removeAt(index)
-            activeConfigs.add(item)
-        }
-
-        selectedClients.select(client)
-        client.select(client.server)
-        return false
     }
 }

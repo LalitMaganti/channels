@@ -1,31 +1,54 @@
 package co.fusionx.channels.activity
 
-import android.app.Activity
+import android.content.Intent
+import android.databinding.ObservableBoolean
+import android.databinding.ObservableField
+import android.databinding.ObservableInt
 import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.EditText
 import butterknife.bindView
 import co.fusionx.channels.R
 import co.fusionx.channels.configuration.ChannelsConfiguration
+import co.fusionx.channels.configuration.ServerConfiguration
+import co.fusionx.channels.configuration.UserConfiguration
 import co.fusionx.channels.databinding.ConfigurationEditAuthBinding
 import co.fusionx.channels.databinding.ConfigurationEditServerBinding
 import co.fusionx.channels.databinding.ConfigurationEditUserBinding
+import co.fusionx.channels.db.connectionDb
 import co.fusionx.channels.presenter.ConfigurationAuthPresenter
 import co.fusionx.channels.presenter.ConfigurationServerPresenter
 import co.fusionx.channels.presenter.ConfigurationUserPresenter
+import co.fusionx.channels.presenter.helper.CommitingBooleanWatcher
+import co.fusionx.channels.presenter.helper.CommitingIntWatcher
+import co.fusionx.channels.presenter.helper.CommitingNullableWatcher
+import co.fusionx.channels.presenter.helper.CommitingWatcher
+import co.fusionx.channels.util.addAll
 import org.parceler.Parcels
+import rx.schedulers.Schedulers
+import java.util.*
 
 class ConfigurationEditActivity : AppCompatActivity() {
 
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val tabs: TabLayout by bindView(R.id.tabs)
     private val pager: ViewPager by bindView(R.id.view_pager)
+
+    private var configuration: ChannelsConfiguration? = null
+
+    private lateinit var server: ConfigurationServerPresenter
+    private lateinit var user: ConfigurationUserPresenter
+    private lateinit var auth: ConfigurationAuthPresenter
+    private val presenters: MutableList<Presenter> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,40 +59,103 @@ class ConfigurationEditActivity : AppCompatActivity() {
         supportActionBar!!.title = getString(R.string.configuration_add_title)
 
         val extras = intent.extras
-        val configuration = if (extras == null) null else Parcels.unwrap<ChannelsConfiguration>(extras.getParcelable(CONFIGURATION))
+        configuration = if (extras == null) null else Parcels.unwrap<ChannelsConfiguration>(extras.getParcelable(CONFIGURATION))
 
         val serverBinding = ConfigurationEditServerBinding.inflate(layoutInflater, pager, false)
-        val server = ConfigurationServerPresenter(this, serverBinding, configuration)
-        server.setup(savedInstanceState)
+        server = ConfigurationServerPresenter(this, serverBinding, configuration)
 
         val userBinding = ConfigurationEditUserBinding.inflate(layoutInflater, pager, false)
-        val user = ConfigurationUserPresenter(this, userBinding)
-        user.setup(savedInstanceState)
+        user = ConfigurationUserPresenter(this, userBinding)
 
         val authBinding = ConfigurationEditAuthBinding.inflate(layoutInflater, pager, false)
-        val auth = ConfigurationAuthPresenter(this, authBinding)
-        auth.setup(savedInstanceState)
+        auth = ConfigurationAuthPresenter(this, authBinding)
 
-        pager.adapter = Adapter(this, server, user, auth)
+        presenters.addAll(server, user, auth)
+        presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
+
+        pager.adapter = Adapter(presenters)
         pager.offscreenPageLimit = 3
         tabs.setupWithViewPager(pager)
     }
 
-    inner class Adapter(private val activity: Activity,
-                        private val server: ConfigurationServerPresenter,
-                        private val user: ConfigurationUserPresenter,
-                        private val auth: ConfigurationAuthPresenter) : PagerAdapter() {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        presenters.forEach { it.restoreState(savedInstanceState.getBundle(it.id)) }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenters.forEach { it.bind() }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenters.forEach { it.unbind() }
+    }
+
+    override fun onBackPressed() {
+        val newConfiguration = convertToConfiguration(
+                server.configuration, user.configuration, auth.configuration)
+        if (newConfiguration == null) {
+            AlertDialog.Builder(this)
+                    .setMessage(R.string.configuration_not_saved)
+                    .setPositiveButton(R.string.yes) { i, j ->
+                        i.dismiss()
+                        super.onBackPressed()
+                    }
+                    .setNegativeButton(R.string.no) { i, j -> i.cancel() }
+                    .show()
+        } else {
+            val completeable = if (configuration == null) {
+                connectionDb.insert(newConfiguration)
+            } else {
+                connectionDb.update(configuration!!.id, newConfiguration)
+            }
+            completeable.subscribeOn(Schedulers.io()).subscribe()
+
+            val result = Intent()
+            result.putExtra(RESULT_OLD_ID, configuration?.id ?: -1)
+            result.putExtra(RESULT_CONFIGURATION, Parcels.wrap(configuration))
+            setResult(RESULT_OK, result)
+
+            super.onBackPressed()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenters.forEach { outState.putBundle(it.id, it.saveState()) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenters.forEach { it.teardown() }
+    }
+
+    private fun convertToConfiguration(server: ConfigurationServerPresenter.Configuration,
+                                       user: ConfigurationUserPresenter.Configuration,
+                                       auth: ConfigurationAuthPresenter.Configuration): ChannelsConfiguration? {
+        if (!server.isValid() || !user.isValid() || !auth.isValid()) {
+            return null
+        }
+
+        val serverConfiguration = ServerConfiguration(
+                server.hostname.get().toString(), server.port.get(),
+                server.ssl.get(), server.sslAllCerts.get(),
+                auth.serverUsername.get().toString(), auth.serverPassword.get().toString())
+        val userConfiguration = UserConfiguration(
+                listOf(user.nick.get().toString()), user.autoChangeNick.get(),
+                user.realName.get().toString(),
+                ConfigurationAuthPresenter.indexToType(auth.authIndex),
+                auth.serverUsername.get().toString(), auth.serverPassword.get().toString())
+        return ChannelsConfiguration(-1, server.name.get().toString(), serverConfiguration, userConfiguration)
+    }
+
+    inner class Adapter(private val presenters: MutableList<Presenter>) : PagerAdapter() {
 
         override fun instantiateItem(container: ViewGroup, position: Int): Presenter? {
-            val presenter = when (position) {
-                0 -> server
-                1 -> user
-                2 -> auth
-                else -> null
-            }
-            if (presenter != null) {
-                container.addView(presenter.binding.root)
-            }
+            val presenter = presenters[position]
+            container.addView(presenter.binding.root)
             return presenter
         }
 
@@ -81,24 +167,46 @@ class ConfigurationEditActivity : AppCompatActivity() {
         }
 
         override fun getCount(): Int {
-            return 3
+            return presenters.size
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
-            return when (position) {
-                0 -> activity.getString(R.string.connection_settings)
-                1 -> activity.getString(R.string.user_settings)
-                2 -> activity.getString(R.string.auth_settings)
-                else -> null
+            return presenters[position].title
+        }
+    }
+
+    abstract class Presenter : co.fusionx.channels.presenter.Presenter {
+        abstract val binding: ViewDataBinding
+        abstract val title: String
+
+        protected final fun addIntBackendListeners(vararg pairs: Pair<EditText, ObservableInt>) {
+            for ((f, s) in pairs) {
+                f.addTextChangedListener(CommitingIntWatcher(s))
+            }
+        }
+
+        protected final fun addBooleanBackendListeners(vararg pairs: Pair<CheckBox, ObservableBoolean>) {
+            for ((f, s) in pairs) {
+                f.setOnCheckedChangeListener(CommitingBooleanWatcher(s))
+            }
+        }
+
+        protected final fun addNullableBackendListeners(vararg pairs: Pair<EditText, ObservableField<CharSequence?>>) {
+            for ((f, s) in pairs) {
+                f.addTextChangedListener(CommitingNullableWatcher(s))
+            }
+        }
+
+        protected final fun addNonNullBackendListeners(vararg pairs: Pair<EditText, ObservableField<CharSequence>>) {
+            for ((f, s) in pairs) {
+                f.addTextChangedListener(CommitingWatcher(s))
             }
         }
     }
 
-    interface Presenter : co.fusionx.channels.presenter.Presenter {
-        val binding: ViewDataBinding
-    }
-
     companion object {
         const val CONFIGURATION = "configuration"
+        const val RESULT_OLD_ID = "old_id"
+        const val RESULT_CONFIGURATION = "configuration"
     }
 }

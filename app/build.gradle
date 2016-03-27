@@ -54,6 +54,7 @@ dependencies {
     compile rootProject.ext.recyclerview
     compile rootProject.ext.design
 
+    compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
 
     compile rootProject.ext.annotation

@@ -2,35 +2,40 @@ package co.fusionx.channels.presenter
 
 import android.app.Activity
 import android.databinding.BaseObservable
-import android.databinding.Bindable
+import android.databinding.ObservableField
+import android.databinding.ObservableInt
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.support.v4.view.ViewCompat
+import android.util.SparseArray
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import co.fusionx.channels.R
 import co.fusionx.channels.activity.ConfigurationEditActivity
-import co.fusionx.channels.activity.helper.EmptyWatcher
 import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.configuration.UserConfiguration
 import co.fusionx.channels.databinding.ConfigurationEditAuthBinding
-import org.parceler.Parcel
-import org.parceler.Parcels
+import co.fusionx.channels.presenter.helper.EmptyWatcher
+import co.fusionx.channels.util.isNotEmpty
 
 class ConfigurationAuthPresenter(override val activity: Activity,
                                  override val binding: ConfigurationEditAuthBinding,
-                                 private val inputConfig: ChannelsConfiguration? = null) : ConfigurationEditActivity.Presenter {
-    private lateinit var configuration: Configuration
+                                 private val inputConfig: ChannelsConfiguration? = null) : ConfigurationEditActivity.Presenter() {
+    lateinit var configuration: Configuration
 
     override val id: String
         get() = "configuration_auth"
+    override val title: String
+        get() = activity.getString(R.string.auth_settings)
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {
             configuration = if (inputConfig == null) Configuration() else Configuration(inputConfig)
         } else {
-            configuration = Parcels.unwrap(savedState.getParcelable(CONFIGURATION))
+            configuration = savedState.getParcelable(CONFIGURATION) ?: Configuration()
         }
         binding.configuration = configuration
 
@@ -48,18 +53,20 @@ class ConfigurationAuthPresenter(override val activity: Activity,
                 onSpinnerPositionChanged(position)
             }
         }
-        spinner.setSelection(configuration.authIndex)
-        onSpinnerPositionChanged(configuration.authIndex)
 
-        if (configuration.authIndex == NICKSERV_INDEX) {
-            if (configuration.password == null) {
+        val authIndex = configuration.authIndex.get()
+        spinner.setSelection(authIndex)
+        onSpinnerPositionChanged(authIndex)
+
+        if (authIndex == NICKSERV_INDEX) {
+            if (configuration.password.get() == null) {
                 binding.nickservContainer.error = getString(R.string.empty_error)
             }
-        } else if (configuration.authIndex == SASL_INDEX) {
-            if (configuration.username == null) {
+        } else if (authIndex == SASL_INDEX) {
+            if (configuration.username.get() == null) {
                 binding.saslUsernameContainer.error = getString(R.string.empty_error)
             }
-            if (configuration.password == null) {
+            if (configuration.password.get() == null) {
                 binding.saslPasswordContainer.error = getString(R.string.empty_error)
             }
         }
@@ -70,16 +77,43 @@ class ConfigurationAuthPresenter(override val activity: Activity,
         binding.nickservPassword.addTextChangedListener(EmptyWatcher(binding.nickservContainer))
 
         binding.serverUsername.addTextChangedListener(EmptyWatcher(binding.serverUsernameContainer))
+
+        addNullableBackendListeners(
+                binding.saslUsername to configuration.username,
+                binding.saslPassword to configuration.password,
+                binding.nickservPassword to configuration.password,
+                binding.serverPassword to configuration.serverPassword)
+
+        addNonNullBackendListeners(
+                binding.serverUsername to configuration.serverUsername)
+    }
+
+    override fun restoreState(bundle: Bundle) {
+        val array = bundle.getSparseParcelableArray<Parcelable>(VIEW)
+        binding.root.restoreHierarchyState(array)
+    }
+
+    override fun saveState(): Bundle {
+        val bundle = Bundle()
+        bundle.putParcelable(CONFIGURATION, configuration)
+
+        val array = SparseArray<Parcelable>()
+        binding.root.saveHierarchyState(array)
+        bundle.putSparseParcelableArray(VIEW, array)
+
+        return bundle
     }
 
     private fun onSpinnerPositionChanged(position: Int) {
-        if (position == 0) {
+        configuration.authIndex.set(position)
+
+        if (position == NONE_INDEX) {
             hide(binding.nickservContainer)
             hide(binding.saslContainer)
-        } else if (position == 1) {
+        } else if (position == SASL_INDEX) {
             binding.nickservContainer.visibility = View.GONE
             show(binding.saslContainer)
-        } else if (position == 2) {
+        } else if (position == NICKSERV_INDEX) {
             show(binding.nickservContainer)
             binding.saslContainer.visibility = View.GONE
         }
@@ -114,35 +148,65 @@ class ConfigurationAuthPresenter(override val activity: Activity,
                 .withEndAction { view.visibility = View.GONE }
     }
 
-    @Parcel(Parcel.Serialization.BEAN)
     class Configuration @JvmOverloads constructor(
-            authIndex: Int = 0,
-            username: String? = null,
-            password: String? = null,
-            serverUsername: String = "ChannelsUser",
-            serverPassword: String? = null) : BaseObservable() {
-
-        var authIndex: Int = authIndex
-            @Bindable get
-        var username: String? = username
-            @Bindable get
-        var password: String? = password
-            @Bindable get
-        var serverUsername: String = serverUsername
-            @Bindable get
-        var serverPassword: String? = serverPassword
-            @Bindable get
+            var authIndex: ObservableInt = ObservableInt(0),
+            var username: ObservableField<CharSequence?> = ObservableField(null),
+            var password: ObservableField<CharSequence?> = ObservableField(null),
+            var serverUsername: ObservableField<CharSequence> = ObservableField("ChannelsUser"),
+            var serverPassword: ObservableField<CharSequence?> = ObservableField(null)) : BaseObservable(), Parcelable {
 
         constructor(c: ChannelsConfiguration) : this(
-                authTypeToIndex(c.user.authType),
-                c.user.authUsername,
-                c.user.authPassword,
-                c.server.username,
-                c.server.password)
+                ObservableInt(authTypeToIndex(c.user.authType)),
+                ObservableField(c.user.authUsername),
+                ObservableField(c.user.authPassword),
+                ObservableField(c.server.username),
+                ObservableField(c.server.password))
+
+        fun isValid(): Boolean {
+            val userValidity: Boolean
+            if (authIndex.get() == SASL_INDEX) {
+                userValidity = username.isNotEmpty() && password.isNotEmpty()
+            } else if (authIndex.get() == NICKSERV_INDEX) {
+                userValidity = password.isNotEmpty()
+            } else {
+                userValidity = true
+            }
+            return userValidity && serverUsername.isNotEmpty()
+        }
+
+        override fun writeToParcel(dest: Parcel, flags: Int) {
+            dest.writeInt(authIndex.get())
+            dest.writeString(username.get()?.toString() ?: "")
+            dest.writeString(password.get()?.toString() ?: "")
+            dest.writeString(serverUsername.get()?.toString() ?: "")
+            dest.writeString(serverPassword.get()?.toString() ?: "")
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object {
+            @JvmField final val CREATOR: Parcelable.Creator<Configuration> = object : Parcelable.Creator<Configuration> {
+                override fun createFromParcel(source: Parcel): Configuration {
+                    return Configuration(
+                            ObservableInt(source.readInt()),
+                            ObservableField(source.readString()),
+                            ObservableField(source.readString()),
+                            ObservableField(source.readString()),
+                            ObservableField(source.readString()))
+                }
+
+                override fun newArray(size: Int): Array<Configuration?> {
+                    return arrayOfNulls(size)
+                }
+            }
+        }
     }
 
     companion object {
         private const val CONFIGURATION = "configuration"
+        private const val VIEW = "view"
 
         const val NONE_INDEX = 0
         const val SASL_INDEX = 1
@@ -152,6 +216,13 @@ class ConfigurationAuthPresenter(override val activity: Activity,
             UserConfiguration.NONE_AUTH_TYPE -> NONE_INDEX
             UserConfiguration.SASL_AUTH_TYPE -> SASL_INDEX
             UserConfiguration.NICKSERV_AUTH_TYPE -> NICKSERV_INDEX
+            else -> -1
+        }
+
+        fun indexToType(authIndex: ObservableInt): Int = when (authIndex.get()) {
+            NONE_INDEX -> UserConfiguration.NONE_AUTH_TYPE
+            SASL_INDEX -> UserConfiguration.SASL_AUTH_TYPE
+            NICKSERV_INDEX -> UserConfiguration.NICKSERV_AUTH_TYPE
             else -> -1
         }
     }

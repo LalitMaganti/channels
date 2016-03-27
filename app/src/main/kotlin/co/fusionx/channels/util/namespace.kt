@@ -1,5 +1,8 @@
 package co.fusionx.channels.util
 
+import android.databinding.ObservableField
+import android.databinding.ObservableInt
+import android.text.TextUtils
 import co.fusionx.channels.collections.IndexedMap
 import timber.log.Timber
 
@@ -40,3 +43,32 @@ inline fun <K, V> IndexedMap<K, V>.binarySearchKey(comparison: (K) -> Int): Int 
 fun <T> MutableCollection<T>.addAll(vararg data: T) = addAll(data)
 
 fun Timber.Tree.failAssert() = e(IllegalArgumentException(), "This is a bug.")
+
+fun ObservableField<out CharSequence?>.isNotEmpty(): Boolean {
+    return !isEmpty()
+}
+
+fun ObservableField<out CharSequence?>.isEmpty(): Boolean {
+    return TextUtils.isEmpty(get())
+}
+
+fun CharSequence.isValidPort(): Boolean {
+    if (isEmpty()) {
+        return false
+    }
+
+    try {
+        val int = Integer.parseInt(toString())
+        return int.isValidPort()
+    } catch (ex: NumberFormatException) {
+        return false
+    }
+}
+
+fun ObservableInt.isValidPort(): Boolean {
+    return get().isValidPort()
+}
+
+fun Int.isValidPort(): Boolean {
+    return this > 0 && this <= 65536
+}

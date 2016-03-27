@@ -5,7 +5,6 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.Toolbar
-import android.util.ArraySet
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
 import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,7 +29,9 @@ class MainActivity : AppCompatActivity() {
     private val messageBox: EditText by bindView(R.id.message)
     private val userDrawerView: ViewGroup by bindView(R.id.user_drawer_view)
 
-    private val presenters: MutableCollection<Presenter> = ArraySet()
+    private lateinit var navigationPresenter: NavigationPresenter
+
+    private val presenters: MutableCollection<Presenter> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,13 +42,14 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(DrawerArrowDrawable(this))
 
+        navigationPresenter = NavigationPresenter(this, navDrawerView)
         presenters.addAll(
-                NavigationPresenter(this, navDrawerView),
+                navigationPresenter,
                 ClientChildPresenter(this, messageBox, eventRecycler),
                 ActionBarPresenter(this),
                 UserListPresenter(this, drawerLayout, userDrawerView)
         )
-        presenters.forEach { it.setup(savedInstanceState) }
+        presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
 
         // If there are no selected server, then start with the drawer open.
         if (relayVM.selectedClients.latest == null) {
@@ -102,5 +105,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             openDrawer(view)
         }
+    }
+
+    companion object {
+        const val REQUEST_EDIT = 100
     }
 }

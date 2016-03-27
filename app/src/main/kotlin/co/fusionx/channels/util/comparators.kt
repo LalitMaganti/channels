@@ -44,11 +44,11 @@ class UserComparator private constructor() : ObservableSortedList.HyperComparato
 
 class ConfigurationComparator private constructor() : ObservableSortedList.HyperComparator<ChannelsConfiguration> {
     override fun areItemsTheSame(item1: ChannelsConfiguration, item2: ChannelsConfiguration): Boolean {
-        return item1.name == item2.name
+        return item1.id == item2.id
     }
 
     override fun areContentsTheSame(oldItem: ChannelsConfiguration, newItem: ChannelsConfiguration): Boolean {
-        return oldItem.name == newItem.name
+        return oldItem.name == newItem.name && oldItem.server == newItem.server && oldItem.user == newItem.user
     }
 
     override fun compare(o1: ChannelsConfiguration, o2: ChannelsConfiguration): Int {

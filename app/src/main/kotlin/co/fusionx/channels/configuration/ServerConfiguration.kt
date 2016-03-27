@@ -6,7 +6,7 @@ import org.parceler.ParcelConstructor
 import org.parceler.ParcelProperty
 
 @Parcel(Parcel.Serialization.BEAN)
-class ServerConfiguration @ParcelConstructor constructor(
+data class ServerConfiguration @ParcelConstructor constructor(
         @param:ParcelProperty("hostname") override val hostname: String,
         @param:ParcelProperty("port") override val port: Int,
         @param:ParcelProperty("ssl") val ssl: Boolean,

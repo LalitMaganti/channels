@@ -131,13 +131,13 @@ class NavigationPresenter(override val activity: MainActivity,
 
         override fun setup() {
             val addClick: (View) -> Unit =  {
-                activity.startActivity(Intent(activity, ConfigurationEditActivity::class.java))
+                activity.startActivityForResult(Intent(activity, ConfigurationEditActivity::class.java), MainActivity.REQUEST_EDIT)
             }
 
             val manageClick: (ChannelsConfiguration) -> Unit = {
                 val intent = Intent(activity, ConfigurationEditActivity::class.java)
                 intent.putExtra(ConfigurationEditActivity.CONFIGURATION, Parcels.wrap(it))
-                activity.startActivity(intent)
+                activity.startActivityForResult(intent, MainActivity.REQUEST_EDIT)
             }
 
             val clientClick: (ChannelsConfiguration) -> Unit =  {

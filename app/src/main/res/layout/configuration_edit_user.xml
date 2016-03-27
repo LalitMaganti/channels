@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/nick"
-                    android:text="@{configuration.nicks[0]}" />
+                    android:text="@{configuration.nick}" />
             </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
@@ -46,6 +46,7 @@
                 android:padding="4dp">
 
                 <CheckBox
+                    android:id="@+id/auto_change_nick"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="@{configuration.autoChangeNick}"

@@ -6,16 +6,17 @@ import org.parceler.ParcelProperty
 
 @Parcel(Parcel.Serialization.BEAN)
 class ChannelsConfiguration @ParcelConstructor constructor(
+        @param:ParcelProperty("id") val id: Int,
         @param:ParcelProperty("name") val name: String,
         @param:ParcelProperty("server") val server: ServerConfiguration,
         @param:ParcelProperty("user") val user: UserConfiguration) {
 
     override fun equals(other: Any?): Boolean {
         if (other !is ChannelsConfiguration) return false
-        return other.name == name
+        return other.id == id
     }
 
     override fun hashCode(): Int {
-        return name.hashCode()
+        return id
     }
 }
