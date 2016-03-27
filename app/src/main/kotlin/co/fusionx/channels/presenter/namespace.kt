@@ -5,8 +5,8 @@ import android.databinding.ObservableField
 import android.os.Bundle
 import android.view.View
 import co.fusionx.channels.base.relayVM
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
-import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
+import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.SelectedClientsVM
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.ActionBar
 import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.presenter.helper.ClientChildListener
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientChildVM
 
 class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     override val id: String

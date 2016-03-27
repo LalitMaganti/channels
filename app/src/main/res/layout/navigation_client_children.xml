@@ -5,7 +5,7 @@
 
         <variable
             name="child"
-            type="co.fusionx.channels.viewmodel.persistent.ClientChildVM" />
+            type="co.fusionx.channels.viewmodel.ClientChildVM" />
     </data>
 
     <LinearLayout

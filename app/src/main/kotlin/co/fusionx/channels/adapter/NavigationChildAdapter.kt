@@ -8,8 +8,8 @@ import co.fusionx.channels.R
 import co.fusionx.channels.base.relayVM
 import co.fusionx.channels.databinding.NavigationClientChildrenBinding
 import co.fusionx.channels.util.failAssert
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
-import co.fusionx.channels.viewmodel.persistent.ClientVM
+import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientVM
 import timber.log.Timber
 
 class NavigationChildAdapter(

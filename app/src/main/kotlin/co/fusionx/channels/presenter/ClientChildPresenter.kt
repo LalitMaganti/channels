@@ -12,7 +12,7 @@ import co.fusionx.channels.presenter.helper.ClientChildListener
 import co.fusionx.channels.collections.ObservableListAdapterProxy
 import co.fusionx.channels.presenter.helper.MessageTextHandler
 import co.fusionx.channels.view.EventRecyclerView
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientChildVM
 
 class ClientChildPresenter(override val activity: MainActivity,
                            private val messageInput: EditText,

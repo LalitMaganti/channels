@@ -9,8 +9,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import co.fusionx.channels.R
-import co.fusionx.channels.viewmodel.persistent.ClientVM
-import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
+import co.fusionx.channels.viewmodel.ClientVM
+import co.fusionx.channels.viewmodel.SelectedClientsVM
 import com.amulyakhare.textdrawable.TextDrawable
 
 /**

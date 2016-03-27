@@ -9,7 +9,7 @@ import co.fusionx.channels.R
 import co.fusionx.channels.databinding.NavigationClientBinding
 import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.util.failAssert
-import co.fusionx.channels.viewmodel.persistent.RelayVM
+import co.fusionx.channels.viewmodel.RelayVM
 import timber.log.Timber
 
 class NavigationClientAdapter(

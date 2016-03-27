@@ -6,7 +6,7 @@
 
         <variable
             name="headerVm"
-            type="co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM" />
+            type="co.fusionx.channels.viewmodel.NavigationHeaderVM" />
     </data>
 
     <co.fusionx.channels.view.ClientCarouselView

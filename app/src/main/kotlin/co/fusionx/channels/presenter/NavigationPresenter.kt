@@ -17,10 +17,10 @@ import co.fusionx.channels.activity.ConfigurationEditActivity
 import co.fusionx.channels.activity.MainActivity
 import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.view.NavigationDrawerView
-import co.fusionx.channels.viewmodel.persistent.ChannelVM
-import co.fusionx.channels.viewmodel.persistent.ClientVM
-import co.fusionx.channels.viewmodel.persistent.SelectedClientsVM
-import co.fusionx.channels.viewmodel.transitory.NavigationHeaderVM
+import co.fusionx.channels.viewmodel.ChannelVM
+import co.fusionx.channels.viewmodel.ClientVM
+import co.fusionx.channels.viewmodel.SelectedClientsVM
+import co.fusionx.channels.viewmodel.NavigationHeaderVM
 import org.parceler.Parcels
 
 class NavigationPresenter(override val activity: MainActivity,

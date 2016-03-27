@@ -1,4 +1,4 @@
-package co.fusionx.channels.viewmodel.persistent
+package co.fusionx.channels.viewmodel
 
 import android.content.Context
 import android.databinding.BaseObservable

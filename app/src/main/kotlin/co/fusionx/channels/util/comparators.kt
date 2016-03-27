@@ -3,7 +3,7 @@ package co.fusionx.channels.util
 import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.configuration.ChannelsConfiguration
-import co.fusionx.channels.viewmodel.persistent.ChannelVM
+import co.fusionx.channels.viewmodel.ChannelVM
 
 class ChannelComparator private constructor() :
         ObservableSortedList.HyperComparator<ChannelVM>, ObservableSortedArrayMap.HyperComparator<ChannelVM> {

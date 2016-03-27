@@ -1,8 +1,8 @@
 package co.fusionx.channels.viewmodel.helper
 
-import co.fusionx.channels.viewmodel.persistent.ChannelVM
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
-import co.fusionx.channels.viewmodel.persistent.ServerVM
+import co.fusionx.channels.viewmodel.ChannelVM
+import co.fusionx.channels.viewmodel.ClientChildVM
+import co.fusionx.channels.viewmodel.ServerVM
 import co.fusionx.relay.protocol.ClientGenerator
 
 class UserMessageParser(private val listener: Listener) {

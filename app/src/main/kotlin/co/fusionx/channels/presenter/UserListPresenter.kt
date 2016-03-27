@@ -13,8 +13,8 @@ import co.fusionx.channels.R
 import co.fusionx.channels.adapter.HeaderViewHolder
 import co.fusionx.channels.adapter.SectionAdapter
 import co.fusionx.channels.presenter.helper.ClientChildListener
-import co.fusionx.channels.viewmodel.persistent.ChannelVM
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.ChannelVM
+import co.fusionx.channels.viewmodel.ClientChildVM
 
 class UserListPresenter(override val activity: Activity,
                         private val drawerLayout: DrawerLayout,

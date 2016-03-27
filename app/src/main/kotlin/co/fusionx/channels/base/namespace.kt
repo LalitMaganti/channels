@@ -2,7 +2,7 @@ package co.fusionx.channels.base
 
 import android.content.Context
 import co.fusionx.channels.presenter.Presenter
-import co.fusionx.channels.viewmodel.persistent.RelayVM
+import co.fusionx.channels.viewmodel.RelayVM
 
 val Context.app: ChannelsApplication
     get() = applicationContext as ChannelsApplication

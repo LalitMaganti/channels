@@ -8,7 +8,7 @@
 
         <variable
             name="client"
-            type="co.fusionx.channels.viewmodel.persistent.ClientVM" />
+            type="co.fusionx.channels.viewmodel.ClientVM" />
 
         <variable
             name="configuration"

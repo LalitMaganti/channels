@@ -17,7 +17,7 @@ import co.fusionx.channels.presenter.*
 import co.fusionx.channels.util.addAll
 import co.fusionx.channels.view.EventRecyclerView
 import co.fusionx.channels.view.NavigationDrawerView
-import co.fusionx.channels.viewmodel.persistent.ClientChildVM
+import co.fusionx.channels.viewmodel.ClientChildVM
 import java.util.*
 
 class MainActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package co.fusionx.channels.viewmodel.persistent
+package co.fusionx.channels.viewmodel
 
 import android.content.Context
 import android.support.v4.util.ArrayMap
@@ -24,9 +24,9 @@ import javax.net.ssl.TrustManager
 @Singleton class RelayVM @Inject constructor(private val context: Context) {
 
     val activeConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
-            ChannelsConfiguration::class.java, ConfigurationComparator.instance)
+            ChannelsConfiguration::class.java, ConfigurationComparator.Companion.instance)
     val inactiveConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
-            ChannelsConfiguration::class.java, ConfigurationComparator.instance)
+            ChannelsConfiguration::class.java, ConfigurationComparator.Companion.instance)
 
     val selectedClients: SelectedClientsVM = SelectedClientsVM()
 
@@ -56,7 +56,7 @@ import javax.net.ssl.TrustManager
         for (i in 0..inactiveConfigs.size - 1) {
             val c = inactiveConfigs[i]
             val index = newConfigs.binarySearch { c.name.compareTo(it.name) }
-            if (index == -1) {
+            if (index < 0) {
                 indices.add(i)
             }
         }
@@ -70,7 +70,9 @@ import javax.net.ssl.TrustManager
             val index = inactiveConfigs.binarySearch { c.name.compareTo(it.name) }
             if (index < 0) {
                 val actIndex = activeConfigs.binarySearch { c.name.compareTo(it.name) }
-                if (actIndex < 0) {
+                if (actIndex >= 0) {
+                    inactiveConfigs.updateItemAt(actIndex, c)
+                } else {
                     inactiveConfigs.add(c)
                 }
             }
@@ -111,7 +113,7 @@ import javax.net.ssl.TrustManager
         val coreClient = RelayClient.create(relayConfig, AndroidMessageLoop.create())
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
-                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
+                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.Companion.instance)
         val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
