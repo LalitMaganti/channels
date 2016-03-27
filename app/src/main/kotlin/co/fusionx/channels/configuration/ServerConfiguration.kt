@@ -9,6 +9,5 @@ data class ServerConfiguration @ParcelConstructor constructor(
         @param:ParcelProperty("hostname") val hostname: String,
         @param:ParcelProperty("port") val port: Int,
         @param:ParcelProperty("ssl") val ssl: Boolean,
-        @param:ParcelProperty("sslAllCerts") val sslAllCerts: Boolean,
         @param:ParcelProperty("username") val username: String,
         @param:ParcelProperty("password") val password: String?)

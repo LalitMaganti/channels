@@ -73,14 +73,14 @@ class ConnectionDatabase private constructor(private val context: Context) :
         createTables(db)
 
         val freenode = ChannelsConfiguration(-1, "Freenode",
-                ServerConfiguration("irc.freenode.net", 6667, false, false, "ChannelsUser", null),
+                ServerConfiguration("irc.freenode.net", 6667, false, "ChannelsUser", null),
                 UserConfiguration(
                         listOf("ChannelsUser"), true, "ChannelsUser",
                         UserConfiguration.NONE_AUTH_TYPE, null, null))
         rawInsertConfiguration(db, freenode)
 
         val techtronix = ChannelsConfiguration(-1, "Techtronix",
-                ServerConfiguration("irc.techtronix.net", 6667, false, false, "ChannelsUser", null),
+                ServerConfiguration("irc.techtronix.net", 6667, false, "ChannelsUser", null),
                 UserConfiguration(
                         listOf("ChannelsUser"), true, "ChannelsUser",
                         UserConfiguration.NONE_AUTH_TYPE, null, null))
@@ -120,7 +120,6 @@ class ConnectionDatabase private constructor(private val context: Context) :
                 cursor.getString(ConnectionTable.HOSTNAME),
                 cursor.getInt(ConnectionTable.PORT),
                 cursor.getInt(ConnectionTable.SSL) == 1,
-                cursor.getInt(ConnectionTable.SSL_ACCEPT_ALL) == 1,
                 cursor.getString(ConnectionTable.SERVER_USERNAME),
                 cursor.getString(ConnectionTable.SERVER_PASSWORD))
         val handshake = UserConfiguration(
@@ -157,7 +156,6 @@ class ConnectionDatabase private constructor(private val context: Context) :
         values.put(ConnectionTable.HOSTNAME, configuration.server.hostname)
         values.put(ConnectionTable.PORT, configuration.server.port)
         values.put(ConnectionTable.SSL, configuration.server.ssl)
-        values.put(ConnectionTable.SSL_ACCEPT_ALL, configuration.server.sslAllCerts)
         values.put(ConnectionTable.SERVER_USERNAME, configuration.server.username)
         values.put(ConnectionTable.SERVER_PASSWORD, configuration.server.password)
 

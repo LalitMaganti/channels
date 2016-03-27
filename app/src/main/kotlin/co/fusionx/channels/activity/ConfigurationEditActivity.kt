@@ -141,7 +141,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
 
         val serverConfiguration = ServerConfiguration(
                 server.hostname.get().toString(), server.port.get(),
-                server.ssl.get(), server.sslAllCerts.get(),
+                server.ssl.get(),
                 auth.serverUsername.get().toString(), auth.serverPassword.get().toString())
         val userConfiguration = UserConfiguration(
                 listOf(user.nick.get().toString()), user.autoChangeNick.get(),

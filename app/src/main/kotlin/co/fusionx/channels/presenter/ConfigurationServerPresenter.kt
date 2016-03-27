@@ -59,8 +59,7 @@ class ConfigurationServerPresenter(override val activity: Activity,
                 binding.port to configuration.port)
 
         addBooleanBackendListeners(
-                binding.ssl to configuration.ssl,
-                binding.sslAllCerts to configuration.sslAllCerts)
+                binding.ssl to configuration.ssl)
     }
 
     override fun restoreState(bundle: Bundle) {
@@ -83,15 +82,13 @@ class ConfigurationServerPresenter(override val activity: Activity,
             var name: ObservableField<CharSequence?> = ObservableField(null),
             var hostname: ObservableField<CharSequence?> = ObservableField(null),
             var port: ObservableInt = ObservableInt(6667),
-            var ssl: ObservableBoolean = ObservableBoolean(false),
-            var sslAllCerts: ObservableBoolean = ObservableBoolean(false)) : BaseObservable(), Parcelable {
+            var ssl: ObservableBoolean = ObservableBoolean(false)) : BaseObservable(), Parcelable {
 
         constructor(c: ChannelsConfiguration) : this(
                 ObservableField(c.name),
                 ObservableField(c.server.hostname),
                 ObservableInt(c.server.port),
-                ObservableBoolean(c.server.ssl),
-                ObservableBoolean(c.server.sslAllCerts))
+                ObservableBoolean(c.server.ssl))
 
         fun isValid(): Boolean {
             return name.isNotEmpty() && hostname.isNotEmpty() && port.isValidPort()
@@ -102,7 +99,6 @@ class ConfigurationServerPresenter(override val activity: Activity,
             dest.writeString(hostname.get()?.toString() ?: "")
             dest.writeInt(port.get())
             dest.writeInt(if (ssl.get()) 1 else 0)
-            dest.writeInt(if (sslAllCerts.get()) 1 else 0)
         }
 
         override fun describeContents(): Int {
@@ -116,7 +112,6 @@ class ConfigurationServerPresenter(override val activity: Activity,
                             ObservableField(source.readString()),
                             ObservableField(source.readString()),
                             ObservableInt(source.readInt()),
-                            ObservableBoolean(source.readInt() != 0),
                             ObservableBoolean(source.readInt() != 0))
                 }
 

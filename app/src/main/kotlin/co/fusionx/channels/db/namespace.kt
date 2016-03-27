@@ -13,7 +13,6 @@ object ConnectionTable {
     const val HOSTNAME: String = "hostname"
     const val PORT: String = "port"
     const val SSL: String = "ssl"
-    const val SSL_ACCEPT_ALL: String = "ssl_accept_all"
     const val SERVER_USERNAME: String = "server_username"
     const val SERVER_PASSWORD: String = "server_password"
 
@@ -30,7 +29,6 @@ object ConnectionTable {
             HOSTNAME to TEXT + NOT_NULL,
             PORT to INTEGER + NOT_NULL,
             SSL to INTEGER + NOT_NULL,
-            SSL_ACCEPT_ALL to INTEGER + NOT_NULL,
             SERVER_USERNAME to TEXT + NOT_NULL,
             SERVER_PASSWORD to TEXT,
 

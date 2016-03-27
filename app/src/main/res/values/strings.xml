@@ -31,9 +31,7 @@
     <string name="ssl">SSL</string>
     <string name="ssl_accept_all">Accept All SSL Certificates</string>
     <string name="ssl_description">
-        SSL is used to secure your connection but usually requires a special port. Accepting all
-        certificates is VERY dangerous and should not be used unless you understand what you are
-        doing.
+        SSL is used to secure your connection but requires a special port (usually 6697).
     </string>
     <string name="user_settings">User</string>
     <string name="nick">Nick</string>
