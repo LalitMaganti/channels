@@ -65,10 +65,10 @@ class ConfigurationEditActivity : AppCompatActivity() {
         server = ConfigurationServerPresenter(this, serverBinding, configuration)
 
         val userBinding = ConfigurationEditUserBinding.inflate(layoutInflater, pager, false)
-        user = ConfigurationUserPresenter(this, userBinding)
+        user = ConfigurationUserPresenter(this, userBinding, configuration)
 
         val authBinding = ConfigurationEditAuthBinding.inflate(layoutInflater, pager, false)
-        auth = ConfigurationAuthPresenter(this, authBinding)
+        auth = ConfigurationAuthPresenter(this, authBinding, configuration)
 
         presenters.addAll(server, user, auth)
         presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
@@ -147,7 +147,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
                 listOf(user.nick.get().toString()), user.autoChangeNick.get(),
                 user.realName.get().toString(),
                 ConfigurationAuthPresenter.indexToType(auth.authIndex),
-                auth.serverUsername.get().toString(), auth.serverPassword.get().toString())
+                auth.username.get().toString(), auth.password.get().toString())
         return ChannelsConfiguration(-1, server.name.get().toString(), serverConfiguration, userConfiguration)
     }
 

@@ -51,8 +51,7 @@ class ConnectionDatabase private constructor(private val context: Context) :
             val transaction = briteDb.newTransaction()
             try {
                 consumeConfigurationAsContentValues(configuration) {
-                    it.put(ConnectionTable._ID, id)
-                    briteDb.insert(ConnectionTable.TABLE_NAME, it, SQLiteDatabase.CONFLICT_REPLACE)
+                    briteDb.update(ConnectionTable.TABLE_NAME, it, "${ConnectionTable._ID} = $id")
                 }
 
                 // Delete all the old nicks before replacing with the new one.

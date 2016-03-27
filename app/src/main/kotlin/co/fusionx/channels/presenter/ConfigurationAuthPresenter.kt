@@ -23,7 +23,7 @@ import co.fusionx.channels.util.isNotEmpty
 
 class ConfigurationAuthPresenter(override val activity: Activity,
                                  override val binding: ConfigurationEditAuthBinding,
-                                 private val inputConfig: ChannelsConfiguration? = null) : ConfigurationEditActivity.Presenter() {
+                                 private val inputConfig: ChannelsConfiguration?) : ConfigurationEditActivity.Presenter() {
     lateinit var configuration: Configuration
 
     override val id: String

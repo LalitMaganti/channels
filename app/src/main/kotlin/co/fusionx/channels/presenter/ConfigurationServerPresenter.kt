@@ -20,7 +20,7 @@ import co.fusionx.channels.util.isValidPort
 
 class ConfigurationServerPresenter(override val activity: Activity,
                                    override val binding: ConfigurationEditServerBinding,
-                                   private val inputConfig: ChannelsConfiguration? = null) : ConfigurationEditActivity.Presenter() {
+                                   private val inputConfig: ChannelsConfiguration?) : ConfigurationEditActivity.Presenter() {
 
     lateinit var configuration: Configuration
 

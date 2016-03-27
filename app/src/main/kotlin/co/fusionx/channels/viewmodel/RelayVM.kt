@@ -55,7 +55,7 @@ import javax.net.ssl.TrustManager
         val indices = ArrayList<Int>()
         for (i in 0..inactiveConfigs.size - 1) {
             val c = inactiveConfigs[i]
-            val index = newConfigs.binarySearch { c.name.compareTo(it.name) }
+            val index = newConfigs.binarySearch { it.name.compareTo(c.name) }
             if (index < 0) {
                 indices.add(i)
             }
@@ -67,11 +67,11 @@ import javax.net.ssl.TrustManager
         // Add all new items.
         for (i in 0..newConfigs.size - 1) {
             val c = newConfigs[i]
-            val index = inactiveConfigs.binarySearch { c.name.compareTo(it.name) }
+            val index = activeConfigs.binarySearch { it.name.compareTo(c.name) }
             if (index < 0) {
-                val actIndex = activeConfigs.binarySearch { c.name.compareTo(it.name) }
-                if (actIndex >= 0) {
-                    inactiveConfigs.updateItemAt(actIndex, c)
+                val inactIndex = inactiveConfigs.binarySearch { it.name.compareTo(c.name) }
+                if (inactIndex >= 0) {
+                    inactiveConfigs.updateItemAt(inactIndex, c)
                 } else {
                     inactiveConfigs.add(c)
                 }

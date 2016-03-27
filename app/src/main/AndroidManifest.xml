@@ -27,6 +27,6 @@
 
         <activity
             android:name="de.duenndns.ssl.MemorizingActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@style/Theme.AppCompat.Light.Translucent.NoTitleBar" />
     </application>
 </manifest>

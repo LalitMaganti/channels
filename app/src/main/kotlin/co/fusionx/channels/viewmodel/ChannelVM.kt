@@ -36,7 +36,7 @@ class ChannelVM(override val name: String) : ClientChildVM() {
     }
 
     fun onNickChange(oldNick: String, newNick: String) {
-        val index = userMap.binarySearchKey { oldNick.compareTo(it.nick) }
+        val index = userMap.binarySearchKey { it.nick.compareTo(oldNick) }
         if (index < 0) {
             return
         }
