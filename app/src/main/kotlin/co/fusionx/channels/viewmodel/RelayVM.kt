@@ -24,9 +24,9 @@ import javax.net.ssl.TrustManager
 @Singleton class RelayVM @Inject constructor(private val context: Context) {
 
     val activeConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
-            ChannelsConfiguration::class.java, ConfigurationComparator.Companion.instance)
+            ChannelsConfiguration::class.java, ConfigurationComparator.instance)
     val inactiveConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
-            ChannelsConfiguration::class.java, ConfigurationComparator.Companion.instance)
+            ChannelsConfiguration::class.java, ConfigurationComparator.instance)
 
     val selectedClients: SelectedClientsVM = SelectedClientsVM()
 
@@ -113,7 +113,7 @@ import javax.net.ssl.TrustManager
         val coreClient = RelayClient.create(relayConfig, AndroidMessageLoop.create())
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
-                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.Companion.instance)
+                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
         val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
