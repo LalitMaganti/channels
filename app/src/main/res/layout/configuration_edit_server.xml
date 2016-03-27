@@ -34,6 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/name"
+                    android:singleLine="true"
                     android:text="@{configuration.name}">
 
                     <requestFocus />
@@ -54,6 +55,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/url"
                     android:inputType="textUri"
+                    android:singleLine="true"
                     android:text="@{configuration.hostname}" />
             </android.support.design.widget.TextInputLayout>
 
@@ -72,6 +74,7 @@
                     android:hint="@string/port"
                     android:inputType="number"
                     android:maxLength="5"
+                    android:singleLine="true"
                     android:text="@{String.valueOf(configuration.port)}" />
             </android.support.design.widget.TextInputLayout>
 

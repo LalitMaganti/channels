@@ -34,6 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/nick"
+                    android:singleLine="true"
                     android:text="@{configuration.nick}" />
             </android.support.design.widget.TextInputLayout>
 
@@ -74,6 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/real_name"
+                    android:singleLine="true"
                     android:text="@{configuration.realName}" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
