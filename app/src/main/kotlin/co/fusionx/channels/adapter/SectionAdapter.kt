@@ -1,5 +1,6 @@
 package co.fusionx.channels.adapter
 
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import co.fusionx.channels.util.failAssert
 import timber.log.Timber
@@ -138,6 +139,21 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         return count + getSectionHeadersBefore(getSectionCount())
     }
 
+    fun getWrappedSpanSizeLookup(local: GridSpanSizeLookup): GridLayoutManager.SpanSizeLookup {
+        return object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(adapterPosition: Int): Int {
+                checkSetup()
+                val section = getSectionForAdapterPosition(adapterPosition)
+                val sectionOffset = getSectionOffsetForAdapterPosition(section, adapterPosition)
+                if (sectionOffset == -1) {
+                    return local.getHeaderSpanSize(section)
+                } else {
+                    return local.getItemSpanSize(section, sectionOffset)
+                }
+            }
+        }
+    }
+
     private fun checkSetup() {
         if (!setupComplete) {
             throw IllegalStateException("setup() was not called")
@@ -176,6 +192,11 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
             }
         }
         return count
+    }
+
+    interface GridSpanSizeLookup {
+        fun getHeaderSpanSize(section: Int): Int
+        fun getItemSpanSize(section: Int, position: Int): Int
     }
 
     companion object {

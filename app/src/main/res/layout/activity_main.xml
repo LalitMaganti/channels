@@ -60,12 +60,12 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
             </android.support.design.widget.AppBarLayout>
         </android.support.design.widget.CoordinatorLayout>
-
     </RelativeLayout>
 
     <!-- The navigation drawer -->
     <include layout="@layout/view_navigation_drawer" />
 
+    <!-- The navigation drawer -->
     <include layout="@layout/user_list" />
 
 </android.support.v4.widget.DrawerLayout>

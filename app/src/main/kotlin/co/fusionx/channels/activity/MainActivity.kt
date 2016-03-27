@@ -1,6 +1,7 @@
 package co.fusionx.channels.activity
 
 import android.os.Bundle
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
@@ -47,7 +48,8 @@ class MainActivity : AppCompatActivity() {
                 navigationPresenter,
                 ClientChildPresenter(this, messageBox, eventRecycler),
                 ActionBarPresenter(this),
-                UserListPresenter(this, drawerLayout, userDrawerView)
+                UserListPresenter(this, drawerLayout, userDrawerView),
+                ActionsPresenter(this)
         )
         presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
 
