@@ -1,1 +1,1 @@
-include ':app', ':relay-jvm:relay', ':relay-jvm:android'
+include ':app', ':relay-jvm:relay', ':relay-jvm:android', ':MemorizingTrustManager:library'

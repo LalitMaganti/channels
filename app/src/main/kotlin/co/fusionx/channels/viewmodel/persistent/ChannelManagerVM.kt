@@ -1,26 +1,24 @@
 package co.fusionx.channels.viewmodel.persistent
 
+import android.databinding.ObservableField
 import co.fusionx.channels.collections.ObservableSortedArrayMap
-import co.fusionx.relay.RegistrationDao
 import co.fusionx.channels.util.failAssert
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.EventListener
 import co.fusionx.relay.protocol.PrefixSplitter
 import co.fusionx.relay.util.isChannel
 import timber.log.Timber
-import java.util.*
 
 class ChannelManagerVM(
         initialNick: String,
-        private val channels: ObservableSortedArrayMap<String, ChannelVM>) :
-        EventListener, UserMessageParser.Listener {
+        private val channels: ObservableSortedArrayMap<String, ChannelVM>) : EventListener, UserMessageParser.Listener {
 
-    private var selfNick: String = initialNick
+    private val selfNick: ObservableField<String> = ObservableField(initialNick)
 
     override fun onJoin(prefix: String, channel: String, optParams: Map<String, String>) {
         val nick = PrefixSplitter.nick(prefix)
         val c: ChannelVM
-        if (nick == selfNick) {
+        if (nick == selfNick.get()) {
             c = ChannelVM(channel)
             channels.put(channel, c)
         } else {
@@ -46,17 +44,18 @@ class ChannelManagerVM(
     }
 
     override fun onChannelMessage(channelVM: ChannelVM, message: String) {
-        channelVM.onMessage(selfNick, message)
+        channelVM.onMessage(selfNick.get(), message)
     }
 
-    override fun onNick(oldNick: String, newNick: String) {
+    override fun onNick(prefix: String, newNick: String) {
+        val oldNick = PrefixSplitter.nick(prefix)
         for (i in 0..channels.size - 1) {
             val channel = channels.getValueAt(i)
             channel!!.onNickChange(oldNick, newNick)
         }
 
-        if (oldNick == selfNick) {
-            selfNick = newNick
+        if (oldNick == selfNick.get()) {
+            selfNick.set(newNick)
         }
     }
 

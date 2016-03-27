@@ -27,8 +27,8 @@ class MainThreadEventListener : EventListener {
         it.onNames(channelName, nickList, modeList)
     }
 
-    override fun onNick(oldNick: String, newNick: String) = postForEach {
-        it.onNick(oldNick, newNick)
+    override fun onNick(prefix: String, newNick: String) = postForEach {
+        it.onNick(prefix, newNick)
     }
 
     override fun onPing(hostName: String?) = postForEach {

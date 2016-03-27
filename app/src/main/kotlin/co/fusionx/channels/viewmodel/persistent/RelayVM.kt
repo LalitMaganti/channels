@@ -7,20 +7,19 @@ import co.fusionx.channels.collections.ObservableSortedArrayMap
 import co.fusionx.channels.collections.ObservableSortedList
 import co.fusionx.channels.configuration.ChannelsConfiguration
 import co.fusionx.channels.db.connectionDb
-import co.fusionx.channels.relay.BasicEventListener
-import co.fusionx.channels.relay.EMPTY_AUTH_HANDLER
-import co.fusionx.channels.relay.HandshakeEventListener
-import co.fusionx.channels.relay.MainThreadEventListener
+import co.fusionx.channels.relay.*
 import co.fusionx.channels.util.ChannelComparator
 import co.fusionx.channels.util.ConfigurationComparator
 import co.fusionx.channels.viewmodel.helper.UserMessageParser
 import co.fusionx.relay.RelayClient
 import co.fusionx.relay.message.AndroidMessageLoop
+import de.duenndns.ssl.MemorizingTrustManager
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import javax.net.ssl.TrustManager
 
 @Singleton class RelayVM @Inject constructor(private val context: Context) {
 
@@ -104,6 +103,9 @@ import javax.inject.Singleton
         val relayConfig = RelayClient.Configuration.create {
             hostname = configuration.server.hostname
             port = configuration.server.port
+
+            ssl = configuration.server.ssl
+            sslTrustManager = if (ssl) MemorizingTrustManager(context) else null
         }
 
         val coreClient = RelayClient.create(relayConfig, AndroidMessageLoop.create())
