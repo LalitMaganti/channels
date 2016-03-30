@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<co.fusionx.channels.view.ScrimInsetsLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tilal6991.channels.view.ScrimInsetsLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/user_drawer_view"
     android:layout_width="@dimen/user_drawer_width"
@@ -22,4 +22,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</co.fusionx.channels.view.ScrimInsetsLinearLayout>
+</com.tilal6991.channels.view.ScrimInsetsLinearLayout>

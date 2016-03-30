@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     android:fitsSystemWindows="true"
-    tools:context=".activity.MainActivity">
+    tools:context="com.tilal6991.channels.activity.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:layout_above="@id/message_wrapper">
 
-            <co.fusionx.channels.view.EventRecyclerView
+            <com.tilal6991.channels.view.EventRecyclerView
                 android:id="@+id/event_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

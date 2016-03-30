@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<co.fusionx.channels.view.NavigationDrawerView
+<com.tilal6991.channels.view.NavigationDrawerView
     android:id="@+id/navdrawer_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,4 +18,4 @@
         android:layout_gravity="start"
         android:orientation="vertical"/>
 
-</co.fusionx.channels.view.NavigationDrawerView>
+</com.tilal6991.channels.view.NavigationDrawerView>

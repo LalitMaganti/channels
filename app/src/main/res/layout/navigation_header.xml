@@ -9,12 +9,12 @@
             type="co.fusionx.channels.viewmodel.NavigationHeaderVM" />
     </data>
 
-    <co.fusionx.channels.view.ClientCarouselView
+    <com.fusionx.channels.view.ClientCarouselView
         android:id="@+id/view_navigation_drawer_server_carousel"
         android:layout_width="match_parent"
         android:layout_height="172dp">
 
-        <co.fusionx.channels.view.NavigationHeaderImageView
+        <com.tilal6991.channels.view.NavigationHeaderImageView
             android:id="@+id/view_navigation_drawer_header_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -45,7 +45,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
             android:textColor="?android:textColorPrimaryInverse" />
 
-        <co.fusionx.channels.view.BezelImageView
+        <com.tilal6991.channels.view.BezelImageView
             android:id="@+id/profile_image"
             android:layout_width="@dimen/navdrawer_profile_image_size_small"
             android:layout_height="@dimen/navdrawer_profile_image_size_small"
@@ -59,7 +59,7 @@
             android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
 
-        <co.fusionx.channels.view.BezelImageView
+        <com.tilal6991.channels.view.BezelImageView
             android:id="@+id/profile_image_3"
             android:layout_width="@dimen/navdrawer_profile_image_size_small"
             android:layout_height="@dimen/navdrawer_profile_image_size_small"
@@ -72,7 +72,7 @@
             android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
 
-        <co.fusionx.channels.view.BezelImageView
+        <com.tilal6991.channels.view.BezelImageView
             android:id="@+id/profile_image_2"
             android:layout_width="@dimen/navdrawer_profile_image_size_small"
             android:layout_height="@dimen/navdrawer_profile_image_size_small"
@@ -84,5 +84,5 @@
             android:src="@drawable/person_image_empty"
             android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
-    </co.fusionx.channels.view.ClientCarouselView>
+    </com.fusionx.channels.view.ClientCarouselView>
 </layout>
