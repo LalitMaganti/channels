@@ -7,8 +7,24 @@ import java.util.*
 
 class ServerVM(override val name: String) : ClientChildVM(), EventListener {
 
+    fun onConnecting() {
+        add("Connecting to the server.")
+    }
+
     override fun onSocketConnect() {
         add("Connection was successful.")
+    }
+
+    override fun onWelcome(target: String, text: String) {
+        add(text)
+    }
+
+    override fun onConnectFailed() {
+        add("Failed to connect to the server.")
+    }
+
+    override fun onDisconnect(triggered: Boolean) {
+        add("Disconnected from the server.")
     }
 
     override fun onOtherCode(code: Int, arguments: List<String>) {
@@ -17,24 +33,8 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
         }
     }
 
-    override fun onWelcome(target: String, text: String) {
-        add(text)
-    }
-
     override fun onNotice(prefix: String, target: String, message: String, optParams: Map<String, String>) {
         add(message)
-    }
-
-    override fun onConnectFailed() {
-        add("Failed to connect to the server.")
-    }
-
-    fun onConnecting() {
-        add("Connecting to the server.")
-    }
-
-    override fun onDisconnect(triggered: Boolean) {
-        add("Disconnected from the server.")
     }
 
     companion object {
