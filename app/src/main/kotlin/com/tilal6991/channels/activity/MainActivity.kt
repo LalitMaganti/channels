@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import butterknife.bindView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.relayVM
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private val eventRecycler: EventRecyclerView by bindView(R.id.event_recycler)
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
+    private val navigationHint: TextView by bindView(R.id.navigation_hint)
     private val messageBox: EditText by bindView(R.id.message)
     private val userDrawerView: ViewGroup by bindView(R.id.user_drawer_view)
 
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         presenters.addAll(
                 navigationPresenter,
-                ClientChildPresenter(this, messageBox, eventRecycler),
+                ClientChildPresenter(this, messageBox, navigationHint, eventRecycler),
                 actionBarPresenter,
                 UserListPresenter(this, drawerLayout, userDrawerView),
                 dashboardPresenter

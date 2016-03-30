@@ -32,8 +32,8 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     }
 
     private fun updateActionBar(it: ClientChildVM?) {
-        actionBar.title = selectedClientsVM.latest?.name ?: "Channels"
-        actionBar.subtitle = it?.name
+        actionBar.title = it?.name ?: "Channels"
+        actionBar.subtitle = selectedClientsVM.latest?.name
         activity.supportInvalidateOptionsMenu()
     }
 

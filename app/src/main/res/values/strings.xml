@@ -13,7 +13,6 @@
     <string name="status_connecting">Connecting</string>
     <string name="status_socket_connected">Socket Connected</string>
     <string name="status_connected">Connected</string>
-    <string name="status_reconnecting">Reconnecting</string>
     <string name="status_disconnected">Disconnected</string>
 
     <string name="header_channels">Channels</string>
@@ -70,4 +69,5 @@
     <string name="reconnect">Reconnect</string>
     <string name="server_actions">Server Actions</string>
     <string name="channel_actions">Channel Actions</string>
+    <string name="no_child_selected">Welcome to Channels!\nPlease select a client on the left to begin.</string>
 </resources>

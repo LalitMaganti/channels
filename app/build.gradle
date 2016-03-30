@@ -8,7 +8,6 @@ buildscript {
 
 repositories {
     maven { url 'http://dl.bintray.com/amulyakhare/maven' }
-    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 apply plugin: 'com.android.application'
@@ -61,7 +60,7 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
 
-    compile 'com.tilal6991.messageloop:messageloop-android:0.1.4-SNAPSHOT'
+    compile 'com.tilal6991.messageloop:messageloop-android:0.2.0-SNAPSHOT'
 
     compile rootProject.ext.annotation
     compile rootProject.ext.dagger

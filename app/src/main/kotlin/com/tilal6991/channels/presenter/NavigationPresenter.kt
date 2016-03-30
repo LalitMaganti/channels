@@ -180,7 +180,7 @@ class NavigationPresenter(override val activity: MainActivity,
         override fun updateHeader() {
             val count = relayVM.activeConfigs.size
             headerVM.updateText(getString(R.string.app_name),
-                    getQuantityString(R.plurals.connected_client_count, count).format(count))
+                    getQuantityString(R.plurals.active_client_count, count).format(count))
         }
 
         override fun unbind() {

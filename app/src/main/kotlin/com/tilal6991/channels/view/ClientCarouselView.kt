@@ -40,6 +40,10 @@ class ClientCarouselView(
         override fun onLatestAntePenultimateSwap() {
             swapToFront(2)
         }
+
+        override fun onLatestClosed() {
+            resetClientViews()
+        }
     }
 
     override fun onFinishInflate() {

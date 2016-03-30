@@ -102,6 +102,24 @@ import javax.inject.Singleton
         return false
     }
 
+    fun reconnectSelected() {
+        selectedClients.latest!!.reconnect()
+    }
+
+    fun disconnectSelected() {
+        selectedClients.latest!!.disconnect()
+    }
+
+    fun closeSelected() {
+        val latest = selectedClients.latest!!
+        latest.close()
+        selectedClients.closeSelected()
+
+        configActiveClients.remove(latest.configuration)
+        activeConfigs.remove(latest.configuration)
+        inactiveConfigs.add(latest.configuration)
+    }
+
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {
         val relayConfig = RelayClient.Configuration.create {
             hostname = configuration.server.hostname
@@ -119,7 +137,7 @@ import javax.inject.Singleton
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
 
-        val clientVM = ClientVM(context, configuration, coreClient, userMessageParser, server, channelMap.valuesAsObservableList())
+        val clientVM = ClientVM(context, coreClient, userMessageParser, configuration, server, channelMap.valuesAsObservableList())
 
         val basicEventListener = BasicEventListener(coreClient)
         val handshakeListener = HandshakeEventListener(coreClient, configuration, EMPTY_AUTH_HANDLER)

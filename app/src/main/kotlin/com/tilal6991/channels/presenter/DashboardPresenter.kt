@@ -1,12 +1,14 @@
 package com.tilal6991.channels.presenter
 
 import android.content.Context
+import android.databinding.Observable
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
 import com.tilal6991.channels.activity.MainActivity
 import com.tilal6991.channels.adapter.HeaderViewHolder
@@ -14,6 +16,7 @@ import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.databinding.DashboardItemBinding
 import com.tilal6991.channels.presenter.helper.ClientChildListener
+import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ClientVM
@@ -27,13 +30,19 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
     private lateinit var dialog: BottomSheetDialog
     private lateinit var adapter: Adapter
 
-    private val childListener = ClientChildListener(activity) { updateActions(it) }
+    private var displayedClient: ClientVM? = null
+    private var displayedChild: ClientChildVM? = null
 
-    fun toggle() {
-        if (dialog.isShowing) {
-            dialog.dismiss()
-        } else {
-            dialog.show()
+    private val childListener = ClientChildListener(activity) { onChildChanged(it) }
+    private val statusListener = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            if (propertyId != BR.statusInt) {
+                return
+            } else if (displayedClient == null || displayedChild == null) {
+                Timber.asTree().failAssert()
+                return
+            }
+            updateAction(displayedClient!!, displayedChild!!)
         }
     }
 
@@ -47,7 +56,7 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         val gridLayoutManager = GridLayoutManager(activity, 3)
         recycler.layoutManager = gridLayoutManager
 
-        adapter = Adapter(activity)
+        adapter = Adapter(activity) { onActionClicked(it) }
         recycler.adapter = adapter
         adapter.setup()
 
@@ -65,13 +74,61 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         dialog.setContentView(view)
     }
 
-    private fun updateActions(it: ClientChildVM?) {
-        if (it == null) {
+    override fun restoreState(bundle: Bundle) {
+        val showing = bundle.getBoolean(SHOWING, false)
+        if (showing) {
+            dialog.show()
+        }
+    }
+
+    override fun bind() {
+        val selectedClient = relayVM.selectedClients.latest
+        selectedClient?.addOnPropertyChangedCallback(statusListener)
+        onChildChanged(selectedClient?.selectedChild?.get())
+
+        childListener.bind()
+    }
+
+    override fun unbind() {
+        relayVM.selectedClients.latest?.removeOnPropertyChangedCallback(statusListener)
+        childListener.unbind()
+    }
+
+    override fun saveState(): Bundle {
+        val bundle = Bundle()
+        bundle.putBoolean(SHOWING, dialog.isShowing)
+        return bundle
+    }
+
+    fun toggle() {
+        if (dialog.isShowing) {
+            dialog.dismiss()
+        } else {
+            dialog.show()
+        }
+    }
+
+    private fun onChildChanged(it: ClientChildVM?) {
+        val latest = relayVM.selectedClients.latest
+        displayedClient?.removeOnPropertyChangedCallback(statusListener)
+        displayedClient = if (it == null) null else latest
+        displayedChild = it
+        displayedClient?.addOnPropertyChangedCallback(statusListener)
+
+        if (it == null || latest == null) {
             adapter.setData(null, null, null)
+            if (it != null) {
+                // Inconsistent state of null client and non-null child.
+                Timber.asTree().failAssert()
+            }
             return
         }
 
-        val status = relayVM.selectedClients.latest?.statusInt
+        updateAction(latest, it)
+    }
+
+    private fun updateAction(client: ClientVM, child: ClientChildVM) {
+        val status = client.statusInt
         val serverStrings: IntArray
         val serverDrawables: IntArray
         if (status == ClientVM.DISCONNECTED) {
@@ -82,37 +139,30 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
             serverDrawables = AdapterData.serverDrawables
         }
 
-        if (it is ChannelVM) {
+        if (child is ChannelVM) {
             adapter.setData(AdapterData.channelTitles, arrayOf(serverStrings), arrayOf(serverDrawables))
-        } else if (it is ServerVM) {
+        } else if (child is ServerVM) {
             adapter.setData(AdapterData.serverTitles, arrayOf(serverStrings), arrayOf(serverDrawables))
         } else {
             Timber.d("Unknown client child encountered in the dashboard.")
         }
     }
 
-    override fun restoreState(bundle: Bundle) {
-        val showing = bundle.getBoolean(SHOWING, false)
-        if (showing) {
-            dialog.show()
+    private fun onActionClicked(stringId: Int) {
+        when (stringId) {
+            R.string.disconnect -> relayVM.disconnectSelected()
+            R.string.close -> relayVM.closeSelected()
+            R.string.disconnect_close -> {
+                relayVM.disconnectSelected()
+                relayVM.closeSelected()
+            }
+            R.string.reconnect -> relayVM.reconnectSelected()
         }
+        dialog.dismiss()
     }
 
-    override fun bind() {
-        childListener.bind()
-    }
-
-    override fun unbind() {
-        childListener.unbind()
-    }
-
-    override fun saveState(): Bundle {
-        val bundle = Bundle()
-        bundle.putBoolean(SHOWING, dialog.isShowing)
-        return bundle
-    }
-
-    class Adapter(private val context: Context) : SectionAdapter<Adapter.ItemViewHolder, HeaderViewHolder>() {
+    class Adapter(private val context: Context,
+                  private val clickListener: (Int) -> Unit) : SectionAdapter<Adapter.ItemViewHolder, HeaderViewHolder>() {
         private val layoutInflater = LayoutInflater.from(context)
 
         private var titles: IntArray? = null
@@ -121,13 +171,13 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder? {
             if (viewType == HEADER_VIEW_TYPE) {
-                return HeaderViewHolder(layoutInflater.inflate(R.layout.recycler_header, parent, false))
+                return HeaderViewHolder(layoutInflater.inflate(R.layout.dashboard_header, parent, false))
             }
             return ItemViewHolder(DashboardItemBinding.inflate(layoutInflater, parent, false))
         }
 
         override fun onBindHeaderViewHolder(holder: HeaderViewHolder, section: Int) {
-            holder.bind("Test")
+            holder.bind(context.getString(titles!![section]))
         }
 
         override fun onBindItemViewHolder(holder: ItemViewHolder, section: Int, offset: Int) {
@@ -160,6 +210,8 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
             fun bind(drawable: Int, string: Int) {
                 binding.actionImage.setImageResource(drawable)
                 binding.actionText.setText(string)
+
+                binding.root.setOnClickListener { clickListener(string) }
             }
         }
     }

@@ -1,48 +1,79 @@
 package com.tilal6991.channels.viewmodel
 
-import android.util.ArraySet
 import java.util.*
 
 class SelectedClientsVM {
-    var latest: ClientVM? = null
-        private set
-    var penultimate: ClientVM? = null
-        private set
-    var antepenultimate: ClientVM? = null
-        private set
+
+    val latest: ClientVM?
+        get() = clientList.firstOrNull()
+    val penultimate: ClientVM?
+        get() = if (clientList.size < 2) null else clientList[1]
+    val antepenultimate: ClientVM?
+        get() = if (clientList.size < 3) null else clientList[2]
+
+    val clientList: LinkedList<ClientVM> = LinkedList()
 
     private val callbacks: MutableCollection<OnClientsChangedCallback> = ArrayList()
 
     fun select(client: ClientVM) {
-        if (client == latest) {
-            return
-        } else if (client == penultimate) {
-            return selectPenultimate()
-        } else if (client == antepenultimate) {
-            return selectAntePenultimate()
+        val i = 0
+        val it = clientList.iterator()
+        while (it.hasNext()) {
+            val current = it.next()
+            if (current != client) {
+                continue
+            }
+
+            if (i == 0) {
+                return
+            } else if (i == 1) {
+                return selectPenultimate()
+            } else if (i == 2) {
+                return selectAntePenultimate()
+            } else {
+                it.remove()
+                break
+            }
         }
 
-        antepenultimate = penultimate
-        penultimate = latest
-        latest = client
-
+        clientList.addFirst(client)
         callbacks.forEach { it.onNewClientAdded() }
     }
 
     fun selectPenultimate() {
-        var oldLatest = latest
-        latest = penultimate
-        penultimate = oldLatest
+        if (clientList.size < 2) {
+            return
+        }
+
+        var oldLatest = clientList.removeFirst()
+        var oldSecond = clientList.removeFirst()
+        clientList.addFirst(oldLatest)
+        clientList.addFirst(oldSecond)
 
         callbacks.forEach { it.onLatestPenultimateSwap() }
     }
 
     fun selectAntePenultimate() {
-        var oldLatest = latest
-        latest = antepenultimate
-        antepenultimate = oldLatest
+        if (clientList.size < 3) {
+            return
+        }
+
+        var latest = clientList.removeFirst()
+        var second = clientList.removeFirst()
+        var third = clientList.removeFirst()
+        clientList.addFirst(second)
+        clientList.addFirst(latest)
+        clientList.addFirst(third)
 
         callbacks.forEach { it.onLatestAntePenultimateSwap() }
+    }
+
+    fun closeSelected() {
+        if (clientList.isEmpty()) {
+            return
+        }
+        clientList.removeFirst()
+        callbacks.forEach { it.onLatestClosed() }
     }
 
     fun addOnClientsChangedCallback(callback: OnClientsChangedCallback) {
@@ -57,6 +88,7 @@ class SelectedClientsVM {
         fun onNewClientAdded()
         fun onLatestPenultimateSwap()
         fun onLatestAntePenultimateSwap()
+        fun onLatestClosed()
     }
 
     interface OnLatestClientChangedCallback : OnClientsChangedCallback {
@@ -69,6 +101,10 @@ class SelectedClientsVM {
         }
 
         override fun onLatestAntePenultimateSwap() {
+            onLatestClientChanged()
+        }
+
+        override fun onLatestClosed() {
             onLatestClientChanged()
         }
 

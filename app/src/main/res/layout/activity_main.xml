@@ -46,6 +46,16 @@
                 android:visibility="gone"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+            <TextView
+                android:id="@+id/navigation_hint"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="false"
+                android:gravity="center"
+                android:padding="32dp"
+                android:text="@string/no_child_selected"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
             <android.support.design.widget.AppBarLayout
                 android:id="@id/appbar"
                 android:layout_width="match_parent"

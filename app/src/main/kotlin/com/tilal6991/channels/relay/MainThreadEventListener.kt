@@ -66,6 +66,50 @@ class MainThreadEventListener : EventListener {
     override fun onAuthenticate(data: String) = postForEach {
         it.onAuthenticate(data)
     }
+    
+    override fun onConnectFailed() = postForEach {
+        it.onConnectFailed()
+    }
+
+    override fun onDisconnect(triggered: Boolean) = postForEach {
+        it.onDisconnect(triggered)
+    }
+
+    override fun onInvite(prefix: String, target: String, channel: String) = postForEach {
+        it.onInvite(prefix, target, channel)
+    }
+
+    override fun onCapNew(caps: List<String>) = postForEach {
+        it.onCapNew(caps)
+    }
+
+    override fun onCapDel(caps: List<String>) = postForEach {
+        it.onCapDel(caps)
+    }
+
+    override fun onAccountLogin(prefix: String, account: String) = postForEach {
+        it.onAccountLogin(prefix, account)
+    }
+
+    override fun onAccountLogout(prefix: String) = postForEach {
+        it.onAccountLogout(prefix)
+    }
+
+    override fun onAway(prefix: String, message: String) = postForEach {
+        it.onAway(prefix, message)
+    }
+
+    override fun onAwayEnd(prefix: String) = postForEach {
+        it.onAwayEnd(prefix)
+    }
+
+    override fun onBatch(referenceTag: String, type: String, batchArgs: List<String>) = postForEach {
+        it.onBatch(referenceTag, type, batchArgs)
+    }
+
+    override fun onChghost(prefix: String?, newUser: String, newHost: String) = postForEach {
+        it.onChghost(prefix, newUser, newHost)
+    }
 
     private inline fun postForEach(crossinline fn: (EventListener) -> Unit) {
         handler.post { children.forEach(fn) }

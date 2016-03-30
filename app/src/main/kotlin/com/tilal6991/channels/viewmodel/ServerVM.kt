@@ -25,6 +25,18 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
         add(message)
     }
 
+    override fun onConnectFailed() {
+        add("Failed to connect to the server.")
+    }
+
+    fun onConnecting() {
+        add("Connecting to the server.")
+    }
+
+    override fun onDisconnect(triggered: Boolean) {
+        add("Disconnected from the server.")
+    }
+
     companion object {
         private val displayedCodes: Set<Int> = arrayOf(
                 ReplyCodes.RPL_YOURHOST, ReplyCodes.RPL_CREATED, ReplyCodes.RPL_MYINFO,
