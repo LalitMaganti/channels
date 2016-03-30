@@ -5,7 +5,7 @@
 
         <variable
             name="child"
-            type="co.fusionx.channels.viewmodel.ClientChildVM" />
+            type="com.tilal6991.channels.viewmodel.ClientChildVM" />
     </data>
 
     <LinearLayout

@@ -1,6 +1,7 @@
 package com.tilal6991.channels.viewmodel
 
 import android.util.ArraySet
+import java.util.*
 
 class SelectedClientsVM {
     var latest: ClientVM? = null
@@ -10,7 +11,7 @@ class SelectedClientsVM {
     var antepenultimate: ClientVM? = null
         private set
 
-    private val callbacks: MutableCollection<OnClientsChangedCallback> = ArraySet<OnClientsChangedCallback>()
+    private val callbacks: MutableCollection<OnClientsChangedCallback> = ArrayList()
 
     fun select(client: ClientVM) {
         if (client == latest) {

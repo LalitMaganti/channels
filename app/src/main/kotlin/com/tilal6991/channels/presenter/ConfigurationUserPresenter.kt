@@ -11,11 +11,9 @@ import android.util.SparseArray
 import com.tilal6991.channels.R
 import com.tilal6991.channels.activity.ConfigurationEditActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import co.fusionx.channels.databinding.ConfigurationEditUserBinding
+import com.tilal6991.channels.databinding.ConfigurationEditUserBinding
 import com.tilal6991.channels.presenter.helper.EmptyWatcher
 import com.tilal6991.channels.util.isNotEmpty
-import com.tilal6991.channels.util.isValidPort
-import org.parceler.Parcels
 
 class ConfigurationUserPresenter(override val activity: Activity,
                                  override val binding: ConfigurationEditUserBinding,

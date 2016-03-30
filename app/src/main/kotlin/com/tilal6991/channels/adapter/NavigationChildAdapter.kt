@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.relayVM
-import co.fusionx.channels.databinding.NavigationClientChildrenBinding
+import com.tilal6991.channels.databinding.NavigationClientChildrenBinding
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ClientVM

@@ -6,10 +6,10 @@
 
         <variable
             name="headerVm"
-            type="co.fusionx.channels.viewmodel.NavigationHeaderVM" />
+            type="com.tilal6991.channels.viewmodel.NavigationHeaderVM" />
     </data>
 
-    <com.fusionx.channels.view.ClientCarouselView
+    <com.tilal6991.channels.view.ClientCarouselView
         android:id="@+id/view_navigation_drawer_server_carousel"
         android:layout_width="match_parent"
         android:layout_height="172dp">
@@ -84,5 +84,5 @@
             android:src="@drawable/person_image_empty"
             android:visibility="invisible"
             app:maskDrawable="@drawable/circle_mask" />
-    </com.fusionx.channels.view.ClientCarouselView>
+    </com.tilal6991.channels.view.ClientCarouselView>
 </layout>

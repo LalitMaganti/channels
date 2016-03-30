@@ -28,6 +28,10 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    lintOptions {
+        warning 'InvalidPackage'
+    }
+
     dataBinding {
         enabled = true
     }

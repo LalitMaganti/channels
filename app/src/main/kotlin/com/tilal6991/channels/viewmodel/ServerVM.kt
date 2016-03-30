@@ -1,9 +1,9 @@
 package com.tilal6991.channels.viewmodel
 
-import android.util.ArraySet
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.protocol.ReplyCodes
 import com.tilal6991.relay.util.join
+import java.util.*
 
 class ServerVM(override val name: String) : ClientChildVM(), EventListener {
 
@@ -32,6 +32,6 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
                 ReplyCodes.RPL_LUSERCHANNELS, ReplyCodes.RPL_LUSERME, ReplyCodes.RPL_LOCALUSERS,
                 ReplyCodes.RPL_GLOBALUSERS, ReplyCodes.RPL_STATSCONN, ReplyCodes.RPL_MOTDSTART,
                 ReplyCodes.RPL_MOTD, ReplyCodes.RPL_ENDOFMOTD
-        ).toCollection(ArraySet())
+        ).toCollection(HashSet())
     }
 }

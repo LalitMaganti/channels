@@ -8,11 +8,11 @@
 
         <variable
             name="client"
-            type="co.fusionx.channels.viewmodel.ClientVM" />
+            type="com.tilal6991.channels.viewmodel.ClientVM" />
 
         <variable
             name="configuration"
-            type="co.fusionx.channels.configuration.ChannelsConfiguration" />
+            type="com.tilal6991.channels.configuration.ChannelsConfiguration" />
     </data>
 
     <LinearLayout

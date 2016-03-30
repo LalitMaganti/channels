@@ -1,24 +1,24 @@
 package com.tilal6991.channels.activity
 
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.Toolbar
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import butterknife.bindView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import co.fusionx.channels.presenter.*
+import com.tilal6991.channels.presenter.*
 import com.tilal6991.channels.util.addAll
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.view.NavigationDrawerView
 import com.tilal6991.channels.viewmodel.ClientChildVM
-import com.tilal6991.channels.base.relayVM
-import com.tilal6991.channels.presenter.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {

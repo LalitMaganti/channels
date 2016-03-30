@@ -5,7 +5,7 @@ import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.databinding.ObservableField
 import android.databinding.ObservableList
-import co.fusionx.channels.BR
+import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser

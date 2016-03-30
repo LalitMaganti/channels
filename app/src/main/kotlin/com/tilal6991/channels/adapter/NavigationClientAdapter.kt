@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.tilal6991.channels.R
-import co.fusionx.channels.databinding.NavigationClientBinding
 import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.databinding.NavigationClientBinding
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.RelayVM
 import timber.log.Timber

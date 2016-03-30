@@ -4,9 +4,9 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import co.fusionx.channels.databinding.NavigationHeaderBinding
-import com.tilal6991.channels.viewmodel.SelectedClientsVM
+import com.tilal6991.channels.databinding.NavigationHeaderBinding
 import com.tilal6991.channels.viewmodel.NavigationHeaderVM
+import com.tilal6991.channels.viewmodel.SelectedClientsVM
 
 class NavigationAdapter(
         private val context: Context,
