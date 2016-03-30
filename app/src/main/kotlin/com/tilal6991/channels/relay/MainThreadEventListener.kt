@@ -3,15 +3,33 @@ package com.tilal6991.channels.relay
 import android.os.Handler
 import android.os.Looper
 import com.tilal6991.relay.EventListener
+import com.tilal6991.relay.MetaListener
 import java.util.*
 
-class MainThreadEventListener : EventListener {
+class MainThreadEventListener : EventListener, MetaListener {
 
-    private val children: MutableCollection<EventListener> = ArrayList()
+    private val event: MutableCollection<EventListener> = ArrayList()
+    private val meta: MutableCollection<MetaListener> = ArrayList()
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun onSocketConnect() = postForEach {
+    override fun onSocketConnect() = postForEachMeta {
         it.onSocketConnect()
+    }
+
+    override fun onConnectFailed() = postForEachMeta {
+        it.onConnectFailed()
+    }
+
+    override fun onDisconnect(triggered: Boolean) = postForEachMeta {
+        it.onDisconnect(triggered)
+    }
+
+    override fun onAlreadyDisconnected() = postForEachMeta {
+        it.onAlreadyDisconnected()
+    }
+
+    override fun onAlreadyConnected() = postForEachMeta {
+        it.onAlreadyConnected()
     }
 
     override fun onOtherCode(code: Int, arguments: List<String>) = postForEach {
@@ -66,14 +84,6 @@ class MainThreadEventListener : EventListener {
     override fun onAuthenticate(data: String) = postForEach {
         it.onAuthenticate(data)
     }
-    
-    override fun onConnectFailed() = postForEach {
-        it.onConnectFailed()
-    }
-
-    override fun onDisconnect(triggered: Boolean) = postForEach {
-        it.onDisconnect(triggered)
-    }
 
     override fun onInvite(prefix: String, target: String, channel: String) = postForEach {
         it.onInvite(prefix, target, channel)
@@ -112,10 +122,18 @@ class MainThreadEventListener : EventListener {
     }
 
     private inline fun postForEach(crossinline fn: (EventListener) -> Unit) {
-        handler.post { children.forEach(fn) }
+        handler.post { event.forEach(fn) }
+    }
+
+    private inline fun postForEachMeta(crossinline fn: (MetaListener) -> Unit) {
+        handler.post { meta.forEach(fn) }
     }
 
     fun addEventListener(eventListener: EventListener) {
-        children.add(eventListener)
+        event.add(eventListener)
+    }
+
+    fun addMetaListener(metaListener: MetaListener) {
+        meta.add(metaListener)
     }
 }

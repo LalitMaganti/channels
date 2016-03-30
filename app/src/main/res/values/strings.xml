@@ -14,6 +14,7 @@
     <string name="status_socket_connected">Socket Connected</string>
     <string name="status_connected">Connected</string>
     <string name="status_disconnected">Disconnected</string>
+    <string name="status_reconnecting">Reconnecting</string>
 
     <string name="header_channels">Channels</string>
     <string name="header_private_messages">PMs</string>
