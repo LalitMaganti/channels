@@ -60,7 +60,7 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
 
-    compile 'com.tilal6991.messageloop:messageloop-android:0.2.0-SNAPSHOT'
+    compile 'com.tilal6991.messageloop:messageloop-android:0.2.0'
 
     compile rootProject.ext.annotation
     compile rootProject.ext.dagger
