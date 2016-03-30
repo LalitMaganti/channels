@@ -97,7 +97,7 @@ import javax.inject.Singleton
 
         selectedClients.select(client)
         client.select(client.server)
-        return index == SortedList.INVALID_POSITION
+        return index != SortedList.INVALID_POSITION
     }
 
     fun reconnectSelected() {
