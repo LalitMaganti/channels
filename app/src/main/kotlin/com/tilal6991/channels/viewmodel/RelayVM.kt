@@ -145,6 +145,9 @@ import javax.inject.Singleton
         coreClient.addEventListener(handshakeListener)
         coreClient.addEventListener(mainThreadListener)
 
+        coreClient.addMetaListener(handshakeListener)
+        coreClient.addMetaListener(mainThreadListener)
+
         mainThreadListener.addMetaListener(clientVM)
         mainThreadListener.addEventListener(clientVM)
         mainThreadListener.addEventListener(server)

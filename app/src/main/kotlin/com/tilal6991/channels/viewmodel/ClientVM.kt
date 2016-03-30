@@ -69,9 +69,6 @@ class ClientVM(private val context: Context,
     }
 
     private fun internalReconnect() {
-        if (statusInt != RECONNECTING) {
-            return
-        }
         updateStatus(CONNECTING)
         client.connect()
 
@@ -165,8 +162,11 @@ class ClientVM(private val context: Context,
             }
 
             handler.postDelayed({
-                reconnectCount++
-                internalReconnect()
+                // Check if we still want to proceed with reconnection.
+                if (statusInt == RECONNECTING) {
+                    reconnectCount++
+                    internalReconnect()
+                }
             }, 5000)
             return true
         }
