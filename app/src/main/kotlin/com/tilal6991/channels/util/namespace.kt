@@ -72,3 +72,12 @@ fun ObservableInt.isValidPort(): Boolean {
 fun Int.isValidPort(): Boolean {
     return this > 0 && this <= 65536
 }
+
+internal fun <T> CharSequence.join(elements: Iterable<T>,
+                                   prefix: CharSequence = "",
+                                   postfix: CharSequence = "",
+                                   limit: Int = -1,
+                                   truncated: CharSequence = "...",
+                                   transform: ((T) -> CharSequence)? = null): String {
+    return elements.joinToString(this, prefix, postfix, limit, truncated, transform)
+}

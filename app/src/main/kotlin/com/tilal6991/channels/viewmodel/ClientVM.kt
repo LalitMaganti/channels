@@ -85,12 +85,12 @@ class ClientVM(private val context: Context,
         updateStatus(SOCKET_CONNECTED)
     }
 
-    override fun onWelcome(target: String, text: String) {
-        updateStatus(CONNECTED)
-    }
-
     override fun onDisconnect(triggered: Boolean) {
         updateStatus(DISCONNECTED)
+    }
+
+    override fun onWelcome(target: String, text: String) {
+        updateStatus(CONNECTED)
     }
 
     companion object {

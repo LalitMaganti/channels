@@ -5,12 +5,13 @@ import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
 import com.tilal6991.relay.EventListener
-import com.tilal6991.relay.protocol.PrefixSplitter
-import com.tilal6991.relay.util.isChannel
+import com.tilal6991.relay.RegistrationDao
+import com.tilal6991.relay.internal.protocol.PrefixSplitter
 import timber.log.Timber
 
 class ChannelManagerVM(
         initialNick: String,
+        private val dao: RegistrationDao,
         private val channels: ObservableSortedArrayMap<String, ChannelVM>) : EventListener, UserMessageParser.Listener {
 
     private val selfNick: ObservableField<String> = ObservableField(initialNick)
@@ -35,7 +36,7 @@ class ChannelManagerVM(
     }
 
     override fun onPrivmsg(prefix: String, target: String, message: String, optParams: Map<String, String>) {
-        if (!target.isChannel()) {
+        if (!dao.isChannel(target)) {
             return
         }
 

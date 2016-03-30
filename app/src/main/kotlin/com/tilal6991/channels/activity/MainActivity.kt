@@ -67,7 +67,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onClientClick(configuration: ChannelsConfiguration) {
-        relayVM.select(configuration)
+        if (relayVM.select(configuration)) {
+            drawerLayout.closeDrawer(navDrawerView)
+        }
     }
 
     fun onChildClick(child: ClientChildVM) {

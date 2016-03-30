@@ -1,8 +1,8 @@
 package com.tilal6991.channels.viewmodel
 
+import com.tilal6991.channels.util.join
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.protocol.ReplyCodes
-import com.tilal6991.relay.util.join
 import java.util.*
 
 class ServerVM(override val name: String) : ClientChildVM(), EventListener {

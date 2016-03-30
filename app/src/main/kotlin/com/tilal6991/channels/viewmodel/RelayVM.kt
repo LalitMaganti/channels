@@ -2,6 +2,7 @@ package com.tilal6991.channels.viewmodel
 
 import android.content.Context
 import android.support.v4.util.ArrayMap
+import android.support.v7.util.SortedList
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
@@ -84,11 +85,8 @@ import javax.inject.Singleton
 
     fun select(configuration: ChannelsConfiguration): Boolean {
         val index = inactiveConfigs.indexOf(configuration)
-        if (selectedClients.latest?.name == configuration.name) {
-            return true
-        }
-
         var client = configActiveClients[configuration]
+
         if (client == null) {
             client = createClient(configuration)
             configActiveClients[configuration] = client
@@ -99,7 +97,7 @@ import javax.inject.Singleton
 
         selectedClients.select(client)
         client.select(client.server)
-        return false
+        return index == SortedList.INVALID_POSITION
     }
 
     fun reconnectSelected() {
@@ -133,7 +131,7 @@ import javax.inject.Singleton
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.Companion.instance)
-        val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], channelMap)
+        val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], coreClient.registrationDao, channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(userChannelVM)
 
