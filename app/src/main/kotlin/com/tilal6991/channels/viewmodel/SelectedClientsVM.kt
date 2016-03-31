@@ -9,9 +9,9 @@ class SelectedClientsVM {
     val latest: ClientVM?
         get() = clientList.firstOrNull()
     val penultimate: ClientVM?
-        get() = if (clientList.size < 2) null else clientList[1]
+        get() = if (clientList.size >= 2) clientList[1] else null
     val antepenultimate: ClientVM?
-        get() = if (clientList.size < 3) null else clientList[2]
+        get() = if (clientList.size >= 3) clientList[2] else null
 
     val clientList: LinkedList<ClientVM> = LinkedList()
 
