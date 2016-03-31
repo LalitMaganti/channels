@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(DrawerArrowDrawable(this))
 
-        navigationPresenter = NavigationPresenter(this, navDrawerView)
+        navigationPresenter = NavigationPresenter(this, drawerLayout, navDrawerView)
         actionBarPresenter = ActionBarPresenter(this)
         dashboardPresenter = DashboardPresenter(this)
 
@@ -59,22 +59,6 @@ class MainActivity : AppCompatActivity() {
                 dashboardPresenter
         )
         presenters.forEach { it.setup(savedInstanceState?.getBundle(it.id)) }
-
-        // If there are no selected server, then start with the drawer open.
-        if (relayVM.selectedClients.latest == null) {
-            drawerLayout.openDrawer(navDrawerView);
-        }
-    }
-
-    fun onClientClick(configuration: ChannelsConfiguration) {
-        if (relayVM.select(configuration)) {
-            drawerLayout.closeDrawer(navDrawerView)
-        }
-    }
-
-    fun onChildClick(child: ClientChildVM) {
-        relayVM.selectedClients.latest!!.select(child)
-        drawerLayout.closeDrawer(navDrawerView)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

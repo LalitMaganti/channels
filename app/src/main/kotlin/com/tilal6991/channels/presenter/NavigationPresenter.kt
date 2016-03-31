@@ -4,6 +4,7 @@ import android.content.Intent
 import android.databinding.Observable
 import android.databinding.ObservableList
 import android.os.Bundle
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.tilal6991.channels.R
@@ -16,14 +17,13 @@ import com.tilal6991.channels.collections.ListSectionProxy
 import com.tilal6991.channels.activity.ConfigurationEditActivity
 import com.tilal6991.channels.activity.MainActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.presenter.helper.ClientChildListener
 import com.tilal6991.channels.view.NavigationDrawerView
-import com.tilal6991.channels.viewmodel.ChannelVM
-import com.tilal6991.channels.viewmodel.ClientVM
-import com.tilal6991.channels.viewmodel.SelectedClientsVM
-import com.tilal6991.channels.viewmodel.NavigationHeaderVM
+import com.tilal6991.channels.viewmodel.*
 import org.parceler.Parcels
 
 class NavigationPresenter(override val activity: MainActivity,
+                          private val drawerLayout: DrawerLayout,
                           private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
@@ -46,6 +46,9 @@ class NavigationPresenter(override val activity: MainActivity,
             updateCurrentType(childHelper)
         }
     }
+    private val childListener = ClientChildListener(activity) {
+        onChildChanged(it)
+    }
 
     override fun setup(savedState: Bundle?) {
         headerVM = NavigationHeaderVM()
@@ -60,6 +63,11 @@ class NavigationPresenter(override val activity: MainActivity,
 
         adapter = NavigationAdapter(view.context, clientHelper.clientAdapter, headerVM, selectedClientsVM)
         view.setAdapter(adapter)
+
+        // If there are no selected server, then start with the drawer open.
+        if (savedState == null && relayVM.selectedClients.latest == null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+        }
     }
 
     override fun restoreState(bundle: Bundle) {
@@ -69,6 +77,7 @@ class NavigationPresenter(override val activity: MainActivity,
 
     override fun bind() {
         currentHelper.bind()
+        childListener.bind()
         selectedClientsVM.addOnClientsChangedCallback(selectedClientCallback)
 
         // Make sure we're displaying the most up to date information.
@@ -77,8 +86,17 @@ class NavigationPresenter(override val activity: MainActivity,
     }
 
     override fun unbind() {
-        relayVM.selectedClients.removeOnClientsChangedCallback(selectedClientCallback)
+        selectedClientsVM.removeOnClientsChangedCallback(selectedClientCallback)
+        childListener.unbind()
         currentHelper.unbind()
+    }
+
+    private fun onChildChanged(it: ClientChildVM?) {
+        if (it == null) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+        } else {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        }
     }
 
     private fun updateCurrentType(helper: Helper) {
@@ -141,7 +159,9 @@ class NavigationPresenter(override val activity: MainActivity,
             }
 
             val clientClick: (ChannelsConfiguration) -> Unit =  {
-                activity.onClientClick(it)
+                if (relayVM.select(it)) {
+                    drawerLayout.closeDrawer(view)
+                }
 
                 // Make sure we're displaying the child view.
                 updateCurrentType(childHelper)
@@ -203,7 +223,8 @@ class NavigationPresenter(override val activity: MainActivity,
 
         override fun setup() {
             childAdapter = NavigationChildAdapter(view.context) {
-                activity.onChildClick(it)
+                relayVM.selectedClients.latest!!.select(it)
+                drawerLayout.closeDrawer(view)
             }
             childAdapter.setup()
 
