@@ -20,16 +20,8 @@ class MainThreadEventListener : EventListener, MetaListener {
         it.onConnectFailed()
     }
 
-    override fun onDisconnect(triggered: Boolean) = postForEachMeta {
-        it.onDisconnect(triggered)
-    }
-
-    override fun onAlreadyDisconnected() = postForEachMeta {
-        it.onAlreadyDisconnected()
-    }
-
-    override fun onAlreadyConnected() = postForEachMeta {
-        it.onAlreadyConnected()
+    override fun onDisconnect() = postForEachMeta {
+        it.onDisconnect()
     }
 
     override fun onOtherCode(code: Int, arguments: List<String>) = postForEach {
