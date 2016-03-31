@@ -18,14 +18,20 @@ class ChannelManagerVM(
 
     override fun onJoin(prefix: String, channel: String, optParams: Map<String, String>) {
         val nick = PrefixSplitter.nick(prefix)
+        val self = nick == selfNick.get()
         val c: ChannelVM
-        if (nick == selfNick.get()) {
-            c = ChannelVM(channel)
-            channels.put(channel, c)
+        if (self) {
+            val channelVM = channels[channel]
+            if (channelVM == null) {
+                c = ChannelVM(channel)
+                channels.put(channel, c)
+            } else {
+                c = channelVM
+            }
         } else {
             c = getChannelOrFail(channel) ?: return
         }
-        c.onJoin(nick)
+        c.onJoin(nick, self)
     }
 
     override fun onNames(channelName: String, nickList: List<String>, modeList: List<List<Char>>) {
@@ -58,6 +64,18 @@ class ChannelManagerVM(
         if (oldNick == selfNick.get()) {
             selfNick.set(newNick)
         }
+    }
+
+    override fun onPart(prefix: String, channel: String) {
+        val nick = PrefixSplitter.nick(prefix)
+        val self = nick == selfNick.get()
+
+        val c = channels[channel]
+        if (c == null) {
+            if (!self) Timber.asTree().failAssert()
+            return
+        }
+        c.onPart(nick, self)
     }
 
     private fun getChannelOrFail(channelName: String): ChannelVM? {

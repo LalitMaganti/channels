@@ -1,5 +1,6 @@
 package com.tilal6991.channels.viewmodel
 
+import android.databinding.Bindable
 import com.tilal6991.channels.util.join
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.protocol.ReplyCodes
@@ -22,26 +23,32 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
     }
 
     fun onSocketConnect() {
+        active = true
         add("Connection was successful.")
     }
 
     fun onConnectFailed() {
+        active = false
         add("Failed to connect to the server.")
     }
 
     fun onDisconnecting() {
+        active = false
         add("Disconnecting from the server.")
     }
 
     fun onDisconnected() {
+        active = false
         add("Disconnected from the server.")
     }
 
     fun onConnecting() {
+        active = false
         add("Connecting to the server.")
     }
 
     fun onReconnecting() {
+        active = false
         add("Trying to reconnect in 5 seconds.")
     }
 

@@ -1,5 +1,6 @@
 package com.tilal6991.channels.collections
 
+import android.support.v4.util.Pools
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import java.util.*
@@ -15,6 +16,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
     override val values: MutableCollection<V>
         get() = throw UnsupportedOperationException()
 
+    private val pool = GLOBAL_POOL as Pools.SimplePool<Node<V>>
     private val root = Node<V>()
 
     override fun get(key: CharSequence): V? {
@@ -27,7 +29,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
     }
 
     override fun clear() {
-        root.clear()
+        root.clear(pool)
     }
 
     override fun getKeyAt(index: Int): CharSequence? {
@@ -120,7 +122,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             // It's very important that we only do the setTerminal case where we create another
             // node as otherwise we get into all sorts of trouble when we do the old terminal
             // insertion.
-            val newNode = Node<V>()
+            val newNode = pool.acquire()
             newNode.setTerminal(key, value, false)
             node.put(char, newNode)
         } else {
@@ -150,7 +152,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         val child = node.get(char)
         val value = remove(key, child, offset + 1) ?: return null
         if (child!!.count == 0) {
-            node.remove(char)
+            pool.release(node.remove(char))
             node.decrementCount()
         }
         return value
@@ -256,8 +258,8 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             map.put(char, newNode)
         }
 
-        fun remove(char: Char) {
-            map.remove(char)
+        fun remove(char: Char): Node<T>? {
+            return map.remove(char)
         }
 
         fun setTerminal(key: CharSequence, value: T, trueTerminal: Boolean) {
@@ -276,7 +278,11 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             decrementCount()
         }
 
-        fun clear() {
+        fun clear(pool: Pools.SimplePool<Node<T>>) {
+            for (i in 0..map.size - 1) {
+                if (!pool.release(map.getValueAt(i))) break
+            }
+
             map.clear()
             resetTerminals()
             count = 0
@@ -306,4 +312,17 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         return true
     }
 
+    private class NodePool(private val maxPoolSize: Int) : Pools.SimplePool<Node<Any>>(maxPoolSize) {
+        override fun acquire(): Node<Any> {
+            return super.acquire() ?: CharSequenceTreeMap.Node()
+        }
+
+        override fun release(instance: Node<Any>?): Boolean {
+            return instance == null || super.release(instance)
+        }
+    }
+
+    companion object {
+        private val GLOBAL_POOL = NodePool(50)
+    }
 }

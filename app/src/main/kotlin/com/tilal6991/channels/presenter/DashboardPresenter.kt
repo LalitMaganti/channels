@@ -133,7 +133,7 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         val status = client.statusInt
 
         if (child is ChannelVM) {
-            updateChannelActions(status)
+            updateChannelActions(child, status)
         } else if (child is ServerVM) {
             val (strings, drawables) = getServerActions(status)
             adapter.setData(AdapterData.serverTitles, arrayOf(strings), arrayOf(drawables))
@@ -158,7 +158,7 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         return strings to drawables
     }
 
-    private fun updateChannelActions(status: Int) {
+    private fun updateChannelActions(channelVM: ChannelVM, status: Int) {
         val (serverStrings, serverDrawables) = getServerActions(status)
 
         val titles: IntArray
@@ -167,8 +167,13 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         if (status == ClientVM.CONNECTED) {
             titles = AdapterData.channelTitles
 
-            stringArray = arrayOf(AdapterData.channelStrings, serverStrings)
-            drawableArray = arrayOf(AdapterData.channelDrawables, serverDrawables)
+            if (channelVM.active) {
+                stringArray = arrayOf(AdapterData.channelStrings, serverStrings)
+                drawableArray = arrayOf(AdapterData.channelDrawables, serverDrawables)
+            } else {
+                stringArray = arrayOf(AdapterData.channelStrings, serverStrings)
+                drawableArray = arrayOf(AdapterData.channelDrawables, serverDrawables)
+            }
         } else {
             titles = AdapterData.serverTitles
             stringArray = arrayOf(serverStrings)
@@ -198,13 +203,13 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         val serverDctingDrawables = intArrayOf(R.drawable.ic_close)
 
         val serverDctStrings = intArrayOf(R.string.close, R.string.reconnect)
-        val serverDctDrawables = intArrayOf(R.drawable.ic_close, R.drawable.ic_cached)
+        val serverDctDrawables = intArrayOf(R.drawable.ic_close, R.drawable.ic_reconnect)
 
         val serverStrings = intArrayOf(R.string.disconnect, R.string.disconnect_close)
-        val serverDrawables = intArrayOf(R.drawable.ic_cancel, R.drawable.ic_close)
+        val serverDrawables = intArrayOf(R.drawable.ic_disconnect, R.drawable.ic_disconnect_close)
 
-        val channelStrings = intArrayOf()
-        val channelDrawables = intArrayOf()
+        val channelStrings = intArrayOf(R.string.part)
+        val channelDrawables = intArrayOf(R.drawable.ic_part)
     }
 
     companion object {

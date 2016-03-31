@@ -62,6 +62,6 @@
             android:focusable="false"
             android:padding="16dp"
             android:visibility="@{client == null ? View.VISIBLE : View.GONE}"
-            app:srcCompat="@drawable/ic_settings_black_24dp" />
+            app:srcCompat="@drawable/ic_settings" />
     </LinearLayout>
 </layout>

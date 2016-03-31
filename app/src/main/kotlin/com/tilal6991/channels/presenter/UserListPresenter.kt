@@ -69,20 +69,25 @@ class UserListPresenter(override val activity: Activity,
             return false
         }
 
-        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, section: Int, offset: Int) {
-            (holder as HeaderViewHolder).bind(displayedChild?.userMap?.getKeyAt(offset)?.nick ?: "Broken")
+        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder, section: Int) {
+            val userMap = displayedChild?.userMap
+            val key = userMap?.getKeyAt(section) ?: return
+            val value = userMap?.getValueAt(section) ?: return
+            (holder as HeaderViewHolder).bind("${value.size} $key users")
         }
 
-        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder, section: Int) {
-            (holder as HeaderViewHolder).bind("Header")
+        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, section: Int, offset: Int) {
+            val valueAt = displayedChild?.userMap?.getValueAt(section)
+            val displayString = valueAt?.get(offset)?.displayString
+            (holder as HeaderViewHolder).bind(displayString ?: "Broken")
         }
 
         override fun getSectionCount(): Int {
-            return 1
+            return displayedChild?.userMap?.size ?: 0
         }
 
         override fun getItemCountInSection(section: Int): Int {
-            return displayedChild?.userMap?.size ?: 0
+            return displayedChild?.userMap?.getValueAt(section)?.size ?: 0
         }
 
         fun onChildChanged(clientChild: ClientChildVM?) {

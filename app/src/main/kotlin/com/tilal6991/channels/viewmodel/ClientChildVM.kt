@@ -8,6 +8,10 @@ import com.tilal6991.channels.BR
 
 abstract class ClientChildVM : BaseObservable() {
     abstract val name: CharSequence
+    var active: Boolean = false
+        @Bindable get
+        protected set
+
     val message: CharSequence
         @Bindable get() = buffer.lastOrNull() ?: "No message to show"
     val buffer: ObservableList<CharSequence> = ObservableArrayList()

@@ -15,7 +15,7 @@
     <style name="Base.Theme.Channels.SubHeader">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:fontFamily">@string/subheader_font_family</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="Base.Theme.Channels.NavDrawerItem">
@@ -62,7 +62,7 @@
     <style name="Theme.Channels.SubHeader" parent="Base.Theme.Channels.SubHeader" />
 
     <style name="Theme.Channels.NavDrawerItem" parent="Base.Theme.Channels.NavDrawerItem">
-        <item name="android:fontFamily">@string/subheader_font_family</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="Theme.Channels.TwoLineListPrimary" parent="Base.Theme.Channels.TwoLineListPrimary" />

@@ -4,6 +4,7 @@ import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.viewmodel.ChannelVM
+import java.util.*
 
 class ChannelComparator private constructor() :
         ObservableSortedList.HyperComparator<ChannelVM>, ObservableSortedArrayMap.HyperComparator<ChannelVM> {
@@ -24,21 +25,47 @@ class ChannelComparator private constructor() :
     }
 }
 
-class UserComparator private constructor() : ObservableSortedList.HyperComparator<ChannelVM.UserVM> {
+class UserComparator private constructor() : ObservableSortedArrayMap.HyperComparator<ChannelVM.UserVM>,
+        ObservableSortedList.HyperComparator<ChannelVM.UserVM> {
     override fun areContentsTheSame(oldItem: ChannelVM.UserVM, newItem: ChannelVM.UserVM): Boolean {
-        return oldItem.nick == newItem.nick
+        return oldItem.displayString == newItem.displayString
     }
 
     override fun areItemsTheSame(item1: ChannelVM.UserVM, item2: ChannelVM.UserVM): Boolean {
-        return item1.nick == item2.nick
+        return item1.displayString == item2.displayString
     }
 
     override fun compare(o1: ChannelVM.UserVM, o2: ChannelVM.UserVM): Int {
-        return o1.nick.compareTo(o2.nick)
+        return o1.displayString.compareTo(o2.displayString)
     }
 
     companion object {
         val instance by lazy { UserComparator() }
+    }
+}
+
+class StringComparator private constructor() : Comparator<String> {
+    override fun compare(lhs: String, rhs: String): Int {
+        return lhs.compareTo(rhs)
+    }
+
+    companion object {
+        val instance by lazy { StringComparator() }
+    }
+}
+
+class UserListComparator private constructor() : ObservableSortedArrayMap.HyperComparator<ObservableSortedList<ChannelVM.UserVM>> {
+
+    override fun areItemsTheSame(item1: ObservableSortedList<ChannelVM.UserVM>, item2: ObservableSortedList<ChannelVM.UserVM>): Boolean {
+        return item1 === item2
+    }
+
+    override fun areContentsTheSame(oldItem: ObservableSortedList<ChannelVM.UserVM>, newItem: ObservableSortedList<ChannelVM.UserVM>): Boolean {
+        return oldItem === newItem
+    }
+
+    companion object {
+        val instance by lazy { UserListComparator() }
     }
 }
 
@@ -60,13 +87,18 @@ class ConfigurationComparator private constructor() : ObservableSortedList.Hyper
     }
 }
 
-class CharComparator private constructor() : ObservableSortedArrayMap.HyperComparator<Char> {
+class CharComparator private constructor() : ObservableSortedArrayMap.HyperComparator<Char>, ObservableSortedList.HyperComparator<Char> {
+
     override fun areItemsTheSame(item1: Char, item2: Char): Boolean {
         return item1 == item2
     }
 
     override fun areContentsTheSame(oldItem: Char, newItem: Char): Boolean {
         return oldItem == newItem
+    }
+
+    override fun compare(lhs: Char, rhs: Char): Int {
+        return lhs.compareTo(rhs)
     }
 
     companion object {

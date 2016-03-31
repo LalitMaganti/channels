@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Welcome to strings.xml! -->
     <string name="app_name">Channels</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Generic Strings -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
-    <string name="navigation_font_family" translatable="false">sans-serif</string>
-    <string name="subheader_font_family" translatable="false">sans-serif-medium</string>
-
+    <!-- Status -->
     <string name="status_connecting">Connecting</string>
     <string name="status_socket_connected">Socket Connected</string>
     <string name="status_connected">Connected</string>
@@ -17,17 +15,30 @@
     <string name="status_disconnected">Disconnected</string>
     <string name="status_reconnecting">Reconnecting</string>
 
+    <!-- Navigation Drawer -->
     <string name="header_channels">Channels</string>
     <string name="header_private_messages">PMs</string>
-
     <string name="header_active_clients">Active</string>
     <string name="header_inactive_clients">Inactive</string>
+
+    <!-- Actions -->
+    <string name="actions">Actions</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="disconnect_close">Disconnect and close</string>
+    <string name="part">Part</string>
+    <string name="close">Close</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="server_actions">Server Actions</string>
+    <string name="channel_actions">Channel Actions</string>
+
+    <!-- Configuration Settings -->
     <string name="message_hint">Message</string>
     <string name="connection_settings">Connection</string>
     <string name="name">Name</string>
     <string name="url">URL</string>
     <string name="port">Port</string>
-    <string name="default_port">6667</string>
+    <string name="port_error">Should be a number between 1 and 65535</string>
     <string name="configuration_add_title">Adding new configuration</string>
     <string name="ssl">SSL</string>
     <string name="ssl_accept_all">Accept All SSL Certificates</string>
@@ -47,7 +58,6 @@
     <string name="server_password">Server Password</string>
     <string name="server_password_desc">Usually a server password is not required.</string>
     <string name="default_user_handle">ChannelsUser</string>
-    <string name="port_error">Should be a number between 1 and 65535</string>
     <string name="auth_mechanism">Authentication Mechanism</string>
     <string name="user_auth">User</string>
     <string name="server_auth">Server</string>
@@ -57,19 +67,10 @@
     <string name="empty_error">Should not be empty</string>
     <string name="add_server">Add New Server</string>
     <string name="manage_servers">Manage Servers</string>
-
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
     <string name="configuration_not_saved">
         CAUTION: your current configuration cannot be saved. Would you like to continue?
     </string>
-    <string name="actions">Actions</string>
-    <string name="dashboard">Dashboard</string>
-    <string name="disconnect">Disconnect</string>
-    <string name="disconnect_close">Disconnect and close</string>
-    <string name="close">Close</string>
-    <string name="reconnect">Reconnect</string>
-    <string name="server_actions">Server Actions</string>
-    <string name="channel_actions">Channel Actions</string>
+
+    <!-- Main -->
     <string name="no_child_selected">Welcome to Channels!\nPlease select a client on the left to begin.</string>
 </resources>

@@ -41,15 +41,25 @@ class ClientChildPresenter(override val activity: MainActivity,
             eventRecyclerView.scroll(positionStart + itemCount - 1)
         }
     }
-    private val statusListener = object : Observable.OnPropertyChangedCallback() {
+    private val messageBoxListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            if (propertyId != BR.statusInt) {
+            if (propertyId != BR.statusInt && propertyId != BR.active) {
                 return
             }
-            onStatusChanged(selectedClientsVM.latest?.statusInt!!)
+            val latest = selectedClientsVM.latest!!
+            val status = latest.statusInt
+            onMessageBoxEnableState(latest.selectedChild.get(), status)
         }
-        fun bind() = selectedClientsVM.latest?.addOnPropertyChangedCallback(this)
-        fun unbind() = selectedClientsVM.latest?.removeOnPropertyChangedCallback(this)
+
+        fun bind() {
+            selectedClientsVM.latest?.addOnPropertyChangedCallback(this)
+            selectedChild?.get()?.addOnPropertyChangedCallback(this)
+        }
+
+        fun unbind() {
+            selectedClientsVM.latest?.removeOnPropertyChangedCallback(this)
+            selectedChild?.get()?.removeOnPropertyChangedCallback(this)
+        }
     }
 
     override fun setup(savedState: Bundle?) {
@@ -64,35 +74,36 @@ class ClientChildPresenter(override val activity: MainActivity,
 
         messageHandler.bind()
         childListener.bind()
-        statusListener.bind()
+        messageBoxListener.bind()
     }
 
     override fun unbind() {
         messageHandler.unbind()
         childListener.unbind()
-        statusListener.unbind()
+        messageBoxListener.unbind()
     }
 
     override fun teardown() {
         messageHandler.teardown()
     }
 
-    private fun onStatusChanged(statusInt: Int) {
-        messageInput.enabled = statusInt == ClientVM.CONNECTED || statusInt == ClientVM.SOCKET_CONNECTED
+    private fun onMessageBoxEnableState(selectedChild: ClientChildVM, statusInt: Int) {
+        messageInput.enabled = selectedChild.active &&
+                (statusInt == ClientVM.CONNECTED || statusInt == ClientVM.SOCKET_CONNECTED)
     }
 
     private fun switchContent(newChild: ClientChildVM?) {
         if (displayedChild == newChild) return
 
-        displayedClient?.removeOnPropertyChangedCallback(statusListener)
+        displayedClient?.removeOnPropertyChangedCallback(messageBoxListener)
+        displayedChild?.removeOnPropertyChangedCallback(messageBoxListener)
         displayedChild?.buffer?.removeOnListChangedCallback(listener)
 
         val buffer = newChild?.buffer
         adapter.setBuffer(buffer)
         adapter.notifyDataSetChanged()
 
-        // Scroll to the bottom once the items are present.
-        if (buffer == null) {
+        if (newChild == null || buffer == null) {
             eventRecyclerView.visibility = View.GONE
             messageInput.visibility = View.GONE
             navigationHint.visibility = View.VISIBLE
@@ -103,12 +114,14 @@ class ClientChildPresenter(override val activity: MainActivity,
             messageInput.visibility = View.VISIBLE
             navigationHint.visibility = View.GONE
 
+            // Scroll to the bottom once the items are present.
             eventRecyclerView.forceScroll(buffer.size - 1)
             buffer.addOnListChangedCallback(listener)
 
             displayedClient = selectedClientsVM.latest
-            displayedClient!!.addOnPropertyChangedCallback(statusListener)
-            onStatusChanged(displayedClient!!.statusInt)
+            displayedClient!!.addOnPropertyChangedCallback(messageBoxListener)
+            newChild.addOnPropertyChangedCallback(messageBoxListener)
+            onMessageBoxEnableState(newChild, displayedClient!!.statusInt)
         }
 
         displayedChild = newChild
