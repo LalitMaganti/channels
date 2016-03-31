@@ -162,8 +162,8 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         if (status == ClientVM.CONNECTED) {
             titles = AdapterData.channelTitles
 
-            stringArray = arrayOf(serverStrings, AdapterData.channelStrings)
-            drawableArray = arrayOf(serverDrawables, AdapterData.channelDrawables)
+            stringArray = arrayOf(AdapterData.channelStrings, serverStrings)
+            drawableArray = arrayOf(AdapterData.channelDrawables, serverDrawables)
         } else {
             titles = AdapterData.serverTitles
             stringArray = arrayOf(serverStrings)

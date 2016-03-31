@@ -1,5 +1,7 @@
 package com.tilal6991.channels.viewmodel
 
+import com.tilal6991.channels.util.failAssert
+import timber.log.Timber
 import java.util.*
 
 class SelectedClientsVM {
@@ -42,6 +44,7 @@ class SelectedClientsVM {
 
     fun selectPenultimate() {
         if (clientList.size < 2) {
+            Timber.asTree().failAssert()
             return
         }
 
@@ -55,6 +58,7 @@ class SelectedClientsVM {
 
     fun selectAntePenultimate() {
         if (clientList.size < 3) {
+            Timber.asTree().failAssert()
             return
         }
 
@@ -70,6 +74,7 @@ class SelectedClientsVM {
 
     fun closeSelected() {
         if (clientList.isEmpty()) {
+            Timber.asTree().failAssert()
             return
         }
         clientList.removeFirst()

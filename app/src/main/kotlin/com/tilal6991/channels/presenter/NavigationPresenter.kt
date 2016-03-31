@@ -96,8 +96,8 @@ class NavigationPresenter(override val activity: MainActivity,
         currentHelper = helper
 
         // Start observing everything new.
-        currentHelper.adapter.notifySectionedDataSetChanged()
         adapter.updateContentAdapter(currentHelper.adapter)
+        currentHelper.adapter.notifySectionedDataSetChanged()
         currentHelper.bind()
 
         // Update the headers as well.

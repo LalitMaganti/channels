@@ -31,12 +31,7 @@ class NavigationAdapter(
 
     fun updateContentAdapter(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>) {
         contentAdapter.unregisterAdapterDataObserver(observer)
-        notifyItemRangeRemoved(headerCount, latestContentCount)
-
         contentAdapter = adapter
-
-        cachedContentCount = latestContentCount
-        notifyItemRangeInserted(headerCount, latestContentCount)
         adapter.registerAdapterDataObserver(observer)
     }
 

@@ -2,6 +2,7 @@ package com.tilal6991.channels.viewmodel
 
 import android.content.Context
 import android.support.v4.util.ArrayMap
+import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
@@ -32,7 +33,7 @@ import javax.inject.Singleton
 
     val selectedClients: SelectedClientsVM = SelectedClientsVM()
 
-    val configActiveClients = ArrayMap<ChannelsConfiguration, ClientVM>()
+    val configActiveClients = SimpleArrayMap<ChannelsConfiguration, ClientVM>()
 
     init {
         /* TODO(lrm113) deal with handling constantly updating databases */
@@ -89,7 +90,7 @@ import javax.inject.Singleton
 
         if (client == null) {
             client = createClient(configuration)
-            configActiveClients[configuration] = client
+            configActiveClients.put(configuration, client)
 
             val item = inactiveConfigs.removeAt(index)
             activeConfigs.add(item)
@@ -113,9 +114,10 @@ import javax.inject.Singleton
         latest.close()
         selectedClients.closeSelected()
 
-        configActiveClients.remove(latest.configuration)
-        activeConfigs.remove(latest.configuration)
-        inactiveConfigs.add(latest.configuration)
+        val configuration = latest.configuration
+        configActiveClients.remove(configuration)
+        activeConfigs.remove(configuration)
+        inactiveConfigs.add(configuration)
     }
 
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {

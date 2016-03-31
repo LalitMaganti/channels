@@ -9,7 +9,7 @@
         android:background="?selectableItemBackground"
         android:clickable="true"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/action_image"

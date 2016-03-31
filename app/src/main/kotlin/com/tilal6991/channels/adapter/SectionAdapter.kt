@@ -4,19 +4,22 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
+import java.util.*
 
 abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         HVH : RecyclerView.ViewHolder> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var setupComplete = false
 
-    private lateinit var sectionAbsolutePositions: IntArray
+    private val sectionAbsolutePositions: MutableList<Int>
     private var count: Int = 0
+
+    init {
+        sectionAbsolutePositions = ArrayList(getSectionCount())
+    }
 
     fun setup() {
         setupComplete = true
-        sectionAbsolutePositions = IntArray(getSectionCount())
-
         notifySectionedDataSetChanged()
     }
 
@@ -42,9 +45,9 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         checkSetup()
 
         count = 0
-        sectionAbsolutePositions = IntArray(getSectionCount())
+        sectionAbsolutePositions.clear()
         for (i in 0..getSectionCount() - 1) {
-            sectionAbsolutePositions[i] = count
+            sectionAbsolutePositions.add(count)
             val itemCountInSection = getItemCountInSection(i)
             count += itemCountInSection
         }
@@ -62,11 +65,10 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
             if (offset != 0) {
                 Timber.asTree().failAssert()
             }
-            notifyItemRangeInserted(sectionStart, insertCount + headerOffsetForSection)
+            notifyItemRangeInserted(sectionStart, headerOffsetForSection + headerOffsetForSection)
         } else {
             notifyItemRangeInserted(sectionStart + headerOffsetForSection + offset, insertCount)
         }
-
         for (i in section + 1..getSectionCount() - 1) {
             sectionAbsolutePositions[i] += insertCount
         }
@@ -100,7 +102,6 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
             notifyItemRangeRemoved(sectionStart, removeCount + headerOffsetForSection)
         } else {
             notifyItemRangeRemoved(sectionStart + headerOffsetForSection + offset, removeCount)
-
         }
 
         for (i in section + 1..getSectionCount() - 1) {
@@ -136,7 +137,6 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
 
     override final fun getItemCount(): Int {
         checkSetup()
-
         return count + getSectionHeadersBefore(getSectionCount())
     }
 

@@ -4,6 +4,6 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical|start"
     android:maxLines="1"
-    android:padding="16dp"
+    android:padding="8dp"
     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
     android:textColor="?android:textColorSecondary" />
