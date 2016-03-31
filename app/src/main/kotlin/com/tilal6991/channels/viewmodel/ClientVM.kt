@@ -51,21 +51,74 @@ class ClientVM(private val context: Context,
         selectedChild.set(child)
     }
 
+    fun disconnect() {
+        if (statusInt == DISCONNECTED || statusInt == DISCONNECTING) {
+            return
+        }
+
+        if (statusInt == CONNECTED) {
+            client.send(ClientGenerator.quit())
+        }
+        client.disconnect()
+
+        updateStatus(DISCONNECTING)
+        server.onDisconnecting()
+    }
+
     fun reconnect() {
         reconnectHandler.resetCounter()
         internalReconnect()
     }
 
-    fun disconnect() {
-        if (statusInt == DISCONNECTED) {
-            return
-        }
-        client.send(ClientGenerator.quit())
-        client.disconnect()
-    }
-
     fun close() {
         client.close()
+    }
+
+    fun sendUserMessage(message: String, context: ClientChildVM) {
+        val line = userMessageParser.parse(message, context, server) ?: return
+        client.send(line)
+    }
+
+    // Event handling.
+    override fun onSocketConnect() {
+        updateStatus(SOCKET_CONNECTED)
+        reconnectHandler.onSocketConnect()
+
+        server.onSocketConnect()
+    }
+
+    override fun onDisconnect() {
+        if (statusInt == DISCONNECTING) {
+            updateStatus(DISCONNECTED)
+
+            server.onDisconnected()
+        } else {
+            server.onDisconnected()
+
+            if (reconnectHandler.onConnectionLost()) {
+                updateStatus(RECONNECTING)
+                server.onReconnecting()
+            }
+        }
+    }
+
+    override fun onConnectFailed() {
+        if (statusInt == DISCONNECTING) {
+            server.onDisconnected()
+
+            updateStatus(DISCONNECTED)
+        } else {
+            server.onConnectFailed()
+
+            if (reconnectHandler.onConnectionLost()) {
+                updateStatus(RECONNECTING)
+                server.onReconnecting()
+            }
+        }
+    }
+
+    override fun onWelcome(target: String, text: String) {
+        updateStatus(CONNECTED)
     }
 
     private fun internalReconnect() {
@@ -83,58 +136,6 @@ class ClientVM(private val context: Context,
         notifyPropertyChanged(BR.status)
     }
 
-    fun sendUserMessage(message: String, context: ClientChildVM) {
-        val line = userMessageParser.parse(message, context, server) ?: return
-        client.send(line)
-    }
-
-    override fun onSocketConnect() {
-        updateStatus(SOCKET_CONNECTED)
-        reconnectHandler.onSocketConnect()
-
-        server.onSocketConnect()
-    }
-
-    override fun onAlreadyDisconnected() {
-        val oldStatus = statusInt
-        updateStatus(DISCONNECTED)
-
-        if (oldStatus != DISCONNECTED) {
-            server.onDisconnect()
-        }
-    }
-
-    override fun onAlreadyConnected() {
-        // Intentional do nothing here.
-    }
-
-    override fun onDisconnect(triggered: Boolean) {
-        if (triggered) {
-            updateStatus(DISCONNECTED)
-            server.onDisconnect()
-        } else {
-            server.onDisconnect()
-
-            if (reconnectHandler.onUnexpectedDisconnect()) {
-                updateStatus(RECONNECTING)
-                server.onReconnecting()
-            }
-        }
-    }
-
-    override fun onConnectFailed() {
-        server.onConnectFailed()
-
-        if (reconnectHandler.onConnectFailed()) {
-            updateStatus(RECONNECTING)
-            server.onReconnecting()
-        }
-    }
-
-    override fun onWelcome(target: String, text: String) {
-        updateStatus(CONNECTED)
-    }
-
     inner class ReconnectHandler {
         private var reconnectCount: Int
         private val handler: Handler
@@ -148,11 +149,7 @@ class ClientVM(private val context: Context,
             resetCounter()
         }
 
-        fun onConnectFailed(): Boolean {
-            return onTryReconnect()
-        }
-
-        fun onUnexpectedDisconnect(): Boolean {
+        fun onConnectionLost(): Boolean {
             return onTryReconnect()
         }
 
@@ -180,6 +177,7 @@ class ClientVM(private val context: Context,
         const val CONNECTING: Int = R.string.status_connecting
         const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
         const val CONNECTED: Int = R.string.status_connected
+        const val DISCONNECTING: Int = R.string.status_disconnecting
         const val DISCONNECTED: Int = R.string.status_disconnected
         const val RECONNECTING: Int = R.string.status_reconnecting
     }

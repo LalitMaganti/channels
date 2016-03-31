@@ -29,7 +29,11 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
         add("Failed to connect to the server.")
     }
 
-    fun onDisconnect() {
+    fun onDisconnecting() {
+        add("Disconnecting from the server.")
+    }
+
+    fun onDisconnected() {
         add("Disconnected from the server.")
     }
 
