@@ -304,7 +304,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             return true
         }
 
-        for (i in offset..length) {
+        for (i in offset..length - 1) {
             if (this[i] != terminalKey[i]) {
                 return false
             }
