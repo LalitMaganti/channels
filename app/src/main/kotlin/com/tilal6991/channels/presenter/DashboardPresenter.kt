@@ -1,20 +1,17 @@
 package com.tilal6991.channels.presenter
 
-import android.content.Context
 import android.databinding.Observable
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
 import com.tilal6991.channels.activity.MainActivity
-import com.tilal6991.channels.adapter.HeaderViewHolder
+import com.tilal6991.channels.adapter.DashboardAdapter
 import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.base.relayVM
-import com.tilal6991.channels.databinding.DashboardItemBinding
 import com.tilal6991.channels.presenter.helper.ClientChildListener
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.ChannelVM
@@ -28,7 +25,7 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         get() = "actions"
 
     private lateinit var dialog: BottomSheetDialog
-    private lateinit var adapter: Adapter
+    private lateinit var adapter: DashboardAdapter
 
     private var displayedClient: ClientVM? = null
     private var displayedChild: ClientChildVM? = null
@@ -56,7 +53,7 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         val gridLayoutManager = GridLayoutManager(activity, 3)
         recycler.layoutManager = gridLayoutManager
 
-        adapter = Adapter(activity) { onActionClicked(it) }
+        adapter = DashboardAdapter(activity) { onActionClicked(it) }
         recycler.adapter = adapter
         adapter.setup()
 
@@ -129,23 +126,50 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
 
     private fun updateAction(client: ClientVM, child: ClientChildVM) {
         val status = client.statusInt
-        val serverStrings: IntArray
-        val serverDrawables: IntArray
-        if (status == ClientVM.DISCONNECTED) {
-            serverStrings = AdapterData.serverDisconnectStrings
-            serverDrawables = AdapterData.serverDisconnectDrawables
-        } else {
-            serverStrings = AdapterData.serverStrings
-            serverDrawables = AdapterData.serverDrawables
-        }
 
         if (child is ChannelVM) {
-            adapter.setData(AdapterData.channelTitles, arrayOf(serverStrings), arrayOf(serverDrawables))
+            updateChannelActions(status)
         } else if (child is ServerVM) {
-            adapter.setData(AdapterData.serverTitles, arrayOf(serverStrings), arrayOf(serverDrawables))
+            val (strings, drawables) = getServerActions(status)
+            adapter.setData(AdapterData.serverTitles, arrayOf(strings), arrayOf(drawables))
         } else {
             Timber.d("Unknown client child encountered in the dashboard.")
         }
+    }
+
+    private fun getServerActions(status: Int): Pair<IntArray, IntArray> {
+        val strings: IntArray
+        val drawables: IntArray
+        if (status == ClientVM.DISCONNECTED) {
+            strings = AdapterData.serverDctStrings
+            drawables = AdapterData.serverDctDrawables
+        } else if (status == ClientVM.DISCONNECTING) {
+            strings = AdapterData.serverDctingStrings
+            drawables = AdapterData.serverDctingDrawables
+        } else {
+            strings = AdapterData.serverStrings
+            drawables = AdapterData.serverDrawables
+        }
+        return strings to drawables
+    }
+
+    private fun updateChannelActions(status: Int) {
+        val (serverStrings, serverDrawables) = getServerActions(status)
+
+        val titles: IntArray
+        val stringArray: Array<IntArray>
+        val drawableArray: Array<IntArray>
+        if (status == ClientVM.CONNECTED) {
+            titles = AdapterData.channelTitles
+
+            stringArray = arrayOf(serverStrings, AdapterData.channelStrings)
+            drawableArray = arrayOf(serverDrawables, AdapterData.channelDrawables)
+        } else {
+            titles = AdapterData.serverTitles
+            stringArray = arrayOf(serverStrings)
+            drawableArray = arrayOf(serverDrawables)
+        }
+        adapter.setData(titles, stringArray, drawableArray)
     }
 
     private fun onActionClicked(stringId: Int) {
@@ -161,70 +185,21 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
         dialog.dismiss()
     }
 
-    class Adapter(private val context: Context,
-                  private val clickListener: (Int) -> Unit) : SectionAdapter<Adapter.ItemViewHolder, HeaderViewHolder>() {
-        private val layoutInflater = LayoutInflater.from(context)
-
-        private var titles: IntArray? = null
-        private var strings: Array<IntArray>? = null
-        private var drawables: Array<IntArray>? = null
-
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder? {
-            if (viewType == HEADER_VIEW_TYPE) {
-                return HeaderViewHolder(layoutInflater.inflate(R.layout.dashboard_header, parent, false))
-            }
-            return ItemViewHolder(DashboardItemBinding.inflate(layoutInflater, parent, false))
-        }
-
-        override fun onBindHeaderViewHolder(holder: HeaderViewHolder, section: Int) {
-            holder.bind(context.getString(titles!![section]))
-        }
-
-        override fun onBindItemViewHolder(holder: ItemViewHolder, section: Int, offset: Int) {
-            holder.bind(drawables!![section][offset], strings!![section][offset])
-        }
-
-        override fun getSectionCount(): Int {
-            return titles?.size ?: 0
-        }
-
-        override fun getItemCountInSection(section: Int): Int {
-            return strings?.get(section)?.size ?: 0
-        }
-
-        override fun isHeaderDisplayedForSection(section: Int): Boolean {
-            return true
-        }
-
-        fun setData(newTitles: IntArray?, newStrings: Array<IntArray>?, newDrawables: Array<IntArray>?) {
-            titles = newTitles
-            strings = newStrings
-            drawables = newDrawables
-
-            notifySectionedDataSetChanged()
-        }
-
-        inner class ItemViewHolder(
-                private val binding: DashboardItemBinding) : RecyclerView.ViewHolder(binding.root) {
-
-            fun bind(drawable: Int, string: Int) {
-                binding.actionImage.setImageResource(drawable)
-                binding.actionText.setText(string)
-
-                binding.root.setOnClickListener { clickListener(string) }
-            }
-        }
-    }
-
     object AdapterData {
         val serverTitles = intArrayOf(R.string.server_actions)
         val channelTitles = intArrayOf(R.string.channel_actions, R.string.server_actions)
 
-        val serverDisconnectStrings = intArrayOf(R.string.close, R.string.reconnect)
-        val serverDisconnectDrawables = intArrayOf(R.drawable.ic_close, R.drawable.ic_cached)
+        val serverDctingStrings = intArrayOf(R.string.close)
+        val serverDctingDrawables = intArrayOf(R.drawable.ic_close)
+
+        val serverDctStrings = intArrayOf(R.string.close, R.string.reconnect)
+        val serverDctDrawables = intArrayOf(R.drawable.ic_close, R.drawable.ic_cached)
 
         val serverStrings = intArrayOf(R.string.disconnect, R.string.disconnect_close)
         val serverDrawables = intArrayOf(R.drawable.ic_cancel, R.drawable.ic_close)
+
+        val channelStrings = intArrayOf()
+        val channelDrawables = intArrayOf()
     }
 
     companion object {

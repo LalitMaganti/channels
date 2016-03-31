@@ -54,6 +54,11 @@ class ClientVM(private val context: Context,
     fun disconnect() {
         if (statusInt == DISCONNECTED || statusInt == DISCONNECTING) {
             return
+        } else if (statusInt == RECONNECTING) {
+            // Because the reconnecting state is one which we introduced, we cannot
+            // delegate to the RelayClient and wait for a response.
+            updateStatus(DISCONNECTED)
+            server.onDisconnected()
         }
 
         if (statusInt == CONNECTED) {
