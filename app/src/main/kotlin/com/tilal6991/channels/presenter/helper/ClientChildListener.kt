@@ -8,32 +8,32 @@ import com.tilal6991.channels.presenter.Bindable
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.SelectedClientsVM
 
-class ClientChildListener(private val context: Context,
-                          private val callback: (ClientChildVM?) -> Unit) : Bindable {
+abstract class ClientChildListener(private val context: Context) : Bindable,
+        Observable.OnPropertyChangedCallback(), SelectedClientsVM.OnLatestClientChangedCallback {
+
     private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClients
     private val selectedChild: ObservableField<ClientChildVM>?
         get() = selectedClientsVM.latest?.selectedChild
 
-    private val clientListener = object : SelectedClientsVM.OnLatestClientChangedCallback {
-        override fun onLatestClientChanged() {
-            selectedChild?.removeOnPropertyChangedCallback(childListener)
-            callback(selectedChild?.get())
-            selectedChild?.addOnPropertyChangedCallback(childListener)
-        }
+
+    override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+        onChildChange(selectedChild?.get())
     }
 
-    private val childListener = object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            callback(selectedChild?.get())
-        }
+    override fun onLatestClientChanged() {
+        selectedChild?.removeOnPropertyChangedCallback(this)
+        onChildChange(selectedChild?.get())
+        selectedChild?.addOnPropertyChangedCallback(this)
     }
 
     override fun bind() {
-        selectedClientsVM.addOnClientsChangedCallback(clientListener)
+        selectedClientsVM.addOnClientsChangedCallback(this)
     }
 
     override fun unbind() {
-        selectedClientsVM.removeOnClientsChangedCallback(clientListener)
+        selectedClientsVM.removeOnClientsChangedCallback(this)
     }
+
+    abstract fun onChildChange(clientChild: ClientChildVM?)
 }

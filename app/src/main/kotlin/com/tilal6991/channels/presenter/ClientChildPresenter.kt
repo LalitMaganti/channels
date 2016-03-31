@@ -28,8 +28,10 @@ class ClientChildPresenter(override val activity: MainActivity,
 
     private var displayedClient: ClientVM? = null
     private var displayedChild: ClientChildVM? = null
-    private val childListener = ClientChildListener(activity) {
-        switchContent(it)
+    private val childListener = object : ClientChildListener(activity) {
+        override fun onChildChange(clientChild: ClientChildVM?) {
+            switchContent(clientChild)
+        }
     }
 
     private val adapter: MainItemAdapter = MainItemAdapter(activity)
@@ -46,6 +48,8 @@ class ClientChildPresenter(override val activity: MainActivity,
             }
             onStatusChanged(selectedClientsVM.latest?.statusInt!!)
         }
+        fun bind() = selectedClientsVM.latest?.addOnPropertyChangedCallback(this)
+        fun unbind() = selectedClientsVM.latest?.removeOnPropertyChangedCallback(this)
     }
 
     override fun setup(savedState: Bundle?) {
@@ -60,15 +64,13 @@ class ClientChildPresenter(override val activity: MainActivity,
 
         messageHandler.bind()
         childListener.bind()
-
-        selectedClientsVM.latest?.addOnPropertyChangedCallback(statusListener)
+        statusListener.bind()
     }
 
     override fun unbind() {
         messageHandler.unbind()
         childListener.unbind()
-
-        selectedClientsVM.latest?.removeOnPropertyChangedCallback(statusListener)
+        statusListener.unbind()
     }
 
     override fun teardown() {

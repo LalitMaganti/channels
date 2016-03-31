@@ -1,9 +1,7 @@
 package com.tilal6991.channels.presenter
 
-import android.os.Bundle
 import android.support.v7.app.ActionBar
 import android.view.Menu
-import android.view.MenuItem
 import com.tilal6991.channels.R
 import com.tilal6991.channels.activity.MainActivity
 import com.tilal6991.channels.base.relayVM
@@ -14,17 +12,18 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     override val id: String
         get() = "toolbar"
 
-    private val childListener = ClientChildListener(activity) { updateActionBar(it) }
+    private val childListener = object : ClientChildListener(activity) {
+        override fun onChildChange(clientChild: ClientChildVM?) {
+            updateActionBar(clientChild)
+        }
+    }
 
     private val actionBar: ActionBar
         get() = activity.supportActionBar!!
 
-    override fun setup(savedState: Bundle?) {
-        updateActionBar(selectedChild?.get())
-    }
-
     override fun bind() {
         childListener.bind()
+        updateActionBar(selectedChild?.get())
     }
 
     override fun unbind() {

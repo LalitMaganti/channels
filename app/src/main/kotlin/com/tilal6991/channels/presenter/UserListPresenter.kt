@@ -23,12 +23,15 @@ class UserListPresenter(override val activity: Activity,
         get() = "user_list"
 
     private val recycler: RecyclerView by userDrawerView.bindView(R.id.user_list_recycler)
-    private val childListener = ClientChildListener(activity) { onChildChanged(it) }
+    private val childListener = object : ClientChildListener(activity) {
+        override fun onChildChange(clientChild: ClientChildVM?) {
+            onChildChanged(clientChild)
+        }
+    }
     private val adapter = Adapter(activity)
 
     override fun setup(savedState: Bundle?) {
         adapter.setup()
-        onChildChanged(selectedChild?.get())
 
         recycler.layoutManager = LinearLayoutManager(activity)
         recycler.adapter = adapter
@@ -36,6 +39,7 @@ class UserListPresenter(override val activity: Activity,
 
     override fun bind() {
         childListener.bind()
+        onChildChanged(selectedChild?.get())
     }
 
     override fun unbind() {

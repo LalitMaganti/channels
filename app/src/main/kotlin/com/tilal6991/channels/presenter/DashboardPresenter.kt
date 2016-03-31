@@ -30,7 +30,11 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
     private var displayedClient: ClientVM? = null
     private var displayedChild: ClientChildVM? = null
 
-    private val childListener = ClientChildListener(activity) { onChildChanged(it) }
+    private val childListener = object : ClientChildListener(activity) {
+        override fun onChildChange(clientChild: ClientChildVM?) {
+            onChildChanged(clientChild)
+        }
+    }
     private val statusListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
             if (propertyId != BR.statusInt) {
@@ -41,6 +45,8 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
             }
             updateAction(displayedClient!!, displayedChild!!)
         }
+        fun bind() = selectedClientsVM.latest?.addOnPropertyChangedCallback(this)
+        fun unbind() = selectedClientsVM.latest?.removeOnPropertyChangedCallback(this)
     }
 
     override fun setup(savedState: Bundle?) {
@@ -79,15 +85,14 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
     }
 
     override fun bind() {
-        val selectedClient = relayVM.selectedClients.latest
-        selectedClient?.addOnPropertyChangedCallback(statusListener)
-        onChildChanged(selectedClient?.selectedChild?.get())
-
+        statusListener.bind()
         childListener.bind()
+
+        onChildChanged(selectedChild?.get())
     }
 
     override fun unbind() {
-        relayVM.selectedClients.latest?.removeOnPropertyChangedCallback(statusListener)
+        statusListener.unbind()
         childListener.unbind()
     }
 
