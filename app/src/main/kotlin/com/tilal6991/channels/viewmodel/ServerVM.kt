@@ -1,6 +1,5 @@
 package com.tilal6991.channels.viewmodel
 
-import android.databinding.Bindable
 import com.tilal6991.channels.util.join
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.protocol.ReplyCodes

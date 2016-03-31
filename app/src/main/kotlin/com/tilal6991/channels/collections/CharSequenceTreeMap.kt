@@ -98,7 +98,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             } else {
                 if (node.trueTerminal) {
                     // We should not be inserting the same nick twice.
-                    Timber.asTree().failAssert()
+                    Timber.asTree().e("key: $key value: $value offset: $offset")
                 } else {
                     val oldKey = node.terminalKey
                     val oldValue = node.terminalValue

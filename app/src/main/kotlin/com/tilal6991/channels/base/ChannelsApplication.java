@@ -3,6 +3,7 @@ package com.tilal6991.channels.base;
 import android.app.Application;
 import android.databinding.BindingMethod;
 import android.databinding.BindingMethods;
+import android.util.Log;
 import android.view.View;
 
 import com.tilal6991.channels.inject.ChannelsObjectProvider;
@@ -28,8 +29,12 @@ public class ChannelsApplication extends Application {
         Timber.plant(new Timber.DebugTree() {
             @Override
             protected void log(int priority, String tag, String message, Throwable t) {
-                if (t != null) {
-                    throw new RuntimeException(t);
+                if (priority == Log.ERROR) {
+                    if (t != null) {
+                        throw new RuntimeException(t);
+                    } else {
+                        throw new IllegalStateException(message);
+                    }
                 }
                 super.log(priority, tag, message, t);
             }

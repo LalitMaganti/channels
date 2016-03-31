@@ -2,6 +2,7 @@ package com.tilal6991.channels.viewmodel
 
 import android.databinding.ObservableField
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
+import com.tilal6991.channels.util.UserPrefixComparator
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
 import com.tilal6991.relay.EventListener
@@ -14,6 +15,7 @@ class ChannelManagerVM(
         private val dao: RegistrationDao,
         private val channels: ObservableSortedArrayMap<String, ChannelVM>) : EventListener, UserMessageParser.Listener {
 
+    private val comparator = UserPrefixComparator.create(dao)
     private val selfNick: ObservableField<String> = ObservableField(initialNick)
 
     override fun onJoin(prefix: String, channel: String, optParams: Map<String, String>) {
@@ -23,7 +25,7 @@ class ChannelManagerVM(
         if (self) {
             val channelVM = channels[channel]
             if (channelVM == null) {
-                c = ChannelVM(channel)
+                c = ChannelVM(channel, comparator)
                 channels.put(channel, c)
             } else {
                 c = channelVM

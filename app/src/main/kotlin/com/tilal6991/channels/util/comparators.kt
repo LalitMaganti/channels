@@ -4,7 +4,7 @@ import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.viewmodel.ChannelVM
-import java.util.*
+import com.tilal6991.relay.RegistrationDao
 
 class ChannelComparator private constructor() :
         ObservableSortedList.HyperComparator<ChannelVM>, ObservableSortedArrayMap.HyperComparator<ChannelVM> {
@@ -44,16 +44,6 @@ class UserComparator private constructor() : ObservableSortedArrayMap.HyperCompa
     }
 }
 
-class StringComparator private constructor() : Comparator<String> {
-    override fun compare(lhs: String, rhs: String): Int {
-        return lhs.compareTo(rhs)
-    }
-
-    companion object {
-        val instance by lazy { StringComparator() }
-    }
-}
-
 class UserListComparator private constructor() : ObservableSortedArrayMap.HyperComparator<ObservableSortedList<ChannelVM.UserVM>> {
 
     override fun areItemsTheSame(item1: ObservableSortedList<ChannelVM.UserVM>, item2: ObservableSortedList<ChannelVM.UserVM>): Boolean {
@@ -87,7 +77,9 @@ class ConfigurationComparator private constructor() : ObservableSortedList.Hyper
     }
 }
 
-class CharComparator private constructor() : ObservableSortedArrayMap.HyperComparator<Char>, ObservableSortedList.HyperComparator<Char> {
+class UserPrefixComparator private constructor(
+        private val dao: RegistrationDao) : ObservableSortedArrayMap.HyperComparator<Char>,
+        ObservableSortedList.HyperComparator<Char> {
 
     override fun areItemsTheSame(item1: Char, item2: Char): Boolean {
         return item1 == item2
@@ -98,10 +90,22 @@ class CharComparator private constructor() : ObservableSortedArrayMap.HyperCompa
     }
 
     override fun compare(lhs: Char, rhs: Char): Int {
-        return lhs.compareTo(rhs)
+        val lhsIndex = dao.getPrefixIndex(lhs)
+        val rhsIndex = dao.getPrefixIndex(rhs)
+        if (lhsIndex == rhsIndex) {
+            return 0
+        } else if (lhsIndex == -1) {
+            return 1
+        } else if (rhsIndex == -1) {
+            return -1
+        }
+        return if (lhsIndex <= rhsIndex) -1 else 1
     }
 
     companion object {
-        val instance by lazy { CharComparator() }
+
+        fun create(dao: RegistrationDao): UserPrefixComparator {
+            return UserPrefixComparator(dao)
+        }
     }
 }

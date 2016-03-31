@@ -5,17 +5,17 @@ import android.databinding.Bindable
 import com.tilal6991.channels.collections.CharSequenceTreeMap
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
-import com.tilal6991.channels.util.CharComparator
 import com.tilal6991.channels.util.UserComparator
 import com.tilal6991.channels.util.UserListComparator
+import com.tilal6991.channels.util.UserPrefixComparator
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 
-class ChannelVM(override val name: String) : ClientChildVM() {
+class ChannelVM(override val name: String,
+                private val comparator: UserPrefixComparator) : ClientChildVM() {
 
-    val treeMap: CharSequenceTreeMap<UserVM> = CharSequenceTreeMap()
-    val userMap: ObservableSortedArrayMap<Char, ObservableSortedList<UserVM>> = ObservableSortedArrayMap(
-            CharComparator.instance, UserListComparator.instance)
+    val treeMap = CharSequenceTreeMap<UserVM>()
+    val userMap = ObservableSortedArrayMap(comparator, UserListComparator.instance)
 
     fun onMessage(nick: String, message: String) {
         val user = getUserOrFail(nick) ?: return
