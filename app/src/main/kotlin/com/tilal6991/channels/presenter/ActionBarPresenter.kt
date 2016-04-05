@@ -18,8 +18,8 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
         }
     }
 
-    private val actionBar: ActionBar
-        get() = activity.supportActionBar!!
+    private val actionBar: ActionBar?
+        get() = activity.supportActionBar
 
     override fun bind() {
         childListener.bind()
@@ -31,8 +31,8 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     }
 
     private fun updateActionBar(it: ClientChildVM?) {
-        actionBar.title = it?.name ?: "Channels"
-        actionBar.subtitle = selectedClientsVM.latest?.name
+        actionBar?.title = it?.name ?: "Channels"
+        actionBar?.subtitle = selectedClientsVM.latest?.name
         activity.supportInvalidateOptionsMenu()
     }
 

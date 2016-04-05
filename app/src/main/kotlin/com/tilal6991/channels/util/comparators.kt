@@ -36,7 +36,7 @@ class UserComparator private constructor() : ObservableSortedArrayMap.HyperCompa
     }
 
     override fun compare(o1: ChannelVM.UserVM, o2: ChannelVM.UserVM): Int {
-        return o1.displayString.compareTo(o2.displayString)
+        return o1.displayString.compareTo(o2.displayString, true)
     }
 
     companion object {

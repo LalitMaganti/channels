@@ -66,7 +66,7 @@ class UserListPresenter(override val activity: Activity,
         }
 
         override fun isHeaderDisplayedForSection(section: Int): Boolean {
-            return false
+            return true
         }
 
         override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder, section: Int) {
