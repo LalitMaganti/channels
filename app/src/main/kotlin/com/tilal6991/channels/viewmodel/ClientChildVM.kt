@@ -10,7 +10,10 @@ abstract class ClientChildVM : BaseObservable() {
     abstract val name: CharSequence
     var active: Boolean = false
         @Bindable get
-        protected set
+        protected set(it) {
+            field = it
+            notifyPropertyChanged(BR.active)
+        }
 
     val message: CharSequence
         @Bindable get() = buffer.lastOrNull() ?: "No message to show"

@@ -2,6 +2,7 @@ package com.tilal6991.channels.viewmodel
 
 import android.databinding.BaseObservable
 import android.databinding.Bindable
+import com.tilal6991.channels.BR
 import com.tilal6991.channels.collections.CharSequenceTreeMap
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
@@ -25,6 +26,7 @@ class ChannelVM(override val name: String,
     fun onJoin(nick: String, self: Boolean) {
         if (self) {
             active = true
+
             treeMap.clear()
             userMap.clear()
         }
@@ -54,6 +56,7 @@ class ChannelVM(override val name: String,
             active = false
         }
         removeUser(nick)
+        add("$nick has parted from the channel")
     }
 
     private fun addUser(nick: String, user: UserVM) {

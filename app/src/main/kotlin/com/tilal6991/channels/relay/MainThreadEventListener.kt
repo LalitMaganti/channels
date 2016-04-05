@@ -53,6 +53,10 @@ class MainThreadEventListener : EventListener, MetaListener {
         it.onPrivmsg(prefix, target, message, optParams)
     }
 
+    override fun onPart(prefix: String, channel: String) = postForEach {
+        it.onPart(prefix, channel)
+    }
+
     override fun onNotice(prefix: String, target: String, message: String, optParams: Map<String, String>) = postForEach {
         it.onNotice(prefix, target, message, optParams)
     }
