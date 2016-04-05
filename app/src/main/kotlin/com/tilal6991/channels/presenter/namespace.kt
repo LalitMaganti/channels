@@ -1,6 +1,6 @@
 package com.tilal6991.channels.presenter
 
-import android.app.Activity
+import android.content.Context
 import android.databinding.ObservableField
 import android.os.Bundle
 import android.view.View
@@ -18,11 +18,11 @@ interface Bindable {
 }
 
 interface Presenter {
-    val activity: Activity
+    val context: Context
     val id: String
 
     val selectedClientsVM: SelectedClientsVM
-        get() = activity.relayVM.selectedClients
+        get() = context.relayVM.selectedClients
     val selectedChild: ObservableField<ClientChildVM>?
         get() = selectedClientsVM.latest?.selectedChild
 
@@ -34,15 +34,15 @@ interface Presenter {
     fun teardown() = Unit
 
     fun getString(id: Int): String {
-        return activity.getString(id)
+        return context.getString(id)
     }
 
     fun getString(id: Int, vararg args: Any): String {
-        return activity.getString(id, args)
+        return context.getString(id, args)
     }
 
     fun getQuantityString(id: Int, quantity: Int): String {
-        return activity.resources.getQuantityString(id, quantity)
+        return context.resources.getQuantityString(id, quantity)
     }
 }
 

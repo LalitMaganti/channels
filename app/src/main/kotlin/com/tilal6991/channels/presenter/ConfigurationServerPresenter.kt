@@ -18,7 +18,7 @@ import com.tilal6991.channels.presenter.helper.ErrorWatcher
 import com.tilal6991.channels.util.isNotEmpty
 import com.tilal6991.channels.util.isValidPort
 
-class ConfigurationServerPresenter(override val activity: Activity,
+class ConfigurationServerPresenter(override val context: Activity,
                                    override val binding: ConfigurationEditServerBinding,
                                    private val inputConfig: ChannelsConfiguration?) : ConfigurationEditActivity.Presenter() {
 
@@ -27,7 +27,7 @@ class ConfigurationServerPresenter(override val activity: Activity,
     override val id: String
         get() = "configuration_server"
     override val title: String
-        get() = activity.getString(R.string.connection_settings)
+        get() = context.getString(R.string.connection_settings)
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {

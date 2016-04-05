@@ -16,24 +16,24 @@ import com.tilal6991.channels.presenter.helper.ClientChildListener
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM
 
-class UserListPresenter(override val activity: Activity,
+class UserListPresenter(override val context: Activity,
                         private val drawerLayout: DrawerLayout,
                         private val userDrawerView: View) : Presenter {
     override val id: String
         get() = "user_list"
 
     private val recycler: RecyclerView by userDrawerView.bindView(R.id.user_list_recycler)
-    private val childListener = object : ClientChildListener(activity) {
+    private val childListener = object : ClientChildListener(context) {
         override fun onChildChange(clientChild: ClientChildVM?) {
             onChildChanged(clientChild)
         }
     }
-    private val adapter = Adapter(activity)
+    private val adapter = Adapter(context)
 
     override fun setup(savedState: Bundle?) {
         adapter.setup()
 
-        recycler.layoutManager = LinearLayoutManager(activity)
+        recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = adapter
     }
 

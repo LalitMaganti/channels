@@ -15,7 +15,7 @@ import com.tilal6991.channels.databinding.ConfigurationEditUserBinding
 import com.tilal6991.channels.presenter.helper.EmptyWatcher
 import com.tilal6991.channels.util.isNotEmpty
 
-class ConfigurationUserPresenter(override val activity: Activity,
+class ConfigurationUserPresenter(override val context: Activity,
                                  override val binding: ConfigurationEditUserBinding,
                                  private val inputConfig: ChannelsConfiguration?) : ConfigurationEditActivity.Presenter() {
     lateinit var configuration: Configuration
@@ -23,7 +23,7 @@ class ConfigurationUserPresenter(override val activity: Activity,
     override val id: String
         get() = "configuration_user"
     override val title: String
-        get() = activity.getString(R.string.user_settings)
+        get() = context.getString(R.string.user_settings)
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {

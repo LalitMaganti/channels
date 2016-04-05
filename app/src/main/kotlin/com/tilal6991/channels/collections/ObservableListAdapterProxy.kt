@@ -26,4 +26,12 @@ open class ObservableListAdapterProxy<T>(private val adapter: RecyclerView.Adapt
             adapter.notifyItemMoved(fromPosition + i, toPosition + i)
         }
     }
+
+    fun bind(list: ObservableList<T>?) {
+        list?.addOnListChangedCallback(this)
+    }
+
+    fun unbind(list: ObservableList<T>?) {
+        list?.removeOnListChangedCallback(this)
+    }
 }

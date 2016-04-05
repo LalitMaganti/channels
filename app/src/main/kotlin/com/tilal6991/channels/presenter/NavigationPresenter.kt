@@ -26,7 +26,7 @@ import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.NavigationHeaderVM
 import org.parceler.Parcels
 
-class NavigationPresenter(override val activity: MainActivity,
+class NavigationPresenter(override val context: MainActivity,
                           private val drawerLayout: DrawerLayout,
                           private val view: NavigationDrawerView) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
@@ -37,7 +37,7 @@ class NavigationPresenter(override val activity: MainActivity,
     private lateinit var adapter: NavigationAdapter
     private lateinit var headerVM: NavigationHeaderVM
 
-    private val selectedClientCallback = object : ClientListener(activity) {
+    private val selectedClientCallback = object : ClientListener(context) {
         override fun onLatestClientChanged() {
             val client = selectedClientsVM.latest
             updateCurrentType(if (client == null) clientHelper else childHelper)
@@ -50,7 +50,7 @@ class NavigationPresenter(override val activity: MainActivity,
             updateCurrentType(childHelper)
         }
     }
-    private val childListener = object : ClientChildListener(activity) {
+    private val childListener = object : ClientChildListener(context) {
         override fun onChildChange(clientChild: ClientChildVM?) {
             if (clientChild == null) {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
@@ -151,13 +151,13 @@ class NavigationPresenter(override val activity: MainActivity,
 
         override fun setup() {
             val addClick: (View) -> Unit =  {
-                activity.startActivityForResult(Intent(activity, ConfigurationEditActivity::class.java), MainActivity.REQUEST_EDIT)
+                context.startActivityForResult(Intent(context, ConfigurationEditActivity::class.java), MainActivity.REQUEST_EDIT)
             }
 
             val manageClick: (ChannelsConfiguration) -> Unit = {
-                val intent = Intent(activity, ConfigurationEditActivity::class.java)
+                val intent = Intent(context, ConfigurationEditActivity::class.java)
                 intent.putExtra(ConfigurationEditActivity.CONFIGURATION, Parcels.wrap(it))
-                activity.startActivityForResult(intent, MainActivity.REQUEST_EDIT)
+                context.startActivityForResult(intent, MainActivity.REQUEST_EDIT)
             }
 
             val clientClick: (ChannelsConfiguration) -> Unit =  {

@@ -20,7 +20,7 @@ import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.ServerVM
 import timber.log.Timber
 
-class DashboardPresenter(override val activity: MainActivity) : Presenter {
+class DashboardPresenter(override val context: MainActivity) : Presenter {
     override val id: String
         get() = "actions"
 
@@ -30,7 +30,7 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
     private var displayedClient: ClientVM? = null
     private var displayedChild: ClientChildVM? = null
 
-    private val childListener = object : ClientChildListener(activity) {
+    private val childListener = object : ClientChildListener(context) {
         override fun onChildChange(clientChild: ClientChildVM?) {
             onChildChanged(clientChild)
         }
@@ -50,16 +50,16 @@ class DashboardPresenter(override val activity: MainActivity) : Presenter {
     }
 
     override fun setup(savedState: Bundle?) {
-        dialog = BottomSheetDialog(activity, R.style.Theme_Design_Light_BottomSheetDialog)
+        dialog = BottomSheetDialog(context, R.style.Theme_Design_Light_BottomSheetDialog)
 
-        val inflater = LayoutInflater.from(activity)
+        val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.dashboard_layout, null, false)
 
         val recycler = view.findViewById(R.id.actions_recycler) as RecyclerView
-        val gridLayoutManager = GridLayoutManager(activity, 3)
+        val gridLayoutManager = GridLayoutManager(context, 3)
         recycler.layoutManager = gridLayoutManager
 
-        adapter = DashboardAdapter(activity) { onActionClicked(it) }
+        adapter = DashboardAdapter(context) { onActionClicked(it) }
         recycler.adapter = adapter
         adapter.setup()
 

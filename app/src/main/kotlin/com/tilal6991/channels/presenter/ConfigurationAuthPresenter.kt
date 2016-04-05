@@ -21,7 +21,7 @@ import com.tilal6991.channels.databinding.ConfigurationEditAuthBinding
 import com.tilal6991.channels.presenter.helper.EmptyWatcher
 import com.tilal6991.channels.util.isNotEmpty
 
-class ConfigurationAuthPresenter(override val activity: Activity,
+class ConfigurationAuthPresenter(override val context: Activity,
                                  override val binding: ConfigurationEditAuthBinding,
                                  private val inputConfig: ChannelsConfiguration?) : ConfigurationEditActivity.Presenter() {
     lateinit var configuration: Configuration
@@ -29,7 +29,7 @@ class ConfigurationAuthPresenter(override val activity: Activity,
     override val id: String
         get() = "configuration_auth"
     override val title: String
-        get() = activity.getString(R.string.auth_settings)
+        get() = context.getString(R.string.auth_settings)
 
     override fun setup(savedState: Bundle?) {
         if (savedState == null) {
@@ -41,7 +41,7 @@ class ConfigurationAuthPresenter(override val activity: Activity,
 
         val spinner = binding.authenticationChooser
         spinner.adapter = ArrayAdapter<String>(
-                activity,
+                context,
                 R.layout.support_simple_spinner_dropdown_item,
                 arrayOf("None", "SASL", "NickServ")
         )

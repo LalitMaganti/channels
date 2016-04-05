@@ -8,18 +8,18 @@ import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.presenter.helper.ClientChildListener
 import com.tilal6991.channels.viewmodel.ClientChildVM
 
-class ActionBarPresenter(override val activity: MainActivity) : Presenter {
+class ActionBarPresenter(override val context: MainActivity) : Presenter {
     override val id: String
         get() = "toolbar"
 
-    private val childListener = object : ClientChildListener(activity) {
+    private val childListener = object : ClientChildListener(context) {
         override fun onChildChange(clientChild: ClientChildVM?) {
             updateActionBar(clientChild)
         }
     }
 
     private val actionBar: ActionBar?
-        get() = activity.supportActionBar
+        get() = context.supportActionBar
 
     override fun bind() {
         childListener.bind()
@@ -33,7 +33,7 @@ class ActionBarPresenter(override val activity: MainActivity) : Presenter {
     private fun updateActionBar(it: ClientChildVM?) {
         actionBar?.title = it?.name ?: "Channels"
         actionBar?.subtitle = selectedClientsVM.latest?.name
-        activity.supportInvalidateOptionsMenu()
+        context.supportInvalidateOptionsMenu()
     }
 
     fun onPrepareOptionsMenu(menu: Menu): Boolean {
