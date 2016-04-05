@@ -33,6 +33,9 @@ class ClientVM(private val context: Context,
     var statusInt: Int = CONNECTING
         @Bindable get
 
+    var active: Boolean = true
+        @Bindable get
+
     val selectedChild: ObservableField<ClientChildVM>
 
     private val reconnectHandler: ReconnectHandler
@@ -76,6 +79,7 @@ class ClientVM(private val context: Context,
     }
 
     fun close() {
+        active = false
         client.close()
     }
 

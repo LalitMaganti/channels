@@ -12,7 +12,7 @@
         android:theme="@style/Theme.Channels">
 
         <activity
-            android:name=".context.MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".context.NotificationService" />
+        <service android:name=".ui.NotificationService" />
 
         <activity
             android:name=".ui.ConfigurationEditActivity"

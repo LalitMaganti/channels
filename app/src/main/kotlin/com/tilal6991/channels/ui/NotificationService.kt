@@ -14,25 +14,29 @@ import android.text.TextUtils
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.collections.ObservableListChangedProxy
+import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.ui.helper.ClientStatusListener
 import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.RelayVM
 import java.util.*
 
 class NotificationService : Service() {
 
-    private val listener = object : ObservableListChangedProxy<ChannelsConfiguration>() {
-        override fun onListChanged(sender: ObservableList<ChannelsConfiguration>) {
-            if (sender.isEmpty()) {
-                sender.removeOnListChangedCallback(this)
-            } else {
-                updateNotifications()
+    private val listener by lazy {
+        object : ClientStatusListener(relayVM) {
+            override fun onStatusChanged(sender: ObservableList<ChannelsConfiguration>) {
+                if (sender.isEmpty()) {
+                    unbind()
+                } else {
+                    updateNotifications()
+                }
             }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        relayVM.activeConfigs.addOnListChangedCallback(listener)
+        listener.bind()
         updateNotifications()
         return START_STICKY
     }
