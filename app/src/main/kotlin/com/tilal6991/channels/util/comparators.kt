@@ -77,6 +77,31 @@ class ConfigurationComparator private constructor() : ObservableSortedList.Hyper
     }
 }
 
+class CharComparator  : ObservableSortedArrayMap.HyperComparator<Char>,
+        ObservableSortedList.HyperComparator<Char> {
+
+    override fun areItemsTheSame(item1: Char, item2: Char): Boolean {
+        return item1 == item2
+    }
+
+    override fun areContentsTheSame(oldItem: Char, newItem: Char): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun compare(a: Char, b: Char): Int {
+        if (a < b) {
+            return -1
+        } else if (a > b) {
+            return 1
+        }
+        return 0
+    }
+
+    companion object {
+        val instance by lazy { CharComparator() }
+    }
+}
+
 class UserPrefixComparator private constructor(
         private val dao: RegistrationDao) : ObservableSortedArrayMap.HyperComparator<Char>,
         ObservableSortedList.HyperComparator<Char> {

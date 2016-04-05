@@ -1,6 +1,7 @@
 package com.tilal6991.channels.collections
 
 import android.support.v4.util.Pools
+import com.tilal6991.channels.util.CharComparator
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import java.util.*
@@ -247,8 +248,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         val mapView: IndexedMap<Char, Node<T>>
             get() = map
 
-        private val map: SortedArrayMap<Char, Node<T>> = SortedArrayMap(
-                Comparator<Char> { p0, p1 -> p0 - p1 }, 3)
+        private val map: SortedArrayMap<Char, Node<T>> = SortedArrayMap(CharComparator.instance, 3)
 
         fun get(c: Char): Node<T>? {
             return map[c]
