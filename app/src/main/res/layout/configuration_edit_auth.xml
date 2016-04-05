@@ -4,11 +4,11 @@
 
     <data>
 
-        <import type="com.tilal6991.channels.presenter.ConfigurationAuthPresenter" />
+        <import type="com.tilal6991.channels.ui.ConfigurationAuthPresenter" />
 
         <variable
             name="configuration"
-            type="com.tilal6991.channels.presenter.ConfigurationAuthPresenter.Configuration" />
+            type="com.tilal6991.channels.ui.ConfigurationAuthPresenter.Configuration" />
     </data>
 
     <android.support.v4.widget.NestedScrollView

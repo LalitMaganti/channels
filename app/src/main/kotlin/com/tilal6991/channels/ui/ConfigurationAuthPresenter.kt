@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.app.Activity
 import android.databinding.BaseObservable
@@ -14,11 +14,11 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.tilal6991.channels.R
-import com.tilal6991.channels.context.ConfigurationEditActivity
+import com.tilal6991.channels.ui.ConfigurationEditActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.databinding.ConfigurationEditAuthBinding
-import com.tilal6991.channels.presenter.helper.EmptyWatcher
+import com.tilal6991.channels.ui.helper.EmptyWatcher
 import com.tilal6991.channels.util.isNotEmpty
 
 class ConfigurationAuthPresenter(override val context: Activity,

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
-import com.tilal6991.channels.context.NotificationService
+import com.tilal6991.channels.ui.NotificationService
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration

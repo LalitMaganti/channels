@@ -1,7 +1,7 @@
 package com.tilal6991.channels.base
 
 import android.content.Context
-import com.tilal6991.channels.presenter.Presenter
+import com.tilal6991.channels.ui.Presenter
 import com.tilal6991.channels.viewmodel.RelayVM
 
 val Context.app: ChannelsApplication

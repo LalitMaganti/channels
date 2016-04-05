@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.app.Activity
 import android.content.Context
@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import com.tilal6991.channels.R
 import com.tilal6991.channels.adapter.HeaderViewHolder
 import com.tilal6991.channels.adapter.SectionAdapter
-import com.tilal6991.channels.presenter.helper.ClientChildListener
+import com.tilal6991.channels.ui.helper.ClientChildListener
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM
 

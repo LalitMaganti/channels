@@ -24,7 +24,7 @@
         <service android:name=".context.NotificationService" />
 
         <activity
-            android:name=".context.ConfigurationEditActivity"
+            android:name=".ui.ConfigurationEditActivity"
             android:theme="@style/Theme.Channels.StatusBar" />
 
         <activity

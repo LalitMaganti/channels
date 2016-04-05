@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.databinding.Observable
 import android.os.Bundle
@@ -8,11 +8,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
-import com.tilal6991.channels.context.MainActivity
+import com.tilal6991.channels.ui.MainActivity
 import com.tilal6991.channels.adapter.DashboardAdapter
 import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.base.relayVM
-import com.tilal6991.channels.presenter.helper.ClientChildListener
+import com.tilal6991.channels.ui.helper.ClientChildListener
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM

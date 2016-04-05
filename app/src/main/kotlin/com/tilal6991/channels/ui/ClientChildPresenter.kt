@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.databinding.Observable
 import android.databinding.ObservableList
@@ -7,11 +7,11 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import com.tilal6991.channels.BR
-import com.tilal6991.channels.context.MainActivity
+import com.tilal6991.channels.ui.MainActivity
 import com.tilal6991.channels.adapter.MainItemAdapter
 import com.tilal6991.channels.collections.ObservableListAdapterProxy
-import com.tilal6991.channels.presenter.helper.ClientChildListener
-import com.tilal6991.channels.presenter.helper.MessageTextHandler
+import com.tilal6991.channels.ui.helper.ClientChildListener
+import com.tilal6991.channels.ui.helper.MessageTextHandler
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ClientVM

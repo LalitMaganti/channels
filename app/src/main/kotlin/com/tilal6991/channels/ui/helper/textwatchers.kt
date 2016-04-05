@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter.helper
+package com.tilal6991.channels.ui.helper
 
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField

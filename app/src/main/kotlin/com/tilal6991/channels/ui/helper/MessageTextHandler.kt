@@ -1,11 +1,11 @@
-package com.tilal6991.channels.presenter.helper
+package com.tilal6991.channels.ui.helper
 
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import com.tilal6991.channels.base.relayVM
-import com.tilal6991.channels.presenter.Bindable
+import com.tilal6991.channels.ui.Bindable
 
 class MessageTextHandler(private val editText: EditText) : Bindable {
 

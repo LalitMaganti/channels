@@ -1,4 +1,4 @@
-package com.tilal6991.channels.context
+package com.tilal6991.channels.ui
 
 import android.app.Notification
 import android.app.PendingIntent

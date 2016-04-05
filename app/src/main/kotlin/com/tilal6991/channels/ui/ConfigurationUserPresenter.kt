@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.app.Activity
 import android.databinding.BaseObservable
@@ -9,10 +9,10 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.SparseArray
 import com.tilal6991.channels.R
-import com.tilal6991.channels.context.ConfigurationEditActivity
+import com.tilal6991.channels.ui.ConfigurationEditActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.databinding.ConfigurationEditUserBinding
-import com.tilal6991.channels.presenter.helper.EmptyWatcher
+import com.tilal6991.channels.ui.helper.EmptyWatcher
 import com.tilal6991.channels.util.isNotEmpty
 
 class ConfigurationUserPresenter(override val context: Activity,

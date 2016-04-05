@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.app.Activity
 import android.databinding.BaseObservable
@@ -10,11 +10,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.SparseArray
 import com.tilal6991.channels.R
-import com.tilal6991.channels.context.ConfigurationEditActivity
+import com.tilal6991.channels.ui.ConfigurationEditActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.databinding.ConfigurationEditServerBinding
-import com.tilal6991.channels.presenter.helper.EmptyWatcher
-import com.tilal6991.channels.presenter.helper.ErrorWatcher
+import com.tilal6991.channels.ui.helper.EmptyWatcher
+import com.tilal6991.channels.ui.helper.ErrorWatcher
 import com.tilal6991.channels.util.isNotEmpty
 import com.tilal6991.channels.util.isValidPort
 

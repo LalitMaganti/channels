@@ -1,4 +1,4 @@
-package com.tilal6991.channels.presenter
+package com.tilal6991.channels.ui
 
 import android.content.Intent
 import android.databinding.Observable
@@ -8,8 +8,8 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.tilal6991.channels.R
-import com.tilal6991.channels.context.ConfigurationEditActivity
-import com.tilal6991.channels.context.MainActivity
+import com.tilal6991.channels.ui.ConfigurationEditActivity
+import com.tilal6991.channels.ui.MainActivity
 import com.tilal6991.channels.adapter.NavigationAdapter
 import com.tilal6991.channels.adapter.NavigationChildAdapter
 import com.tilal6991.channels.adapter.NavigationClientAdapter
@@ -17,8 +17,8 @@ import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.collections.ListSectionProxy
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.presenter.helper.ClientChildListener
-import com.tilal6991.channels.presenter.helper.ClientListener
+import com.tilal6991.channels.ui.helper.ClientChildListener
+import com.tilal6991.channels.ui.helper.ClientListener
 import com.tilal6991.channels.view.NavigationDrawerView
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM

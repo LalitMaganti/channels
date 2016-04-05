@@ -1,4 +1,4 @@
-package com.tilal6991.channels.context
+package com.tilal6991.channels.ui
 
 import android.content.Intent
 import android.databinding.ObservableBoolean
@@ -25,14 +25,14 @@ import com.tilal6991.channels.databinding.ConfigurationEditAuthBinding
 import com.tilal6991.channels.databinding.ConfigurationEditServerBinding
 import com.tilal6991.channels.databinding.ConfigurationEditUserBinding
 import com.tilal6991.channels.db.connectionDb
-import com.tilal6991.channels.presenter.ConfigurationAuthPresenter
-import com.tilal6991.channels.presenter.ConfigurationServerPresenter
-import com.tilal6991.channels.presenter.ConfigurationUserPresenter
-import com.tilal6991.channels.presenter.Presenter
-import com.tilal6991.channels.presenter.helper.CommitingBooleanWatcher
-import com.tilal6991.channels.presenter.helper.CommitingIntWatcher
-import com.tilal6991.channels.presenter.helper.CommitingNullableWatcher
-import com.tilal6991.channels.presenter.helper.CommitingWatcher
+import com.tilal6991.channels.ui.ConfigurationAuthPresenter
+import com.tilal6991.channels.ui.ConfigurationServerPresenter
+import com.tilal6991.channels.ui.ConfigurationUserPresenter
+import com.tilal6991.channels.ui.Presenter
+import com.tilal6991.channels.ui.helper.CommitingBooleanWatcher
+import com.tilal6991.channels.ui.helper.CommitingIntWatcher
+import com.tilal6991.channels.ui.helper.CommitingNullableWatcher
+import com.tilal6991.channels.ui.helper.CommitingWatcher
 import com.tilal6991.channels.util.addAll
 import org.parceler.Parcels
 import rx.schedulers.Schedulers
@@ -147,7 +147,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
         val userConfiguration = UserConfiguration(
                 listOf(user.nick.get().toString()), user.autoChangeNick.get(),
                 user.realName.get().toString(),
-                ConfigurationAuthPresenter.Companion.indexToType(auth.authIndex),
+                ConfigurationAuthPresenter.indexToType(auth.authIndex),
                 auth.username.get().toString(), auth.password.get().toString())
         return ChannelsConfiguration(-1, server.name.get().toString(), serverConfiguration, userConfiguration)
     }
@@ -176,7 +176,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
         }
     }
 
-    abstract class Presenter : com.tilal6991.channels.presenter.Presenter {
+    abstract class Presenter : com.tilal6991.channels.ui.Presenter {
         abstract val binding: ViewDataBinding
         abstract val title: String
 
