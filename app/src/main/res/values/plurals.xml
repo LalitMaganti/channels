@@ -4,4 +4,24 @@
         <item quantity="one">%d client active</item>
         <item quantity="other">%d clients active</item>
     </plurals>
+
+    <plurals name="client_connected">
+        <item quantity="one">1 client connected</item>
+        <item quantity="other">%d clients connected</item>
+    </plurals>
+
+    <plurals name="client_disconnected">
+        <item quantity="one">1 client disconnected</item>
+        <item quantity="other">%d clients disconnected</item>
+    </plurals>
+
+    <plurals name="client_connecting">
+        <item quantity="one">1 client connecting</item>
+        <item quantity="other">%d clients connecting</item>
+    </plurals>
+
+    <plurals name="client_reconnecting">
+        <item quantity="one">1 client reconnecting</item>
+        <item quantity="other">%d clients reconnecting</item>
+    </plurals>
 </resources>

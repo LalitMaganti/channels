@@ -1,9 +1,10 @@
 package com.tilal6991.channels.viewmodel
 
 import android.content.Context
-import android.support.v4.util.ArrayMap
+import android.content.Intent
 import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
+import com.tilal6991.channels.context.NotificationService
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
@@ -15,8 +16,8 @@ import com.tilal6991.channels.relay.MainThreadEventListener
 import com.tilal6991.channels.util.ChannelComparator
 import com.tilal6991.channels.util.ConfigurationComparator
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
-import com.tilal6991.relay.RelayClient
 import com.tilal6991.messageloop.AndroidHandlerMessageLoop
+import com.tilal6991.relay.RelayClient
 import de.duenndns.ssl.MemorizingTrustManager
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -98,6 +99,12 @@ import javax.inject.Singleton
 
         selectedClients.select(client)
         client.select(client.server)
+
+        // Start the service for notifications if this is the first client added.
+        if (activeConfigs.size == 1) {
+            val app = context.applicationContext
+            app.startService(Intent(app, NotificationService::class.java))
+        }
         return index != SortedList.INVALID_POSITION
     }
 
@@ -118,6 +125,11 @@ import javax.inject.Singleton
         configActiveClients.remove(configuration)
         activeConfigs.remove(configuration)
         inactiveConfigs.add(configuration)
+
+        if (activeConfigs.isEmpty()) {
+            val app = context.applicationContext
+            app.stopService(Intent(app, NotificationService::class.java))
+        }
     }
 
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {

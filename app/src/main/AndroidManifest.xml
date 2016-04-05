@@ -21,6 +21,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".context.NotificationService" />
+
         <activity
             android:name=".context.ConfigurationEditActivity"
             android:theme="@style/Theme.Channels.StatusBar" />
