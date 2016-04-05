@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
-import com.tilal6991.channels.activity.MainActivity
+import com.tilal6991.channels.context.MainActivity
 import com.tilal6991.channels.adapter.DashboardAdapter
 import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.base.relayVM

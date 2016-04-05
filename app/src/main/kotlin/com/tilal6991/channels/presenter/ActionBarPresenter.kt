@@ -3,7 +3,7 @@ package com.tilal6991.channels.presenter
 import android.support.v7.app.ActionBar
 import android.view.Menu
 import com.tilal6991.channels.R
-import com.tilal6991.channels.activity.MainActivity
+import com.tilal6991.channels.context.MainActivity
 import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.presenter.helper.ClientChildListener
 import com.tilal6991.channels.viewmodel.ClientChildVM

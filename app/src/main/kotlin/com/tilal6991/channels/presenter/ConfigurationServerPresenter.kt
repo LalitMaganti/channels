@@ -10,7 +10,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.SparseArray
 import com.tilal6991.channels.R
-import com.tilal6991.channels.activity.ConfigurationEditActivity
+import com.tilal6991.channels.context.ConfigurationEditActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.databinding.ConfigurationEditServerBinding
 import com.tilal6991.channels.presenter.helper.EmptyWatcher

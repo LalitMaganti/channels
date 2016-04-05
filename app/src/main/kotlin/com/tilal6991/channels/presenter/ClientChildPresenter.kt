@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import com.tilal6991.channels.BR
-import com.tilal6991.channels.activity.MainActivity
+import com.tilal6991.channels.context.MainActivity
 import com.tilal6991.channels.adapter.MainItemAdapter
 import com.tilal6991.channels.collections.ObservableListAdapterProxy
 import com.tilal6991.channels.presenter.helper.ClientChildListener

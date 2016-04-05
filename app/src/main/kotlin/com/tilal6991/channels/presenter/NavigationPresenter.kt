@@ -8,8 +8,8 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.tilal6991.channels.R
-import com.tilal6991.channels.activity.ConfigurationEditActivity
-import com.tilal6991.channels.activity.MainActivity
+import com.tilal6991.channels.context.ConfigurationEditActivity
+import com.tilal6991.channels.context.MainActivity
 import com.tilal6991.channels.adapter.NavigationAdapter
 import com.tilal6991.channels.adapter.NavigationChildAdapter
 import com.tilal6991.channels.adapter.NavigationClientAdapter

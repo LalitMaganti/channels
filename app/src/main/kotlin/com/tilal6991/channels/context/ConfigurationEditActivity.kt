@@ -1,4 +1,4 @@
-package com.tilal6991.channels.activity
+package com.tilal6991.channels.context
 
 import android.content.Intent
 import android.databinding.ObservableBoolean
