@@ -56,7 +56,23 @@ class ChannelVM(override val name: String,
             active = false
         }
         removeUser(nick)
+
         add("$nick has parted from the channel")
+    }
+
+    fun onQuit(nick: String, self: Boolean, message: String?) {
+        if (self) {
+            active = false
+        }
+        removeUser(nick)
+
+        val suffix: String
+        if (message == null) {
+            suffix = ""
+        } else {
+            suffix = " ($message)"
+        }
+        add("$nick has quit the server$suffix")
     }
 
     private fun addUser(nick: String, user: UserVM) {

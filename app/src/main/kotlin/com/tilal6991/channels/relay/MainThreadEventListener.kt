@@ -57,6 +57,10 @@ class MainThreadEventListener : EventListener, MetaListener {
         it.onPart(prefix, channel)
     }
 
+    override fun onQuit(prefix: String, message: String?) = postForEach {
+        it.onQuit(prefix, message)
+    }
+
     override fun onNotice(prefix: String, target: String, message: String, optParams: Map<String, String>) = postForEach {
         it.onNotice(prefix, target, message, optParams)
     }

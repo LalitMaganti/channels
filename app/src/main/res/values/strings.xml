@@ -27,6 +27,7 @@
     <string name="disconnect">Disconnect</string>
     <string name="disconnect_close">Disconnect and close</string>
     <string name="part">Part</string>
+    <string name="part_close">Part and Close</string>
     <string name="close">Close</string>
     <string name="reconnect">Reconnect</string>
     <string name="server_actions">Server Actions</string>

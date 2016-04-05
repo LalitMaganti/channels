@@ -9,11 +9,13 @@ import android.os.Handler
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.MetaListener
 import com.tilal6991.relay.RelayClient
 import com.tilal6991.relay.protocol.ClientGenerator
+import timber.log.Timber
 
 class ClientVM(private val context: Context,
                private val client: RelayClient,
@@ -81,6 +83,15 @@ class ClientVM(private val context: Context,
     fun close() {
         active = false
         client.close()
+    }
+
+    fun partSelected() {
+        val child = selectedChild.get()
+        if (child is ChannelVM) {
+            client.send(ClientGenerator.part(child.name))
+        } else {
+            Timber.asTree().failAssert()
+        }
     }
 
     fun sendUserMessage(message: String, context: ClientChildVM) {

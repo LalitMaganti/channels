@@ -80,6 +80,15 @@ class ChannelManagerVM(
         c.onPart(nick, self)
     }
 
+    override fun onQuit(prefix: String, message: String?) {
+        for (i in 0..channels.size - 1) {
+            val c = channels.getValueAt(i)
+            val nick = PrefixSplitter.nick(prefix)
+            val self = nick == selfNick.get()
+            c!!.onQuit(nick, self, message)
+        }
+    }
+
     private fun getChannelOrFail(channelName: String): ChannelVM? {
         val channelVM = channels[channelName]
         if (channelVM == null) {

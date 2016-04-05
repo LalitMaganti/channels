@@ -37,7 +37,7 @@ class DashboardPresenter(override val context: MainActivity) : Presenter {
     }
     private val statusListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-            if (propertyId != BR.statusInt) {
+            if (propertyId != BR.statusInt && propertyId != BR.active) {
                 return
             } else if (displayedClient == null || displayedChild == null) {
                 Timber.asTree().failAssert()
@@ -191,6 +191,7 @@ class DashboardPresenter(override val context: MainActivity) : Presenter {
                 relayVM.closeSelected()
             }
             R.string.reconnect -> relayVM.reconnectSelected()
+            R.string.part -> displayedClient?.partSelected()
         }
         dialog.dismiss()
     }
@@ -208,8 +209,8 @@ class DashboardPresenter(override val context: MainActivity) : Presenter {
         val serverStrings = intArrayOf(R.string.disconnect, R.string.disconnect_close)
         val serverDrawables = intArrayOf(R.drawable.ic_disconnect, R.drawable.ic_disconnect_close)
 
-        val channelStrings = intArrayOf(R.string.part)
-        val channelDrawables = intArrayOf(R.drawable.ic_part)
+        val channelStrings = intArrayOf(R.string.part, R.string.part_close)
+        val channelDrawables = intArrayOf(R.drawable.ic_part, R.drawable.ic_part_close)
     }
 
     companion object {
