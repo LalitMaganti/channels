@@ -13,6 +13,7 @@ import android.support.v4.content.res.ResourcesCompat
 import android.text.TextUtils
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.relayVM
+import com.tilal6991.channels.collections.ObservableListChangedProxy
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.RelayVM
@@ -20,34 +21,10 @@ import java.util.*
 
 class NotificationService : Service() {
 
-    private val listener = object : ObservableList.OnListChangedCallback<ObservableList<ChannelsConfiguration>>() {
-        override fun onItemRangeRemoved(sender: ObservableList<ChannelsConfiguration>,
-                                        positionStart: Int, itemCount: Int) {
-            onListChanged(sender)
-        }
-
-        override fun onItemRangeInserted(sender: ObservableList<ChannelsConfiguration>,
-                                         positionStart: Int, itemCount: Int) {
-            onListChanged(sender)
-        }
-
-        override fun onItemRangeMoved(sender: ObservableList<ChannelsConfiguration>,
-                                      fromPosition: Int, toPosition: Int, itemCount: Int) {
-            onListChanged(sender)
-        }
-
-        override fun onChanged(sender: ObservableList<ChannelsConfiguration>) {
-            onListChanged(sender)
-        }
-
-        override fun onItemRangeChanged(sender: ObservableList<ChannelsConfiguration>,
-                                        positionStart: Int, itemCount: Int) {
-            onListChanged(sender)
-        }
-
-        private fun onListChanged(sender: ObservableList<ChannelsConfiguration>) {
+    private val listener = object : ObservableListChangedProxy<ChannelsConfiguration>() {
+        override fun onListChanged(sender: ObservableList<ChannelsConfiguration>) {
             if (sender.isEmpty()) {
-                relayVM.activeConfigs.removeOnListChangedCallback(this)
+                sender.removeOnListChangedCallback(this)
             } else {
                 updateNotifications()
             }
