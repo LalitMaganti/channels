@@ -6,6 +6,7 @@ import android.databinding.ObservableField
 import com.tilal6991.channels.base.relayVM
 import com.tilal6991.channels.ui.Bindable
 import com.tilal6991.channels.viewmodel.ClientChildVM
+import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.SelectedClientsVM
 
 abstract class ClientChildListener(private val context: Context) : Bindable,
@@ -13,25 +14,32 @@ abstract class ClientChildListener(private val context: Context) : Bindable,
 
     private val selectedClientsVM: SelectedClientsVM
         get() = context.relayVM.selectedClients
-    private val selectedChild: ObservableField<ClientChildVM>?
-        get() = selectedClientsVM.latest?.selectedChild
 
+    private var registeredClient: ClientVM? = null
 
     override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-        onChildChange(selectedChild?.get())
+        onChildChange(registeredClient?.selectedChild?.get())
     }
 
     override fun onLatestClientChanged() {
-        selectedChild?.removeOnPropertyChangedCallback(this)
-        onChildChange(selectedChild?.get())
-        selectedChild?.addOnPropertyChangedCallback(this)
+        onChildChange(registeredClient?.selectedChild?.get())
+
+        registeredClient?.removeOnPropertyChangedCallback(this)
+        registeredClient = selectedClientsVM.latest
+        registeredClient?.addOnPropertyChangedCallback(this)
     }
 
     override fun bind() {
         selectedClientsVM.addOnClientsChangedCallback(this)
+
+        registeredClient = selectedClientsVM.latest
+        registeredClient?.addOnPropertyChangedCallback(this)
     }
 
     override fun unbind() {
+        registeredClient?.removeOnPropertyChangedCallback(this)
+        registeredClient = null
+
         selectedClientsVM.removeOnClientsChangedCallback(this)
     }
 

@@ -42,7 +42,7 @@ class ClientChildPresenter(override val context: MainActivity,
         }
     }
     private val messageBoxListener = object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+        override fun onPropertyChanged(sender: Observable, propertyId: Int) {
             if (propertyId != BR.statusInt && propertyId != BR.active) {
                 return
             }
