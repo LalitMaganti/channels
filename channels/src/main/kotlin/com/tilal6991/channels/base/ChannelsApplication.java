@@ -6,6 +6,7 @@ import android.databinding.BindingMethods;
 import android.util.Log;
 import android.view.View;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.tilal6991.channels.inject.ChannelsObjectProvider;
 import com.tilal6991.channels.inject.DaggerChannelsObjectProvider;
 import com.tilal6991.channels.inject.RelayModule;
@@ -22,6 +23,8 @@ public class ChannelsApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+
+        LeakCanary.install(this);
 
         provider = DaggerChannelsObjectProvider.builder()
                 .relayModule(new RelayModule(this))
