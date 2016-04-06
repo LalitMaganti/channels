@@ -22,22 +22,21 @@ abstract class ClientChildListener(private val context: Context) : Bindable,
     }
 
     override fun onLatestClientChanged() {
-        onChildChange(registeredClient?.selectedChild?.get())
-
         registeredClient?.removeOnPropertyChangedCallback(this)
         registeredClient = selectedClientsVM.latest
-        registeredClient?.addOnPropertyChangedCallback(this)
+        onChildChange(registeredClient?.selectedChild?.get())
+        registeredClient?.selectedChild?.addOnPropertyChangedCallback(this)
     }
 
     override fun bind() {
         selectedClientsVM.addOnClientsChangedCallback(this)
 
         registeredClient = selectedClientsVM.latest
-        registeredClient?.addOnPropertyChangedCallback(this)
+        registeredClient?.selectedChild?.addOnPropertyChangedCallback(this)
     }
 
     override fun unbind() {
-        registeredClient?.removeOnPropertyChangedCallback(this)
+        registeredClient?.selectedChild?.removeOnPropertyChangedCallback(this)
         registeredClient = null
 
         selectedClientsVM.removeOnClientsChangedCallback(this)

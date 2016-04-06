@@ -77,9 +77,11 @@ class ClientChildPresenter(override val context: MainActivity,
     }
 
     override fun unbind() {
-        messageHandler.unbind()
-        childListener.unbind()
         messageBoxListener.unbind(displayedClient, displayedChild)
+        childListener.unbind()
+        messageHandler.unbind()
+
+        listener.unbind(displayedChild?.buffer)
     }
 
     override fun teardown() {
