@@ -8,11 +8,9 @@ import com.tilal6991.channels.ui.NotificationService
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.db.connectionDb
-import com.tilal6991.channels.relay.BasicEventListener
-import com.tilal6991.channels.relay.EMPTY_AUTH_HANDLER
-import com.tilal6991.channels.relay.HandshakeEventListener
-import com.tilal6991.channels.relay.MainThreadEventListener
+import com.tilal6991.channels.relay.*
 import com.tilal6991.channels.util.ChannelComparator
 import com.tilal6991.channels.util.ConfigurationComparator
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
@@ -131,6 +129,7 @@ import javax.inject.Singleton
     }
 
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {
+        val user = configuration.user
         val relayConfig = RelayClient.Configuration.create {
             hostname = configuration.server.hostname
             port = configuration.server.port
@@ -143,14 +142,23 @@ import javax.inject.Singleton
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val channelManagerVM = ChannelManagerVM(configuration.user.nicks[0], coreClient.registrationDao, channelMap)
+        val channelManagerVM = ChannelManagerVM(user.nicks[0], coreClient.registrationDao, channelMap)
         val server = ServerVM("Server")
         val userMessageParser = UserMessageParser(channelManagerVM)
 
         val clientVM = ClientVM(context, coreClient, userMessageParser, configuration, server, channelManagerVM)
 
+        val authHandler: AuthHandler
+        if (user.authType == UserConfiguration.SASL_AUTH_TYPE) {
+            authHandler = PlainSASLHandler(coreClient, user.authUsername!!, user.authPassword!!)
+        } else if (user.authType == UserConfiguration.NICKSERV_AUTH_TYPE) {
+            authHandler = NickServHandler(coreClient, user.authPassword!!)
+        } else {
+            authHandler = EMPTY_AUTH_HANDLER
+        }
+
         val basicEventListener = BasicEventListener(coreClient)
-        val handshakeListener = HandshakeEventListener(coreClient, configuration, EMPTY_AUTH_HANDLER)
+        val handshakeListener = HandshakeEventListener(coreClient, configuration, authHandler)
         val mainThreadListener = MainThreadEventListener()
 
         coreClient.addEventListener(basicEventListener)
