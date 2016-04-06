@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.Channels.Tab.Inverse" parent="TextAppearance.Design.Tab" />
+
+    <style name="TextAppearance.Channels.Navigation.Header" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="Theme.Channels.Dashboard" parent="Theme.Design.BottomSheetDialog"/>
+
+    <style name="TextAppearance.Channels.Navigation.SubHeader" parent="TextAppearance.AppCompat" />
+</resources>

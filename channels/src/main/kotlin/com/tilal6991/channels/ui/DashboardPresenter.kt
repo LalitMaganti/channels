@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.view.LayoutInflater
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
-import com.tilal6991.channels.ui.MainActivity
 import com.tilal6991.channels.adapter.DashboardAdapter
 import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.base.relayVM
@@ -45,12 +45,21 @@ class DashboardPresenter(override val context: MainActivity) : Presenter {
             }
             updateAction(displayedClient!!, displayedChild!!)
         }
+
         fun bind() = selectedClientsVM.latest?.addOnPropertyChangedCallback(this)
         fun unbind() = selectedClientsVM.latest?.removeOnPropertyChangedCallback(this)
     }
 
     override fun setup(savedState: Bundle?) {
-        dialog = BottomSheetDialog(context, R.style.Theme_Design_Light_BottomSheetDialog)
+        val value = TypedValue()
+        val theme: Int
+        if (context.theme.resolveAttribute(R.attr.dashboardTheme, value, false)) {
+            theme = value.resourceId
+        } else {
+            theme = R.style.Theme_Design_Light_BottomSheetDialog
+        }
+
+        dialog = BottomSheetDialog(context,theme)
 
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.dashboard_layout, null, false)

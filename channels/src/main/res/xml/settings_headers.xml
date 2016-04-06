@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        android:key="appearance"
+        android:summary="Test"
+        android:title="Test2"
+        app:fragment="com.tilal6991.channels.ui.SettingsActivity.AppearanceFragment"/>
+</PreferenceScreen>

@@ -20,6 +20,8 @@ ext {
     appcompat = "com.android.support:appcompat-v7:$supportVersion"
     recyclerview = "com.android.support:recyclerview-v7:$supportVersion"
     design = "com.android.support:design:$supportVersion"
+    preferencev7 = "com.android.support:preference-v7:$supportVersion"
+    preferencev14 = "com.android.support:preference-v14:$supportVersion"
 
     relay = ':relay-jvm:relay'
 

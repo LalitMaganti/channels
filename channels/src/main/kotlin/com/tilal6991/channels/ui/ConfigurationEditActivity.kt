@@ -54,7 +54,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.configuration_edit)
+        setContentView(R.layout.activity_configuration_edit)
         setSupportActionBar(toolbar)
 
         supportActionBar!!.title = getString(R.string.configuration_add_title)

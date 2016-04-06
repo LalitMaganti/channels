@@ -18,7 +18,7 @@
             android:id="@+id/view_navigation_drawer_header_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorSecondary"
             android:onClick="@{headerVm.headerListener}"
             android:scaleType="fitXY"
             android:src="?selectableItemBackground" />
@@ -32,7 +32,7 @@
             android:layout_marginStart="16dp"
             android:padding="4dp"
             android:text="@{headerVm.subtitle}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+            android:textAppearance="@style/TextAppearance.Channels.Navigation.SubHeader" />
 
         <TextView
             android:id="@+id/header_title"
@@ -42,8 +42,7 @@
             android:layout_marginStart="16dp"
             android:padding="4dp"
             android:text="@{headerVm.title}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-            android:textColor="?android:textColorPrimaryInverse" />
+            android:textAppearance="@style/TextAppearance.Channels.Navigation.Header" />
 
         <com.tilal6991.channels.view.BezelImageView
             android:id="@+id/profile_image"

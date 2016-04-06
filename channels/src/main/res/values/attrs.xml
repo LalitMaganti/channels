@@ -6,5 +6,5 @@
         <attr name="desaturateOnPress" format="boolean" />
     </declare-styleable>
 
-    <attr name="dashboardDrawableColor" format="color" />
+    <attr name="dashboardTheme" format="reference" />
 </resources>

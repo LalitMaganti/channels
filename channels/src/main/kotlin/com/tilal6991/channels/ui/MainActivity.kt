@@ -106,6 +106,8 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
+
+        delegate
         return super.onOptionsItemSelected(item)
     }
 
@@ -119,5 +121,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val REQUEST_EDIT = 100
+        const val REQUEST_SETTINGS = 101
     }
 }

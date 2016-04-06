@@ -55,6 +55,8 @@ dependencies {
     compile rootProject.ext.appcompat
     compile rootProject.ext.recyclerview
     compile rootProject.ext.design
+    compile rootProject.ext.preferencev7
+    compile rootProject.ext.preferencev14
 
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
