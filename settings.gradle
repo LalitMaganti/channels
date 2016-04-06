@@ -1,5 +1,5 @@
 rootProject.name = 'channels-root'
 
-include ':app'
+include ':channels'
 include ':relay-jvm:relay'
 include ':MemorizingTrustManager:library'
