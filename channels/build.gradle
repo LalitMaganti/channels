@@ -7,6 +7,7 @@ buildscript {
 
 repositories {
     maven { url 'http://dl.bintray.com/amulyakhare/maven' }
+    maven { url "https://jitpack.io" }
 }
 
 apply plugin: 'com.android.application'
@@ -55,6 +56,9 @@ dependencies {
     compile rootProject.ext.appcompat
     compile rootProject.ext.recyclerview
     compile rootProject.ext.design
+
+    compile 'com.github.brianegan:bansa:0.1.0'
+    compile 'co.trikita:anvil-sdk15:0.3.1'
 
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
