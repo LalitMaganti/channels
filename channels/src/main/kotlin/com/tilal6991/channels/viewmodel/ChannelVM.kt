@@ -55,7 +55,9 @@ class ChannelVM(override val name: String,
         if (self) {
             active = false
         }
-        removeUser(nick)
+        // If the user is not preset then something has gone
+        // wrong and we need to fail.
+        removeUser(nick) ?: return Timber.asTree().failAssert()
 
         add("$nick has parted from the channel")
     }
@@ -64,8 +66,10 @@ class ChannelVM(override val name: String,
         if (self) {
             active = false
         }
-        removeUser(nick)
 
+        // User being null means they are not in this channel and we
+        // don't need to do anything.
+        removeUser(nick) ?: return
         val suffix: String
         if (message == null) {
             suffix = ""
@@ -120,9 +124,10 @@ class ChannelVM(override val name: String,
         addUserToModeMap(user)
     }
 
-    private fun removeUser(nick: String) {
-        val user = treeMap.remove(nick) ?: return Timber.asTree().failAssert()
+    private fun removeUser(nick: String): UserVM? {
+        val user = treeMap.remove(nick) ?: return null
         removeUserFromModeMap(user)
+        return user
     }
 
     private fun getUserOrFail(nick: String): UserVM? {
