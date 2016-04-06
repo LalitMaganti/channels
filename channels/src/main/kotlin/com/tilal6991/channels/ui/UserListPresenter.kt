@@ -83,7 +83,7 @@ class UserListPresenter(override val context: Activity,
 
         override fun onBindItemViewHolder(holder: Adapter.ViewHolder, section: Int, offset: Int) {
             val valueAt = displayedChild?.userMap?.getValueAt(section)
-            val displayString = valueAt?.get(offset)?.displayString
+            val displayString = valueAt?.get(offset)?.handle
             holder.bind(displayString ?: "Broken")
         }
 

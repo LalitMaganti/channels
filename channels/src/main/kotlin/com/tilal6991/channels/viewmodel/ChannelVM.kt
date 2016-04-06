@@ -2,7 +2,6 @@ package com.tilal6991.channels.viewmodel
 
 import android.databinding.BaseObservable
 import android.databinding.Bindable
-import com.tilal6991.channels.BR
 import com.tilal6991.channels.collections.CharSequenceTreeMap
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
@@ -20,7 +19,7 @@ class ChannelVM(override val name: String,
 
     fun onMessage(nick: String, message: String) {
         val user = getUser(nick)
-        add("${user?.displayString ?: nick}: $message")
+        add("${user?.handle ?: nick}: $message")
     }
 
     fun onJoin(nick: String, self: Boolean) {
@@ -33,7 +32,7 @@ class ChannelVM(override val name: String,
 
         val user = UserVM(nick, null)
         addUser(nick, user)
-        add("${user.displayString} joined the channel")
+        add("${user.handle} joined the channel")
     }
 
     fun onName(nick: String, mode: List<Char>) {
@@ -139,7 +138,7 @@ class ChannelVM(override val name: String,
 
     inner class UserVM(initialNick: String, initialMode: Char?) : BaseObservable() {
 
-        var displayString: String
+        var handle: String
             @Bindable get
             private set
 
@@ -148,17 +147,17 @@ class ChannelVM(override val name: String,
             private set
 
         init {
-            displayString = if (initialMode == null) initialNick else initialMode + initialNick
+            handle = if (initialMode == null) initialNick else initialMode + initialNick
             mode = initialMode
         }
 
         fun onNickUpdate(nick: String) {
-            displayString = if (mode == null) nick else mode!! + nick
+            handle = if (mode == null) nick else mode!! + nick
         }
 
         fun onUpdateMode(m: Char?) {
-            val nick = if (mode == null) displayString else displayString.substring(1)
-            displayString = if (m == null) displayString else m + nick
+            val nick = if (mode == null) handle else handle.substring(1)
+            handle = if (m == null) handle else m + nick
             mode = m
         }
     }

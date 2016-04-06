@@ -28,15 +28,15 @@ class ChannelComparator private constructor() :
 class UserComparator private constructor() : ObservableSortedArrayMap.HyperComparator<ChannelVM.UserVM>,
         ObservableSortedList.HyperComparator<ChannelVM.UserVM> {
     override fun areContentsTheSame(oldItem: ChannelVM.UserVM, newItem: ChannelVM.UserVM): Boolean {
-        return oldItem.displayString == newItem.displayString
+        return oldItem.handle == newItem.handle
     }
 
     override fun areItemsTheSame(item1: ChannelVM.UserVM, item2: ChannelVM.UserVM): Boolean {
-        return item1.displayString == item2.displayString
+        return item1.handle == item2.handle
     }
 
     override fun compare(o1: ChannelVM.UserVM, o2: ChannelVM.UserVM): Int {
-        return o1.displayString.compareTo(o2.displayString, true)
+        return o1.handle.compareTo(o2.handle, true)
     }
 
     companion object {

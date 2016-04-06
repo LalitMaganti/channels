@@ -2,6 +2,7 @@ package com.tilal6991.channels.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.support.v4.util.LruCache
 import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
 import com.tilal6991.channels.ui.NotificationService
@@ -138,40 +139,40 @@ import javax.inject.Singleton
             sslTrustManager = if (ssl) MemorizingTrustManager(context) else null
         }
 
-        val coreClient = RelayClient.create(relayConfig, { AndroidHandlerMessageLoop.create(it) })
+        val core = RelayClient.create(relayConfig, { AndroidHandlerMessageLoop.create(it) })
 
-        val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
+        val channels = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val channelManagerVM = ChannelManagerVM(user.nicks[0], coreClient.registrationDao, channelMap)
+        val cManager = ChannelManagerVM(user.nicks[0], core.registrationDao, channels)
         val server = ServerVM("Server")
-        val userMessageParser = UserMessageParser(channelManagerVM)
+        val parser = UserMessageParser(cManager)
 
-        val clientVM = ClientVM(context, coreClient, userMessageParser, configuration, server, channelManagerVM)
+        val clientVM = ClientVM(context, core, parser, configuration, server, cManager)
 
         val authHandler: AuthHandler
         if (user.authType == UserConfiguration.SASL_AUTH_TYPE) {
-            authHandler = PlainSASLHandler(coreClient, user.authUsername!!, user.authPassword!!)
+            authHandler = PlainSASLHandler(core, user.authUsername!!, user.authPassword!!)
         } else if (user.authType == UserConfiguration.NICKSERV_AUTH_TYPE) {
-            authHandler = NickServHandler(coreClient, user.authPassword!!)
+            authHandler = NickServHandler(core, user.authPassword!!)
         } else {
             authHandler = EMPTY_AUTH_HANDLER
         }
 
-        val basicEventListener = BasicEventListener(coreClient)
-        val handshakeListener = HandshakeEventListener(coreClient, configuration, authHandler)
+        val basicEventListener = BasicEventListener(core)
+        val handshakeListener = HandshakeEventListener(core, configuration, authHandler)
         val mainThreadListener = MainThreadEventListener()
 
-        coreClient.addEventListener(basicEventListener)
-        coreClient.addEventListener(handshakeListener)
-        coreClient.addEventListener(mainThreadListener)
+        core.addEventListener(basicEventListener)
+        core.addEventListener(handshakeListener)
+        core.addEventListener(mainThreadListener)
 
-        coreClient.addMetaListener(handshakeListener)
-        coreClient.addMetaListener(mainThreadListener)
+        core.addMetaListener(handshakeListener)
+        core.addMetaListener(mainThreadListener)
 
         mainThreadListener.addMetaListener(clientVM)
         mainThreadListener.addEventListener(clientVM)
         mainThreadListener.addEventListener(server)
-        mainThreadListener.addEventListener(channelManagerVM)
+        mainThreadListener.addEventListener(cManager)
 
         return clientVM
     }
