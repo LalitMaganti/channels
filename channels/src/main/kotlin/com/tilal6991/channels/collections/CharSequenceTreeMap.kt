@@ -103,7 +103,8 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             }
 
             node.incrementCount()
-            return put(oldKey, oldValue, node, offset)
+            put(oldKey, oldValue, node, offset)
+            return null
         }
 
         val terminalKey = node.terminalKey
@@ -281,7 +282,9 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
 
         fun clear(pool: Pools.SimplePool<Node<T>>) {
             for (i in 0..map.size - 1) {
-                if (!pool.release(map.getValueAt(i))) break
+                val node = map.getValueAt(i)
+                node!!.clear(pool)
+                if (!pool.release(node)) break
             }
 
             map.clear()

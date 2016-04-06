@@ -32,6 +32,16 @@ class CharSequenceTreeMapTest {
         assertThat(map["key3"]).isEqualTo("value3")
     }
 
+    @Test fun testLongShort() {
+        val old1 = map.put("keywhichisverylong", "value1")
+        val old = map.put("k", "value")
+        assertThat(old).isNull()
+        assertThat(old1).isNull()
+
+        assertThat(map["k"]).isEqualTo("value")
+        assertThat(map["keywhichisverylong"]).isEqualTo("value1")
+    }
+
     @Test fun testDuplicateInsert() {
         map.put("key", "value")
 
