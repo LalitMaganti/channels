@@ -20,7 +20,7 @@ import timber.log.Timber
 class ConnectionDatabase private constructor(private val context: Context) :
         SQLiteOpenHelper(context, DB_NAME, null, 1) {
 
-    private val briteDb = SqlBrite.create().wrapDatabaseHelper(this)
+    private val briteDb = SqlBrite.create().wrapDatabaseHelper(this, Schedulers.io())
 
     fun getConfigurations(): Observable<List<ChannelsConfiguration>> {
         return briteDb.createQuery(ConnectionTable.TABLE_NAME, "SELECT * from ${ConnectionTable.TABLE_NAME}")

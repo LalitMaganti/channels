@@ -37,9 +37,7 @@ import javax.inject.Singleton
     val configActiveClients = SimpleArrayMap<ChannelsConfiguration, ClientVM>()
 
     init {
-        /* TODO(lrm113) deal with handling constantly updating databases */
         context.connectionDb.getConfigurations()
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { mergeConfigs(it) }
     }

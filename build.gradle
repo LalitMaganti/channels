@@ -13,9 +13,7 @@ allprojects {
 ext {
     kotlinVersion = '1.0.1'
     kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    kotlinAndroid = "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     supportVersion = '23.2.1'
     supportv4 = "com.android.support:support-v4:$supportVersion"

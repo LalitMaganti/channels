@@ -76,7 +76,11 @@ class ChannelVM(override val name: String,
     }
 
     private fun addUser(nick: String, user: UserVM) {
-        treeMap.put(nick, user)
+        val oldUser = treeMap.put(nick, user)
+        if (oldUser != null) {
+            // We should not be inserting the same nick twice.
+            Timber.asTree().e(IllegalArgumentException(), "Inserted same nick twice")
+        }
         addUserToModeMap(user)
     }
 

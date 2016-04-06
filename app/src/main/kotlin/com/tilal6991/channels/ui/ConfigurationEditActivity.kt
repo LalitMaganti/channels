@@ -112,7 +112,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
             } else {
                 connectionDb.update(configuration!!.id, newConfiguration)
             }
-            completeable.subscribeOn(Schedulers.io()).subscribe()
+            completeable.subscribe()
 
             val result = Intent()
             result.putExtra(RESULT_OLD_ID, configuration?.id ?: -1)
