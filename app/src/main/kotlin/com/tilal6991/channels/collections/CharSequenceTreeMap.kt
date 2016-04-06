@@ -2,9 +2,6 @@ package com.tilal6991.channels.collections
 
 import android.support.v4.util.Pools
 import com.tilal6991.channels.util.CharComparator
-import com.tilal6991.channels.util.failAssert
-import timber.log.Timber
-import java.util.*
 
 class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
 
@@ -25,8 +22,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
     }
 
     override fun put(key: CharSequence, value: V): V? {
-        put(key, value, root, 0)
-        return null
+        return put(key, value, root, 0)
     }
 
     override fun clear() {
@@ -35,14 +31,14 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
 
     override fun getKeyAt(index: Int): CharSequence? {
         if (index < 0) {
-            Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
+            throw IndexOutOfBoundsException("Index cannot be negative.")
         }
         return getKeyAt(index, root)
     }
 
     override fun getValueAt(index: Int): V? {
         if (index < 0) {
-            Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
+            throw IndexOutOfBoundsException("Index cannot be negative.")
         }
         return getValueAt(index, root)
     }
@@ -92,28 +88,29 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         return get(key, child, offset + 1)
     }
 
-    private fun put(key: CharSequence, value: V, node: Node<V>, offset: Int) {
+    private fun put(key: CharSequence, value: V, node: Node<V>, offset: Int): V? {
         if (offset == key.length) {
-            if (node.terminalKey == null) {
-                node.setTerminal(key, value, true)
-            } else {
-                if (node.trueTerminal) {
-                    // We should not be inserting the same nick twice.
-                    Timber.asTree().e("key: $key value: $value offset: $offset")
-                } else {
-                    val oldKey = node.terminalKey
-                    val oldValue = node.terminalValue
-                    node.setTerminal(key, value, true)
-                    put(oldKey!!, oldValue!!, node, offset)
-                }
+            val oldKey = node.terminalKey
+            val oldValue = node.terminalValue
+            val oldTrueTerminal = node.trueTerminal
+            node.setTerminal(key, value, true)
+
+            if (oldKey == null || oldValue == null) {
+                node.incrementCount()
+                return null
+            } else if (oldTrueTerminal) {
+                return oldValue
             }
-            return
+
+            node.incrementCount()
+            return put(oldKey, oldValue, node, offset)
         }
 
         val terminalKey = node.terminalKey
         if (terminalKey != null && !node.trueTerminal) {
             val terminalValue = node.terminalValue
             node.resetTerminals()
+            node.decrementCount()
             put(terminalKey, terminalValue!!, node, offset)
         }
 
@@ -124,12 +121,19 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             // node as otherwise we get into all sorts of trouble when we do the old terminal
             // insertion.
             val newNode = pool.acquire()
-            newNode.setTerminal(key, value, false)
+            newNode.setTerminal(key, value, offset + 1 == key.length)
+            newNode.incrementCount()
+
             node.put(char, newNode)
-        } else {
             node.incrementCount()
-            put(key, value, child, offset + 1)
+            return null
         }
+
+        val old = put(key, value, child, offset + 1)
+        if (old == null) {
+            node.incrementCount()
+        }
+        return old
     }
 
     private fun remove(key: CharSequence, node: Node<V>?, offset: Int): V? {
@@ -143,6 +147,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             if (key.equalFromOffset(terminalKey, offset)) {
                 val value = node.terminalValue!!
                 node.resetTerminals()
+                node.decrementCount()
                 return value
             } else if (offset == key.length) {
                 return null
@@ -154,8 +159,8 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         val value = remove(key, child, offset + 1) ?: return null
         if (child!!.count == 0) {
             pool.release(node.remove(char))
-            node.decrementCount()
         }
+        node.decrementCount()
         return value
     }
 
@@ -204,7 +209,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
 
         // This means the running count did not match the actual count which is a bug.
-        Timber.asTree().failAssert()
+        // Timber.asTree().failAssert()
         return null
     }
 
@@ -232,7 +237,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
 
         // This means the running count did not match the actual count which is a bug.
-        Timber.asTree().failAssert()
+        // Timber.asTree().failAssert()
         return null
     }
 
@@ -266,16 +271,12 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             this.terminalKey = key
             this.terminalValue = value
             this.trueTerminal = trueTerminal
-
-            incrementCount()
         }
 
         fun resetTerminals() {
             this.terminalKey = null
             this.terminalValue = null
             this.trueTerminal = false
-
-            decrementCount()
         }
 
         fun clear(pool: Pools.SimplePool<Node<T>>) {
@@ -293,7 +294,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
 
         fun decrementCount() {
-            count++
+            count--
         }
     }
 
@@ -314,7 +315,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
 
     private class NodePool(private val maxPoolSize: Int) : Pools.SimplePool<Node<Any>>(maxPoolSize) {
         override fun acquire(): Node<Any> {
-            return super.acquire() ?: CharSequenceTreeMap.Node()
+            return super.acquire() ?: Node()
         }
 
         override fun release(instance: Node<Any>?): Boolean {
