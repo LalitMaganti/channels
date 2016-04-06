@@ -46,7 +46,10 @@ class ChannelVM(override val name: String,
     }
 
     fun onNickChange(oldNick: String, newNick: String) {
-        val user = getUserOrFail(oldNick) ?: return
+        // If user is null then they simply mush not have been
+        // in this channel.
+        val user = getUser(oldNick) ?: return
+
         changeUserNick(user, newNick)
         add("$oldNick is now known as $newNick")
     }
@@ -130,8 +133,12 @@ class ChannelVM(override val name: String,
         return user
     }
 
+    private fun getUser(nick: String): UserVM? {
+        return treeMap[nick]
+    }
+
     private fun getUserOrFail(nick: String): UserVM? {
-        val userVM = treeMap[nick]
+        val userVM = getUser(nick)
         if (userVM == null) {
             Timber.asTree().failAssert()
         }
