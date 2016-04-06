@@ -19,8 +19,8 @@ class ChannelVM(override val name: String,
     val userMap = ObservableSortedArrayMap(comparator, UserListComparator.instance)
 
     fun onMessage(nick: String, message: String) {
-        val user = getUserOrFail(nick) ?: return
-        add("${user.displayString}: $message")
+        val user = getUser(nick)
+        add("${user?.displayString ?: nick}: $message")
     }
 
     fun onJoin(nick: String, self: Boolean) {
