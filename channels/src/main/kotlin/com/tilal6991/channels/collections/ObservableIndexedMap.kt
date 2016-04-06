@@ -3,7 +3,8 @@ package com.tilal6991.channels.collections
 import android.databinding.ObservableList
 
 interface ObservableIndexedMap<K, V> : IndexedMap<K, V> {
-    fun valuesAsObservableList(): ObservableList<V>
+
+    val valuesList: ObservableList<V>
 
     fun addOnIndexedMapChangedCallback(
             callback: OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>)

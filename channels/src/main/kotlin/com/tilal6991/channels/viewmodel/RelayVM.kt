@@ -142,12 +142,12 @@ import javax.inject.Singleton
         val coreClient = RelayClient.create(relayConfig, { AndroidHandlerMessageLoop.create(it) })
 
         val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
-                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.Companion.instance)
-        val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], coreClient.registrationDao, channelMap)
+                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
+        val channelManagerVM = ChannelManagerVM(configuration.user.nicks[0], coreClient.registrationDao, channelMap)
         val server = ServerVM("Server")
-        val userMessageParser = UserMessageParser(userChannelVM)
+        val userMessageParser = UserMessageParser(channelManagerVM)
 
-        val clientVM = ClientVM(context, coreClient, userMessageParser, configuration, server, channelMap.valuesAsObservableList())
+        val clientVM = ClientVM(context, coreClient, userMessageParser, configuration, server, channelManagerVM)
 
         val basicEventListener = BasicEventListener(coreClient)
         val handshakeListener = HandshakeEventListener(coreClient, configuration, EMPTY_AUTH_HANDLER)
@@ -163,7 +163,7 @@ import javax.inject.Singleton
         mainThreadListener.addMetaListener(clientVM)
         mainThreadListener.addEventListener(clientVM)
         mainThreadListener.addEventListener(server)
-        mainThreadListener.addEventListener(userChannelVM)
+        mainThreadListener.addEventListener(channelManagerVM)
 
         return clientVM
     }

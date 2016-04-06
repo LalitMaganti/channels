@@ -22,7 +22,7 @@ class ClientVM(private val context: Context,
                private val userMessageParser: UserMessageParser,
                val configuration: ChannelsConfiguration,
                val server: ServerVM,
-               val channels: ObservableList<ChannelVM>) : BaseObservable(), EventListener, MetaListener {
+               val channelManager: ChannelManagerVM) : BaseObservable(), EventListener, MetaListener {
 
     val name: CharSequence
         get() = configuration.name

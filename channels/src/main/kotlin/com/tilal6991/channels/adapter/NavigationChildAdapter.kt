@@ -40,7 +40,7 @@ class NavigationChildAdapter(
         if (section == 0) {
             return 1
         }
-        return selectedClient?.channels?.size ?: 0
+        return selectedClient?.channelManager?.channels?.size ?: 0
     }
 
     override fun isHeaderDisplayedForSection(section: Int): Boolean {
@@ -72,7 +72,7 @@ class NavigationChildAdapter(
             if (section == 0) {
                 binding.child = selectedClient?.server
             } else {
-                binding.child = selectedClient!!.channels[position]
+                binding.child = selectedClient!!.channelManager.channels[position]
             }
             binding.executePendingBindings()
 

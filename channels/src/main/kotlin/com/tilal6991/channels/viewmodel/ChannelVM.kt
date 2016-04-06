@@ -137,14 +137,6 @@ class ChannelVM(override val name: String,
         return treeMap[nick]
     }
 
-    private fun getUserOrFail(nick: String): UserVM? {
-        val userVM = getUser(nick)
-        if (userVM == null) {
-            Timber.asTree().failAssert()
-        }
-        return userVM
-    }
-
     inner class UserVM(initialNick: String, initialMode: Char?) : BaseObservable() {
 
         var displayString: String

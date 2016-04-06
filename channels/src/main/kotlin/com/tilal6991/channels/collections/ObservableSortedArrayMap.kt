@@ -6,10 +6,12 @@ import java.util.*
 
 @Suppress("CAST_NEVER_SUCCEEDS") class ObservableSortedArrayMap<K, V>(
         private val keyComparator: Comparator<K>,
-        private val comparator: HyperComparator<V>) : SortedArrayMap<K, V>(keyComparator), ObservableIndexedMap<K, V> {
+        private val comparator: HyperComparator<V>) : SortedArrayMap<K, V>(keyComparator),
+        ObservableIndexedMap<K, V> {
 
-    private @Transient var registry: IndexedMapChangeRegistry<ObservableSortedArrayMap<K, V>, K, V>? = null
-    private var valuesObservableList: ValuesObservableList? = null
+    override val valuesList by lazy { ValuesObservableList() }
+
+    private var registry: IndexedMapChangeRegistry<ObservableSortedArrayMap<K, V>, K, V>? = null
 
     override fun clear() {
         super.clear()
@@ -47,13 +49,6 @@ import java.util.*
         return value
     }
 
-    override fun valuesAsObservableList(): ObservableList<V> {
-        if (valuesObservableList == null) {
-            valuesObservableList = ValuesObservableList()
-        }
-        return valuesObservableList!!
-    }
-
     @Suppress("UNCHECKED_CAST")
     override fun addOnIndexedMapChangedCallback(
             callback: ObservableIndexedMap.OnIndexedMapChangedCallback<out ObservableIndexedMap<K, V>, K, V>) {
@@ -72,7 +67,8 @@ import java.util.*
         registry!!.remove(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V>)
     }
 
-    inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(), ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
+    inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(),
+            ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
         private val registry = ListChangeRegistry()
 
         override val size: Int

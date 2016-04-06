@@ -1,7 +1,8 @@
 package com.tilal6991.channels.viewmodel
 
 import android.databinding.ObservableField
-import com.tilal6991.channels.collections.ObservableSortedArrayMap
+import android.databinding.ObservableList
+import com.tilal6991.channels.collections.ObservableIndexedMap
 import com.tilal6991.channels.util.UserPrefixComparator
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
@@ -13,7 +14,10 @@ import timber.log.Timber
 class ChannelManagerVM(
         initialNick: String,
         private val dao: RegistrationDao,
-        private val channels: ObservableSortedArrayMap<String, ChannelVM>) : EventListener, UserMessageParser.Listener {
+        private val channelMap: ObservableIndexedMap<String, ChannelVM>) : EventListener, UserMessageParser.Listener {
+
+    val channels: ObservableList<ChannelVM>
+        get() = channelMap.valuesList
 
     private val comparator = UserPrefixComparator.create(dao)
     private val selfNick: ObservableField<String> = ObservableField(initialNick)
@@ -23,10 +27,10 @@ class ChannelManagerVM(
         val self = nick == selfNick.get()
         val c: ChannelVM
         if (self) {
-            val channelVM = channels[channel]
+            val channelVM = channelMap[channel]
             if (channelVM == null) {
                 c = ChannelVM(channel, comparator)
-                channels.put(channel, c)
+                channelMap.put(channel, c)
             } else {
                 c = channelVM
             }
@@ -58,8 +62,8 @@ class ChannelManagerVM(
 
     override fun onNick(prefix: String, newNick: String) {
         val oldNick = PrefixSplitter.nick(prefix)
-        for (i in 0..channels.size - 1) {
-            val channel = channels.getValueAt(i)
+        for (i in 0..channelMap.size - 1) {
+            val channel = channelMap.getValueAt(i)
             channel!!.onNickChange(oldNick, newNick)
         }
 
@@ -72,7 +76,7 @@ class ChannelManagerVM(
         val nick = PrefixSplitter.nick(prefix)
         val self = nick == selfNick.get()
 
-        val c = channels[channel]
+        val c = channelMap[channel]
         if (c == null) {
             if (!self) Timber.asTree().failAssert()
             return
@@ -81,8 +85,8 @@ class ChannelManagerVM(
     }
 
     override fun onQuit(prefix: String, message: String?) {
-        for (i in 0..channels.size - 1) {
-            val c = channels.getValueAt(i)
+        for (i in 0..channelMap.size - 1) {
+            val c = channelMap.getValueAt(i)
             val nick = PrefixSplitter.nick(prefix)
             val self = nick == selfNick.get()
             c!!.onQuit(nick, self, message)
@@ -90,7 +94,7 @@ class ChannelManagerVM(
     }
 
     private fun getChannelOrFail(channelName: String): ChannelVM? {
-        val channelVM = channels[channelName]
+        val channelVM = channelMap[channelName]
         if (channelVM == null) {
             Timber.asTree().failAssert()
         }

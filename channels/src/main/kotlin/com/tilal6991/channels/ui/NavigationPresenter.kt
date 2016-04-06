@@ -217,7 +217,7 @@ class NavigationPresenter(override val context: MainActivity,
 
         private var displayedClient: ClientVM? = null
         private val displayedChannels: ObservableList<ChannelVM>?
-            get() = displayedClient?.channels
+            get() = displayedClient?.channelManager?.channels
 
         private lateinit var childAdapter: NavigationChildAdapter
         private lateinit var channelsListener: ListSectionProxy<ChannelVM>
