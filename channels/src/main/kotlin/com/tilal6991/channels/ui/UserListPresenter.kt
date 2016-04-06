@@ -9,8 +9,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.adapter.HeaderViewHolder
+import com.tilal6991.channels.adapter.NavigationClientAdapter
 import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.ui.helper.ClientChildListener
 import com.tilal6991.channels.viewmodel.ChannelVM
@@ -56,30 +58,33 @@ class UserListPresenter(override val context: Activity,
         }
     }
 
-    class Adapter(private val context: Context) : SectionAdapter<RecyclerView.ViewHolder, RecyclerView.ViewHolder>() {
+    class Adapter(private val context: Context) : SectionAdapter<Adapter.ViewHolder, HeaderViewHolder>() {
         private val inflater = LayoutInflater.from(context)
 
         private var displayedChild: ChannelVM? = null
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder? {
-            return HeaderViewHolder(inflater.inflate(R.layout.recycler_header, parent, false))
+            if (viewType == HEADER_VIEW_TYPE) {
+                return HeaderViewHolder(inflater.inflate(R.layout.recycler_header, parent, false))
+            }
+            return ViewHolder(inflater.inflate(R.layout.user_list_item, parent, false))
         }
 
         override fun isHeaderDisplayedForSection(section: Int): Boolean {
             return true
         }
 
-        override fun onBindHeaderViewHolder(holder: RecyclerView.ViewHolder, section: Int) {
+        override fun onBindHeaderViewHolder(holder: HeaderViewHolder, section: Int) {
             val userMap = displayedChild?.userMap
             val key = userMap?.getKeyAt(section) ?: return
             val value = userMap?.getValueAt(section) ?: return
-            (holder as HeaderViewHolder).bind("${value.size} $key users")
+            holder.bind("${value.size} $key users")
         }
 
-        override fun onBindItemViewHolder(holder: RecyclerView.ViewHolder, section: Int, offset: Int) {
+        override fun onBindItemViewHolder(holder: Adapter.ViewHolder, section: Int, offset: Int) {
             val valueAt = displayedChild?.userMap?.getValueAt(section)
             val displayString = valueAt?.get(offset)?.displayString
-            (holder as HeaderViewHolder).bind(displayString ?: "Broken")
+            holder.bind(displayString ?: "Broken")
         }
 
         override fun getSectionCount(): Int {
@@ -95,6 +100,12 @@ class UserListPresenter(override val context: Activity,
 
             displayedChild = if (clientChild is ChannelVM) clientChild else null
             notifySectionedDataSetChanged()
+        }
+
+        class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+            fun bind(text: String) {
+                (view as TextView).text = text
+            }
         }
     }
 }

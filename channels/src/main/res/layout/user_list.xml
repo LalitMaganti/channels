@@ -10,16 +10,18 @@
     android:orientation="vertical"
     app:insetForeground="#4000">
 
-    <android.support.v7.widget.Toolbar
+    <View
         android:id="@+id/user_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:theme="@style/Theme.Channels.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:background="@color/colorPrimary" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/user_list_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp" />
 
 </com.tilal6991.channels.view.ScrimInsetsLinearLayout>
