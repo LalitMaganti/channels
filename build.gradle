@@ -22,7 +22,6 @@ ext {
     design = "com.android.support:design:$supportVersion"
 
     relay = ':relay-jvm:relay'
-    relayAndroid = ':relay-jvm:android'
 
     dagger = 'com.google.dagger:dagger:2.1'
     daggerCompiler = 'com.google.dagger:dagger-compiler:2.1'

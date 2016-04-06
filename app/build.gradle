@@ -68,8 +68,7 @@ dependencies {
     compile rootProject.ext.parcellerApi
     kapt rootProject.ext.parceller
 
-    compile project(rootProject.ext.relay)
-    compile project(rootProject.ext.relayAndroid)
+    compile project(':relay-jvm:relay')
     compile project(':MemorizingTrustManager:library')
 
     compile 'com.squareup.sqlbrite:sqlbrite:0.6.2'
