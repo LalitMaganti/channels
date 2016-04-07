@@ -33,14 +33,14 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         if (index < 0) {
             throw IndexOutOfBoundsException("Index cannot be negative.")
         }
-        return getKeyAt(index, root)
+        return getNodeOrParent(index, root, false)?.terminalKey!!
     }
 
     override fun getValueAt(index: Int): V {
         if (index < 0) {
             throw IndexOutOfBoundsException("Index cannot be negative.")
         }
-        return getValueAt(index, root)
+        return getNodeOrParent(index, root, false)?.terminalValue!!
     }
 
     override fun indexOf(key: CharSequence): Int {
@@ -48,6 +48,11 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
     }
 
     override fun remove(key: CharSequence): V? {
+        return remove(key, root, 0)
+    }
+
+    override fun removeAt(index: Int): V? {
+        val key = getNodeOrParent(index, root, false)?.terminalKey!!
         return remove(key, root, 0)
     }
 
@@ -186,54 +191,26 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         return absIndex + indexOf(key, child, offset + 1)
     }
 
-    private fun getKeyAt(index: Int, node: Node<V>): CharSequence {
-        if (index >= node.count) {
+    private fun getNodeOrParent(index: Int, current: Node<V>, parent: Boolean): Node<V>? {
+        if (index >= current.count) {
             throw IndexOutOfBoundsException()
         }
 
         var mapIndex = index
-        val key = node.terminalKey
+        val key = current.terminalKey
         if (key != null) {
             if (index == 0) {
-                return key
+                return if (parent) null else current
             }
             mapIndex--
         }
 
         var runningCount = 0
-        val mapView = node.mapView
+        val mapView = current.mapView
         for (i in 0..mapView.size - 1) {
             val child = mapView.getValueAt(i)
             if (mapIndex < runningCount + child.count) {
-                return getKeyAt(mapIndex - runningCount)
-            }
-            runningCount += child.count
-        }
-
-        // This means the running count did not match the actual count which is a bug.
-        throw IllegalStateException()
-    }
-
-    private fun getValueAt(index: Int, node: Node<V>): V {
-        if (index >= node.count) {
-            throw IndexOutOfBoundsException()
-        }
-
-        var mapIndex = index
-        val value = node.terminalValue
-        if (value != null) {
-            if (index == 0) {
-                return value
-            }
-            mapIndex--
-        }
-
-        var runningCount = 0
-        val mapView = node.mapView
-        for (i in 0..mapView.size - 1) {
-            val child = mapView.getValueAt(i)
-            if (mapIndex < runningCount + child.count) {
-                return getValueAt(mapIndex - runningCount)
+                return getNodeOrParent(mapIndex - runningCount, child, parent) ?: current
             }
             runningCount += child.count
         }
