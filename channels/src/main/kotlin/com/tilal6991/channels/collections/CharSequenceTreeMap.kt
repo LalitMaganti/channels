@@ -3,7 +3,7 @@ package com.tilal6991.channels.collections
 import android.support.v4.util.Pools
 import com.tilal6991.channels.util.CharComparator
 
-class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
+class CharSequenceTreeMap<V : Any> : MutableMap<CharSequence, V> {
 
     override val size: Int
         get() = root.count
@@ -29,30 +29,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         root.clear(pool)
     }
 
-    override fun getKeyAt(index: Int): CharSequence {
-        if (index < 0) {
-            throw IndexOutOfBoundsException("Index cannot be negative.")
-        }
-        return getNodeOrParent(index, root, false)?.terminalKey!!
-    }
-
-    override fun getValueAt(index: Int): V {
-        if (index < 0) {
-            throw IndexOutOfBoundsException("Index cannot be negative.")
-        }
-        return getNodeOrParent(index, root, false)?.terminalValue!!
-    }
-
-    override fun indexOf(key: CharSequence): Int {
-        return indexOf(key, root, 0)
-    }
-
     override fun remove(key: CharSequence): V? {
-        return remove(key, root, 0)
-    }
-
-    override fun removeAt(index: Int): V? {
-        val key = getNodeOrParent(index, root, false)?.terminalKey!!
         return remove(key, root, 0)
     }
 
@@ -168,55 +145,6 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
         node.decrementCount()
         return value
-    }
-
-    private fun indexOf(key: CharSequence, node: Node<V>?, offset: Int): Int {
-        if (node == null || offset == key.length && node.terminalKey == null) {
-            return IndexedMap.NO_POSITION
-        }
-
-        val terminalKey = node.terminalKey
-        if (terminalKey != null) {
-            // TODO(tilal6991) - is this faster than substring + equals?
-            if (key.equalFromOffset(terminalKey, offset)) {
-                return 0
-            } else if (offset == key.length) {
-                return IndexedMap.NO_POSITION
-            }
-        }
-
-        val mapIndex = node.mapView.indexOf(key[offset])
-        val child = node.mapView.getValueAt(mapIndex)
-        val absIndex = mapIndex + if (terminalKey != null) 1 else 0
-        return absIndex + indexOf(key, child, offset + 1)
-    }
-
-    private fun getNodeOrParent(index: Int, current: Node<V>, parent: Boolean): Node<V>? {
-        if (index >= current.count) {
-            throw IndexOutOfBoundsException()
-        }
-
-        var mapIndex = index
-        val key = current.terminalKey
-        if (key != null) {
-            if (index == 0) {
-                return if (parent) null else current
-            }
-            mapIndex--
-        }
-
-        var runningCount = 0
-        val mapView = current.mapView
-        for (i in 0..mapView.size - 1) {
-            val child = mapView.getValueAt(i)
-            if (mapIndex < runningCount + child.count) {
-                return getNodeOrParent(mapIndex - runningCount, child, parent) ?: current
-            }
-            runningCount += child.count
-        }
-
-        // This means the running count did not match the actual count which is a bug.
-        throw IllegalStateException()
     }
 
     private class Node<T : Any> {

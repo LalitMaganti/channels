@@ -14,8 +14,8 @@ import timber.log.Timber
 class ChannelVM(override val name: String,
                 private val comparator: UserPrefixComparator) : ClientChildVM() {
 
-    val treeMap = CharSequenceTreeMap<UserVM>()
     val userMap = ObservableSortedArrayMap(comparator, UserListComparator.instance)
+    private val treeMap = CharSequenceTreeMap<UserVM>()
 
     fun onMessage(nick: String, message: String) {
         val user = getUser(nick)
