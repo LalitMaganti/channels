@@ -2,16 +2,15 @@ package com.tilal6991.channels.viewmodel
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.util.LruCache
 import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
-import com.tilal6991.channels.ui.NotificationService
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.db.connectionDb
 import com.tilal6991.channels.relay.*
+import com.tilal6991.channels.ui.NotificationService
 import com.tilal6991.channels.util.ChannelComparator
 import com.tilal6991.channels.util.ConfigurationComparator
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
@@ -19,12 +18,9 @@ import com.tilal6991.messageloop.AndroidHandlerMessageLoop
 import com.tilal6991.relay.RelayClient
 import de.duenndns.ssl.MemorizingTrustManager
 import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton class RelayVM @Inject constructor(private val context: Context) {
+class RelayVM(private val context: Context) {
 
     val activeConfigs: ObservableSortedList<ChannelsConfiguration> = ObservableSortedList(
             ChannelsConfiguration::class.java, ConfigurationComparator.Companion.instance)
