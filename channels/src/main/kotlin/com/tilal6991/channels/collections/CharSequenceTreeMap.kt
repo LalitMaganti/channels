@@ -283,7 +283,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         fun clear(pool: Pools.SimplePool<Node<T>>) {
             for (i in 0..map.size - 1) {
                 val node = map.getValueAt(i)
-                node!!.clear(pool)
+                node.clear(pool)
                 if (!pool.release(node)) break
             }
 

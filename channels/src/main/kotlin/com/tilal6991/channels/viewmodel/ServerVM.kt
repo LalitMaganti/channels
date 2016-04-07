@@ -18,7 +18,7 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
 
     override fun onOtherCode(code: Int, arguments: List<String>) {
         if (displayedCodes.contains(code)) {
-            add(" ".join(arguments))
+            add(" ".join(arguments.map {  }))
         }
     }
 

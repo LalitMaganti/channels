@@ -44,7 +44,7 @@ import java.util.*
 
     override fun remove(key: K): V? {
         val index = indexOfRaw(key)
-        val value = removeAtIndex(index) ?: return null
+        val value = removeAt(index) ?: return null
         registry?.notifyItemRemoved(this, index, key, value)
         return value
     }
