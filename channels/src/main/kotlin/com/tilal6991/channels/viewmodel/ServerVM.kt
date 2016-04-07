@@ -21,36 +21,6 @@ class ServerVM(override val name: String) : ClientChildVM(), EventListener {
         add(message)
     }
 
-    fun onSocketConnect() {
-        active = true
-        add("Connection was successful.")
-    }
-
-    fun onConnectFailed() {
-        active = false
-        add("Failed to connect to the server.")
-    }
-
-    fun onDisconnecting() {
-        active = false
-        add("Disconnecting from the server.")
-    }
-
-    fun onDisconnected() {
-        active = false
-        add("Disconnected from the server.")
-    }
-
-    fun onConnecting() {
-        active = false
-        add("Connecting to the server.")
-    }
-
-    fun onReconnecting() {
-        active = false
-        add("Trying to reconnect in 5 seconds.")
-    }
-
     companion object {
         private val displayedCodes: Set<Int> = arrayOf(
                 ReplyCodes.RPL_YOURHOST, ReplyCodes.RPL_CREATED, ReplyCodes.RPL_MYINFO,

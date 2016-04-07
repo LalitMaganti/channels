@@ -22,7 +22,7 @@ import java.util.*
     override fun put(key: K, value: V): V? {
         val index = indexOfRaw(key)
         if (index >= 0) {
-            val old = getAtIndexUnchecked(index)
+            val old = getValueAt(index)
             // TODO(tilal6991) - this might need a resort. Investigate how to fix.
             if (comparator.areItemsTheSame(old, value)) {
                 if (!comparator.areContentsTheSame(old, value)) {

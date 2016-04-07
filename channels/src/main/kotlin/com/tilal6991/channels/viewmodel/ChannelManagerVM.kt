@@ -15,7 +15,8 @@ import timber.log.Timber
 class ChannelManagerVM(
         initialNick: String,
         private val dao: RegistrationDao,
-        private val channelMap: ObservableIndexedMap<String, ChannelVM>) : EventListener, UserMessageParser.Listener {
+        private val channelMap: ObservableIndexedMap<String, ChannelVM>) : EventListener,
+        UserMessageParser.Listener, ClientVM.StatusListener {
 
     val channels: ObservableList<ChannelVM>
         get() = channelMap.valuesList
@@ -65,7 +66,7 @@ class ChannelManagerVM(
         val oldNick = PrefixSplitter.nick(prefix)
         for (i in 0..channelMap.size - 1) {
             val channel = channelMap.getValueAt(i)
-            channel!!.onNickChange(oldNick, newNick)
+            channel.onNickChange(oldNick, newNick)
         }
 
         if (oldNick == selfNick.get()) {
@@ -78,11 +79,10 @@ class ChannelManagerVM(
         val self = nick == selfNick.get()
 
         val c = channelMap[channel]
-        if (c == null) {
-            if (!self) Timber.asTree().failAssert()
-            return
+        if (c == null && !self) {
+            return Timber.asTree().failAssert()
         }
-        c.onPart(nick, self)
+        c?.onPart(nick, self)
     }
 
     override fun onQuit(prefix: String, message: String?) {
@@ -90,7 +90,7 @@ class ChannelManagerVM(
             val c = channelMap.getValueAt(i)
             val nick = PrefixSplitter.nick(prefix)
             val self = nick == selfNick.get()
-            c!!.onQuit(nick, self, message)
+            c.onQuit(nick, self, message)
         }
     }
 
@@ -101,4 +101,12 @@ class ChannelManagerVM(
         }
         return channelVM
     }
+
+    // Status listener.
+    override fun onSocketConnect() = channels.forEach { it.onSocketConnect() }
+    override fun onConnectFailed() = channels.forEach { it.onConnectFailed() }
+    override fun onDisconnecting() = channels.forEach { it.onDisconnecting() }
+    override fun onDisconnected() = channels.forEach { it.onDisconnected() }
+    override fun onConnecting() = channels.forEach { it.onConnecting() }
+    override fun onReconnecting() = channels.forEach { it.onReconnecting() }
 }

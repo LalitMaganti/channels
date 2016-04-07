@@ -4,13 +4,13 @@ import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.databinding.ObservableField
-import android.databinding.ObservableList
 import android.os.Handler
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
+import com.tilal6991.listen.Listener
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.MetaListener
 import com.tilal6991.relay.RelayClient
@@ -41,10 +41,15 @@ class ClientVM(private val context: Context,
     val selectedChild: ObservableField<ClientChildVM>
 
     private val reconnectHandler: ReconnectHandler
+    private val statusDispatcher: StatusListenerDispatcher
 
     init {
         selectedChild = ObservableField(server)
         reconnectHandler = ReconnectHandler()
+
+        statusDispatcher = StatusListenerDispatcher()
+        statusDispatcher.addListener(server)
+        statusDispatcher.addListener(channelManager)
 
         client.init()
         client.connect()
@@ -108,17 +113,13 @@ class ClientVM(private val context: Context,
     }
 
     override fun onDisconnect() {
+        server.onDisconnected()
+
         if (statusInt == DISCONNECTING) {
             updateStatus(DISCONNECTED)
-
-            server.onDisconnected()
-        } else {
-            server.onDisconnected()
-
-            if (reconnectHandler.onConnectionLost()) {
-                updateStatus(RECONNECTING)
-                server.onReconnecting()
-            }
+        } else if (reconnectHandler.onConnectionLost()) {
+            updateStatus(RECONNECTING)
+            server.onReconnecting()
         }
     }
 
@@ -191,6 +192,16 @@ class ClientVM(private val context: Context,
         fun resetCounter() {
             reconnectCount = 0
         }
+    }
+
+    @Listener
+    interface StatusListener {
+        fun onSocketConnect() = Unit
+        fun onConnectFailed() = Unit
+        fun onDisconnecting() = Unit
+        fun onDisconnected() = Unit
+        fun onConnecting() = Unit
+        fun onReconnecting() = Unit
     }
 
     companion object {

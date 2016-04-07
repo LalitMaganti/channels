@@ -66,6 +66,8 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
     compile 'com.tilal6991.messageloop:messageloop-android:0.2.0'
+    compile 'com.tilal6991.listen:listen:0.1.0-SNAPSHOT'
+    kapt 'com.tilal6991.listen:listen-compiler:0.1.0-SNAPSHOT'
 
     compile rootProject.ext.annotation
     compile rootProject.ext.dagger
