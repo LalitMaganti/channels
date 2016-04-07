@@ -29,14 +29,14 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         root.clear(pool)
     }
 
-    override fun getKeyAt(index: Int): CharSequence? {
+    override fun getKeyAt(index: Int): CharSequence {
         if (index < 0) {
             throw IndexOutOfBoundsException("Index cannot be negative.")
         }
         return getKeyAt(index, root)
     }
 
-    override fun getValueAt(index: Int): V? {
+    override fun getValueAt(index: Int): V {
         if (index < 0) {
             throw IndexOutOfBoundsException("Index cannot be negative.")
         }
@@ -186,15 +186,16 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         return absIndex + indexOf(key, child, offset + 1)
     }
 
-    private fun getKeyAt(index: Int, node: Node<V>): CharSequence? {
+    private fun getKeyAt(index: Int, node: Node<V>): CharSequence {
         if (index >= node.count) {
-            return null
+            throw IndexOutOfBoundsException()
         }
 
         var mapIndex = index
-        if (node.terminalKey != null) {
+        val key = node.terminalKey
+        if (key != null) {
             if (index == 0) {
-                return node.terminalKey
+                return key
             }
             mapIndex--
         }
@@ -202,7 +203,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         var runningCount = 0
         val mapView = node.mapView
         for (i in 0..mapView.size - 1) {
-            val child = mapView.getValueAt(i)!!
+            val child = mapView.getValueAt(i)
             if (mapIndex < runningCount + child.count) {
                 return getKeyAt(mapIndex - runningCount)
             }
@@ -210,19 +211,19 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
 
         // This means the running count did not match the actual count which is a bug.
-        // Timber.asTree().failAssert()
-        return null
+        throw IllegalStateException()
     }
 
-    private fun getValueAt(index: Int, node: Node<V>): V? {
+    private fun getValueAt(index: Int, node: Node<V>): V {
         if (index >= node.count) {
-            return null
+            throw IndexOutOfBoundsException()
         }
 
         var mapIndex = index
-        if (node.terminalKey != null) {
+        val value = node.terminalValue
+        if (value != null) {
             if (index == 0) {
-                return node.terminalValue
+                return value
             }
             mapIndex--
         }
@@ -230,7 +231,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         var runningCount = 0
         val mapView = node.mapView
         for (i in 0..mapView.size - 1) {
-            val child = mapView.getValueAt(i)!!
+            val child = mapView.getValueAt(i)
             if (mapIndex < runningCount + child.count) {
                 return getValueAt(mapIndex - runningCount)
             }
@@ -238,8 +239,7 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         }
 
         // This means the running count did not match the actual count which is a bug.
-        // Timber.asTree().failAssert()
-        return null
+        throw IllegalStateException()
     }
 
     private class Node<T : Any> {

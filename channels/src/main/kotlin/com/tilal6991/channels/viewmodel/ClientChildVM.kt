@@ -10,7 +10,7 @@ abstract class ClientChildVM : BaseObservable(), ClientVM.StatusListener {
     abstract val name: CharSequence
     var active: Boolean = false
         @Bindable get
-        private set(it) {
+        protected set(it) {
             field = it
             notifyPropertyChanged(BR.active)
         }
@@ -24,33 +24,10 @@ abstract class ClientChildVM : BaseObservable(), ClientVM.StatusListener {
         notifyPropertyChanged(BR.message)
     }
 
-    override fun onSocketConnect() {
-        active = true
-        add("Connection was successful.")
-    }
-
-    override fun onConnectFailed() {
-        active = false
-        add("Failed to connect to the server.")
-    }
-
-    override fun onDisconnecting() {
-        active = false
-        add("Disconnecting from the server.")
-    }
-
-    override fun onDisconnected() {
-        active = false
-        add("Disconnected from the server.")
-    }
-
-    override fun onConnecting() {
-        active = false
-        add("Connecting to the server.")
-    }
-
-    override fun onReconnecting() {
-        active = false
-        add("Trying to reconnect in 5 seconds.")
-    }
+    override fun onSocketConnect() = add("Connection was successful.")
+    override fun onConnectFailed() = add("Failed to connect to the server.")
+    override fun onDisconnecting() = add("Disconnecting from the server.")
+    override fun onDisconnected() = add("Disconnected from the server.")
+    override fun onConnecting() = add("Connecting to the server.")
+    override fun onReconnecting() = add("Trying to reconnect in 5 seconds.")
 }

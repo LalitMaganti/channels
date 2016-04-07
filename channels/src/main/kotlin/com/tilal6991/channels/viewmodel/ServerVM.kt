@@ -7,6 +7,11 @@ import java.util.*
 
 class ServerVM(override val name: String) : ClientChildVM(), EventListener {
 
+    init {
+        // A server child is always active.
+        active = true
+    }
+
     override fun onWelcome(target: String, text: String) {
         add(text)
     }
