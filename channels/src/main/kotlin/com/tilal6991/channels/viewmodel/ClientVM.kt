@@ -54,7 +54,7 @@ class ClientVM(private val context: Context,
         client.init()
         client.connect()
 
-        server.onConnecting()
+        statusDispatcher.onConnecting()
     }
 
     fun select(child: ClientChildVM) {
@@ -68,7 +68,7 @@ class ClientVM(private val context: Context,
             // Because the reconnecting state is one which we introduced, we cannot
             // delegate to the RelayClient and wait for a response.
             updateStatus(DISCONNECTED)
-            server.onDisconnected()
+            statusDispatcher.onDisconnected()
         }
 
         if (statusInt == CONNECTED) {
@@ -77,7 +77,7 @@ class ClientVM(private val context: Context,
         client.disconnect()
 
         updateStatus(DISCONNECTING)
-        server.onDisconnecting()
+        statusDispatcher.onDisconnecting()
     }
 
     fun reconnect() {
@@ -109,31 +109,31 @@ class ClientVM(private val context: Context,
         updateStatus(SOCKET_CONNECTED)
         reconnectHandler.onSocketConnect()
 
-        server.onSocketConnect()
+        statusDispatcher.onSocketConnect()
     }
 
     override fun onDisconnect() {
-        server.onDisconnected()
+        statusDispatcher.onDisconnected()
 
         if (statusInt == DISCONNECTING) {
             updateStatus(DISCONNECTED)
         } else if (reconnectHandler.onConnectionLost()) {
             updateStatus(RECONNECTING)
-            server.onReconnecting()
+            statusDispatcher.onReconnecting()
         }
     }
 
     override fun onConnectFailed() {
         if (statusInt == DISCONNECTING) {
-            server.onDisconnected()
+            statusDispatcher.onDisconnected()
 
             updateStatus(DISCONNECTED)
         } else {
-            server.onConnectFailed()
+            statusDispatcher.onConnectFailed()
 
             if (reconnectHandler.onConnectionLost()) {
                 updateStatus(RECONNECTING)
-                server.onReconnecting()
+                statusDispatcher.onReconnecting()
             }
         }
     }
@@ -146,7 +146,7 @@ class ClientVM(private val context: Context,
         updateStatus(CONNECTING)
         client.connect()
 
-        server.onConnecting()
+        statusDispatcher.onConnecting()
     }
 
     private fun updateStatus(newStatus: Int) {
