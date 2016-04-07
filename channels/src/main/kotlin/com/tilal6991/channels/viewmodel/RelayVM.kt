@@ -2,17 +2,16 @@ package com.tilal6991.channels.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.support.v4.util.LruCache
 import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
 import com.tilal6991.channels.ui.NotificationService
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.db.connectionDb
-import com.tilal6991.channels.relay.BasicEventListener
-import com.tilal6991.channels.relay.EMPTY_AUTH_HANDLER
-import com.tilal6991.channels.relay.HandshakeEventListener
-import com.tilal6991.channels.relay.MainThreadEventListener
+import com.tilal6991.channels.relay.*
 import com.tilal6991.channels.util.ChannelComparator
 import com.tilal6991.channels.util.ConfigurationComparator
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
@@ -131,6 +130,7 @@ import javax.inject.Singleton
     }
 
     private fun createClient(configuration: ChannelsConfiguration): ClientVM {
+        val user = configuration.user
         val relayConfig = RelayClient.Configuration.create {
             hostname = configuration.server.hostname
             port = configuration.server.port
@@ -139,31 +139,40 @@ import javax.inject.Singleton
             sslTrustManager = if (ssl) MemorizingTrustManager(context) else null
         }
 
-        val coreClient = RelayClient.create(relayConfig, { AndroidHandlerMessageLoop.create(it) })
+        val core = RelayClient.create(relayConfig, { AndroidHandlerMessageLoop.create(it) })
 
-        val channelMap = ObservableSortedArrayMap<String, ChannelVM>(
-                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.Companion.instance)
-        val userChannelVM = ChannelManagerVM(configuration.user.nicks[0], coreClient.registrationDao, channelMap)
+        val channels = ObservableSortedArrayMap<String, ChannelVM>(
+                Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
+        val cManager = ChannelManagerVM(user.nicks[0], core.registrationDao, channels)
         val server = ServerVM("Server")
-        val userMessageParser = UserMessageParser(userChannelVM)
+        val parser = UserMessageParser(cManager)
 
-        val clientVM = ClientVM(context, coreClient, userMessageParser, configuration, server, channelMap.valuesAsObservableList())
+        val clientVM = ClientVM(context, core, parser, configuration, server, cManager)
 
-        val basicEventListener = BasicEventListener(coreClient)
-        val handshakeListener = HandshakeEventListener(coreClient, configuration, EMPTY_AUTH_HANDLER)
+        val authHandler: AuthHandler
+        if (user.authType == UserConfiguration.SASL_AUTH_TYPE) {
+            authHandler = PlainSASLHandler(core, user.authUsername!!, user.authPassword!!)
+        } else if (user.authType == UserConfiguration.NICKSERV_AUTH_TYPE) {
+            authHandler = NickServHandler(core, user.authPassword!!)
+        } else {
+            authHandler = EMPTY_AUTH_HANDLER
+        }
+
+        val basicEventListener = BasicEventListener(core)
+        val handshakeListener = HandshakeEventListener(core, configuration, authHandler)
         val mainThreadListener = MainThreadEventListener()
 
-        coreClient.addEventListener(basicEventListener)
-        coreClient.addEventListener(handshakeListener)
-        coreClient.addEventListener(mainThreadListener)
+        core.addEventListener(basicEventListener)
+        core.addEventListener(handshakeListener)
+        core.addEventListener(mainThreadListener)
 
-        coreClient.addMetaListener(handshakeListener)
-        coreClient.addMetaListener(mainThreadListener)
+        core.addMetaListener(handshakeListener)
+        core.addMetaListener(mainThreadListener)
 
         mainThreadListener.addMetaListener(clientVM)
         mainThreadListener.addEventListener(clientVM)
         mainThreadListener.addEventListener(server)
-        mainThreadListener.addEventListener(userChannelVM)
+        mainThreadListener.addEventListener(cManager)
 
         return clientVM
     }

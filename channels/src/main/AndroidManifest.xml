@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-sdk xmlns:tools="http://schemas.android.com/tools"
+        tools:overrideLibrary="android.support.v14.preference" />
+
     <application
         android:name=".base.ChannelsApplication"
         android:allowBackup="true"
@@ -25,7 +28,11 @@
 
         <activity
             android:name=".ui.ConfigurationEditActivity"
-            android:theme="@style/Theme.Channels.StatusBar" />
+            android:theme="@style/Theme.Channels.Prefs" />
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:theme="@style/Theme.Channels.Prefs" />
 
         <activity
             android:name="de.duenndns.ssl.MemorizingActivity"

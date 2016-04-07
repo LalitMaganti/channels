@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Base.Theme.Channels" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Base.Theme.Channels" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:windowBackground">@color/gray_50</item>
-        <item name="dashboardDrawableColor">@color/material_primary_text</item>
+        <item name="android:windowBackground">@color/window_background_color</item>
+        <item name="dashboardTheme">@style/Theme.Channels.Dashboard</item>
     </style>
 
     <style name="Base.Theme.Channels.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -45,7 +45,9 @@
         <item name="drawerArrowStyle">@style/Widget.Channels.DrawerArrowToggle</item>
     </style>
 
-    <style name="Theme.Channels.StatusBar" parent="Base.Theme.Channels" />
+    <style name="Theme.Channels.Prefs" parent="Base.Theme.Channels">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
 
     <style name="Theme.Channels.ActionBar" parent="Base.Theme.Channels.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
@@ -58,6 +60,8 @@
     <style name="Theme.Channels.NavigationDrawer" parent="Base.Theme.Channels">
         <item name="textAppearanceListItem">@style/Theme.Channels.NavDrawerItem</item>
     </style>
+
+    <style name="Theme.Channels.Dashboard" parent="Theme.Design.Light.BottomSheetDialog"/>
 
     <style name="Theme.Channels.SubHeader" parent="Base.Theme.Channels.SubHeader" />
 
@@ -79,7 +83,19 @@
         <item name="android:textColor">?android:textColorSecondaryInverse</item>
     </style>
 
+    <style name="TextAppearance.Channels.Navigation.Header" parent="TextAppearance.AppCompat.Medium.Inverse"/>
+
+    <style name="TextAppearance.Channels.Navigation.SubHeader" parent="TextAppearance.AppCompat.Inverse"/>
+
     <style name="Widget.Channels.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@android:color/white</item>
+    </style>
+
+    <!-- Fix for Preferences bug -->
+    <style name="Preference_TextAppearanceMaterialBody2">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 </resources>

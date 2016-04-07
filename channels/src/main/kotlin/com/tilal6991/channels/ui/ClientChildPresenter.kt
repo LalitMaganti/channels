@@ -42,13 +42,12 @@ class ClientChildPresenter(override val context: MainActivity,
         }
     }
     private val messageBoxListener = object : Observable.OnPropertyChangedCallback() {
-        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+        override fun onPropertyChanged(sender: Observable, propertyId: Int) {
             if (propertyId != BR.statusInt && propertyId != BR.active) {
                 return
             }
-            val latest = selectedClientsVM.latest!!
-            val status = latest.statusInt
-            onMessageBoxEnableState(latest.selectedChild.get(), status)
+            val latest = selectedClientsVM.latest
+            onMessageBoxEnableState(latest)
         }
 
         fun bind(client: ClientVM?, child: ClientChildVM?) {
@@ -78,18 +77,20 @@ class ClientChildPresenter(override val context: MainActivity,
     }
 
     override fun unbind() {
-        messageHandler.unbind()
-        childListener.unbind()
         messageBoxListener.unbind(displayedClient, displayedChild)
+        childListener.unbind()
+        messageHandler.unbind()
+
+        listener.unbind(displayedChild?.buffer)
     }
 
     override fun teardown() {
         messageHandler.teardown()
     }
 
-    private fun onMessageBoxEnableState(selectedChild: ClientChildVM, statusInt: Int) {
-        messageInput.enabled = selectedChild.active &&
-                (statusInt == ClientVM.CONNECTED || statusInt == ClientVM.SOCKET_CONNECTED)
+    private fun onMessageBoxEnableState(client: ClientVM?) {
+        messageInput.enabled = client != null && client.selectedChild.get().active &&
+                (client.statusInt == ClientVM.CONNECTED || client.statusInt == ClientVM.SOCKET_CONNECTED)
     }
 
     private fun switchContent(newChild: ClientChildVM?) {
@@ -121,7 +122,7 @@ class ClientChildPresenter(override val context: MainActivity,
             eventRecyclerView.forceScroll(buffer.size - 1)
 
             messageBoxListener.bind(displayedClient, displayedChild)
-            onMessageBoxEnableState(newChild, displayedClient!!.statusInt)
+            onMessageBoxEnableState(displayedClient)
         }
     }
 }

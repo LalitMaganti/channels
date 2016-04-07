@@ -60,7 +60,8 @@ abstract class SASLHandler(protected val client: RelayClient) : AuthHandler {
 }
 
 class PlainSASLHandler(client: RelayClient,
-                       private val configuration: Configuration) : SASLHandler(client) {
+                       val username: String,
+                       val password: String) : SASLHandler(client) {
 
     override fun onCapAck() {
         client.send(ClientGenerator.authenticate("PLAIN"))
@@ -68,13 +69,18 @@ class PlainSASLHandler(client: RelayClient,
 
     override fun onAuthenticate(data: String) {
         if (data == "+") {
-            val authentication = configuration.username + "\\0" +
-                    configuration.username + "\\0" + configuration.password
+            val authentication = "\\0$username\\0$password"
             val authBytes = authentication.toByteArray(StandardCharsets.UTF_8)
             val encoded = Base64.encodeToString(authBytes, Base64.DEFAULT)
             client.send(ClientGenerator.authenticate(encoded))
         }
     }
+}
 
-    data class Configuration(val username: String, val password: String)
+class NickServHandler(private val client: RelayClient,
+                      private val password: String) : AuthHandler {
+
+    override fun onWelcome(target: String, text: String) {
+        client.send(ClientGenerator.privmsg("NickServ", "IDENTIFY $password"))
+    }
 }

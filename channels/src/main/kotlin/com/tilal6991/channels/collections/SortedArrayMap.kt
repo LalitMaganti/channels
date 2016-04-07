@@ -1,6 +1,5 @@
 package com.tilal6991.channels.collections
 
-import timber.log.Timber
 import java.util.*
 
 @Suppress("CAST_NEVER_SUCCEEDS")
@@ -11,36 +10,33 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
         get() {
             val set = HashSet<MutableMap.MutableEntry<K, V>>()
-            for (i in 0..contentSize - 1) {
-                set.add(Entry(keyArray[i]!!, valueArray[i]!!))
+            for (i in 0..keyList.size - 1) {
+                set.add(Entry(keyList[i]!!, valueList[i]!!))
             }
             return set
         }
 
-    private var keyArray: Array<K?>
-    private var valueArray: Array<V?>
-    private var contentSize: Int
+    private val keyList: ArrayList<K>
+    private val valueList: ArrayList<V>
 
     override val size: Int
-        get() = contentSize
+        get() = keyList.size
 
     init {
-        contentSize = 0
-        keyArray = arrayOfNulls<Any>(baseSize) as Array<K?>
-        valueArray = arrayOfNulls<Any>(baseSize) as Array<V?>
+        keyList = ArrayList(baseSize)
+        valueList = ArrayList(baseSize)
     }
 
     override fun clear() {
-        contentSize = 0
-        keyArray = arrayOfNulls<Any>(baseSize) as Array<K?>
-        valueArray = arrayOfNulls<Any>(baseSize) as Array<V?>
+        keys.clear()
+        values.clear()
     }
 
     override fun put(key: K, value: V): V? {
         val index = indexOfRaw(key)
         if (index >= 0) {
-            val old = valueArray[index]!!
-            valueArray[index] = value
+            val old = valueList[index]!!
+            valueList[index] = value
             return old
         }
         val insertionIndex = -index - 1
@@ -49,16 +45,9 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
     }
 
     override fun putAll(from: Map<out K, V>) {
-        var oldK: Array<K?> = keyArray
-        var oldV: Array<V?> = valueArray
-
-        if (contentSize + from.size > oldK.size) {
-            keyArray = arrayOfNulls<Any>(from.size + oldK.size * 2) as Array<K?>
-            valueArray = arrayOfNulls<Any>(from.size + oldV.size * 2) as Array<V?>
-
-            System.arraycopy(oldK, 0, keyArray, 0, oldK.size)
-            System.arraycopy(oldV, 0, valueArray, 0, oldV.size)
-        }
+        val additional = Math.min(size, from.size) * 2
+        keyList.ensureCapacity(size + from.size + additional)
+        valueList.ensureCapacity(size + from.size + additional)
 
         for ((k, v) in from) {
             put(k, v)
@@ -67,7 +56,15 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
 
     override fun remove(key: K): V? {
         val index = indexOfRaw(key)
-        return removeAtIndex(index)
+        return removeAt(index)
+    }
+
+    override fun removeAt(index: Int): V? {
+        if (index < 0) {
+            return null
+        }
+        keyList.removeAt(index)
+        return valueList.removeAt(index)
     }
 
     override fun containsKey(key: K): Boolean {
@@ -75,12 +72,7 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
     }
 
     override fun containsValue(value: V): Boolean {
-        for (v in valueArray) {
-            if (value == v) {
-                return true
-            }
-        }
-        return false
+        return valueList.contains(value)
     }
 
     override fun get(key: K): V? {
@@ -88,25 +80,19 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
         if (index < 0) {
             return null
         }
-        return valueArray[index]
+        return valueList[index]
     }
 
     override fun isEmpty(): Boolean {
-        return contentSize == 0
+        return keyList.isEmpty()
     }
 
-    override fun getKeyAt(index: Int): K? {
-        if (index < 0) {
-            Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
-        }
-        return if (index < contentSize) keyArray[index] else null
+    override fun getKeyAt(index: Int): K {
+        return keyList[index]!!
     }
 
-    override fun getValueAt(index: Int): V? {
-        if (index < 0) {
-            Timber.asTree().e(NegativeArraySizeException(), "Index cannot be negative.")
-        }
-        return if (index < contentSize) getAtIndexUnchecked(index) else null
+    override fun getValueAt(index: Int): V {
+        return valueList[index]!!
     }
 
     override fun indexOf(key: K): Int {
@@ -114,70 +100,13 @@ open class SortedArrayMap<K, V> @JvmOverloads constructor(
         return if (index < 0) IndexedMap.NO_POSITION else index
     }
 
-    protected fun getAtIndexUnchecked(index: Int): V {
-        return valueArray[index]!!
-    }
-
     protected fun putAtIndex(index: Int, key: K, value: V) {
-        var oldK: Array<K?> = keyArray
-        var oldV: Array<V?> = valueArray
-        if (contentSize == oldK.size) {
-            keyArray = arrayOfNulls<Any>(oldK.size * 2) as Array<K?>
-            valueArray = arrayOfNulls<Any>(oldV.size * 2) as Array<V?>
-
-            if (index > 0) {
-                System.arraycopy(oldK, 0, keyArray, 0, index)
-                System.arraycopy(oldV, 0, valueArray, 0, index)
-            }
-        }
-        if (index < contentSize) {
-            System.arraycopy(oldK, index, keyArray, index + 1, contentSize - index)
-            System.arraycopy(oldV, index, valueArray, index + 1, contentSize - index)
-        }
-
-        contentSize++
-        keyArray[index] = key
-        valueArray[index] = value
-    }
-
-    protected fun removeAtIndex(index: Int): V? {
-        if (index < 0) {
-            return null
-        }
-        val value = valueArray[index] ?: return null
-
-        if (keyArray.size > baseSize * 2 && contentSize < keyArray.size / 3) {
-            val n = if (contentSize > baseSize * 2) contentSize + (contentSize shr 1) else baseSize * 2
-
-            var oldK: Array<K?> = keyArray
-            var oldV: Array<V?> = valueArray
-
-            keyArray = arrayOfNulls<Any>(n) as Array<K?>
-            valueArray = arrayOfNulls<Any>(n) as Array<V?>
-
-            if (index > 0) {
-                System.arraycopy(oldK, 0, keyArray, 0, index)
-                System.arraycopy(oldV, 0, valueArray, 0, index)
-            }
-            if (index < contentSize - 1) {
-                System.arraycopy(oldK, index + 1, keyArray, index, contentSize - index - 1)
-                System.arraycopy(oldV, index + 1, valueArray, index, contentSize - index - 1)
-            }
-        } else {
-            if (index < contentSize - 1) {
-                System.arraycopy(keyArray, index + 1, keyArray, index, contentSize - index - 1)
-                System.arraycopy(valueArray, index + 1, valueArray, index, contentSize - index - 1)
-            }
-            keyArray[contentSize - 1] = null
-            valueArray[contentSize - 1] = null
-        }
-
-        contentSize--
-        return value
+        keyList.add(index, key)
+        valueList.add(index, value)
     }
 
     protected fun indexOfRaw(key: K): Int {
-        return Arrays.binarySearch(keyArray, 0, contentSize, key, keyComparator as Comparator<in K?>)
+        return Collections.binarySearch(keyList, key, keyComparator as Comparator<in K?>)
     }
 
     class Entry<K, V>(override val key: K, override var value: V) : MutableMap.MutableEntry<K, V> {

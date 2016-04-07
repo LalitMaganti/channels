@@ -5,6 +5,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import butterknife.bindView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.databinding.NavigationClientBinding
@@ -17,6 +20,7 @@ class NavigationClientAdapter(
         private val relayVM: RelayVM,
         private val addClick: (View) -> Unit,
         private val manageClick: (ChannelsConfiguration) -> Unit,
+        private val settingsClick: (View) -> Unit,
         private val clientClickListener: (ChannelsConfiguration) -> Unit) :
         SectionAdapter<NavigationClientAdapter.ViewHolder, HeaderViewHolder>() {
 
@@ -51,7 +55,7 @@ class NavigationClientAdapter(
 
     override fun getItemCountInSection(section: Int): Int {
         if (section == 2) {
-            return 1
+            return 2
         }
         return getListForSection(section).size
     }
@@ -71,13 +75,13 @@ class NavigationClientAdapter(
         return 3
     }
 
-    private fun getListForSection(section: Int): List<ChannelsConfiguration> {
-        if (section == 0) {
-            return relayVM.activeConfigs
+    private fun getListForSection(section: Int): List<ChannelsConfiguration> = when (section) {
+        0 -> relayVM.activeConfigs
+        1 -> relayVM.inactiveConfigs
+        else -> {
+            Timber.asTree().failAssert()
+            relayVM.inactiveConfigs
         }
-
-        if (section != 1) Timber.asTree().failAssert()
-        return relayVM.inactiveConfigs
     }
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -99,8 +103,13 @@ class NavigationClientAdapter(
     }
 
     inner class FooterViewHolder(private val view: View) : ViewHolder(view) {
+        private val image by bindView<ImageView>(R.id.image)
+        private val text by bindView<TextView>(R.id.text)
+
         override fun bind(section: Int, offset: Int) {
-            view.setOnClickListener(addClick)
+            view.setOnClickListener(if (offset == 0) addClick else settingsClick)
+            text.setText(if (offset == 0) R.string.add_server else R.string.settings)
+            image.setImageResource(if (offset == 0) R.drawable.ic_add else R.drawable.ic_settings)
         }
     }
 }

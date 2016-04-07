@@ -160,6 +160,11 @@ class NavigationPresenter(override val context: MainActivity,
                 context.startActivityForResult(intent, MainActivity.REQUEST_EDIT)
             }
 
+            val settingsClick: (View) -> Unit = {
+                val intent = Intent(context, SettingsActivity::class.java)
+                context.startActivityForResult(intent, MainActivity.REQUEST_SETTINGS)
+            }
+
             val clientClick: (ChannelsConfiguration) -> Unit =  {
                 if (relayVM.select(it)) {
                     drawerLayout.closeDrawer(view)
@@ -169,7 +174,7 @@ class NavigationPresenter(override val context: MainActivity,
                 updateCurrentType(childHelper)
             }
 
-            clientAdapter = NavigationClientAdapter(view.context, relayVM, addClick, manageClick, clientClick)
+            clientAdapter = NavigationClientAdapter(view.context, relayVM, addClick, manageClick, settingsClick, clientClick)
             clientAdapter.setup()
 
             activeClientListener = object : ListSectionProxy<ChannelsConfiguration>(0, clientAdapter) {
@@ -217,7 +222,7 @@ class NavigationPresenter(override val context: MainActivity,
 
         private var displayedClient: ClientVM? = null
         private val displayedChannels: ObservableList<ChannelVM>?
-            get() = displayedClient?.channels
+            get() = displayedClient?.channelManager?.channels
 
         private lateinit var childAdapter: NavigationChildAdapter
         private lateinit var channelsListener: ListSectionProxy<ChannelVM>

@@ -6,10 +6,12 @@ import java.util.*
 
 @Suppress("CAST_NEVER_SUCCEEDS") class ObservableSortedArrayMap<K, V>(
         private val keyComparator: Comparator<K>,
-        private val comparator: HyperComparator<V>) : SortedArrayMap<K, V>(keyComparator), ObservableIndexedMap<K, V> {
+        private val comparator: HyperComparator<V>) : SortedArrayMap<K, V>(keyComparator),
+        ObservableIndexedMap<K, V> {
 
-    private @Transient var registry: IndexedMapChangeRegistry<ObservableSortedArrayMap<K, V>, K, V>? = null
-    private var valuesObservableList: ValuesObservableList? = null
+    override val valuesList by lazy { ValuesObservableList() }
+
+    private var registry: IndexedMapChangeRegistry<ObservableSortedArrayMap<K, V>, K, V>? = null
 
     override fun clear() {
         super.clear()
@@ -20,7 +22,7 @@ import java.util.*
     override fun put(key: K, value: V): V? {
         val index = indexOfRaw(key)
         if (index >= 0) {
-            val old = getAtIndexUnchecked(index)
+            val old = getValueAt(index)
             // TODO(tilal6991) - this might need a resort. Investigate how to fix.
             if (comparator.areItemsTheSame(old, value)) {
                 if (!comparator.areContentsTheSame(old, value)) {
@@ -42,16 +44,9 @@ import java.util.*
 
     override fun remove(key: K): V? {
         val index = indexOfRaw(key)
-        val value = removeAtIndex(index) ?: return null
+        val value = removeAt(index) ?: return null
         registry?.notifyItemRemoved(this, index, key, value)
         return value
-    }
-
-    override fun valuesAsObservableList(): ObservableList<V> {
-        if (valuesObservableList == null) {
-            valuesObservableList = ValuesObservableList()
-        }
-        return valuesObservableList!!
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -72,7 +67,8 @@ import java.util.*
         registry!!.remove(callback as ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V>)
     }
 
-    inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(), ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
+    inner class ValuesObservableList : ObservableList<V>, AbstractList<V>(),
+            ObservableIndexedMap.OnIndexedMapChangedCallback<ObservableSortedArrayMap<K, V>, K, V> {
         private val registry = ListChangeRegistry()
 
         override val size: Int

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/indigo_900</color>
+    <color name="colorSecondary">@color/indigo_700</color>
+    <color name="colorAccent">@color/orange_900</color>
+
+    <color name="window_background_color">#303030</color>
+    <color name="navigation_background_color">#212121</color>
+</resources>

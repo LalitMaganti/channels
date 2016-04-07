@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:text="@string/dashboard"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="?android:textAppearanceMedium" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/actions_recycler"

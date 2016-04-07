@@ -2,7 +2,6 @@ package com.tilal6991.channels.viewmodel
 
 import android.databinding.BaseObservable
 import android.databinding.Bindable
-import com.tilal6991.channels.BR
 import com.tilal6991.channels.collections.CharSequenceTreeMap
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
 import com.tilal6991.channels.collections.ObservableSortedList
@@ -19,8 +18,8 @@ class ChannelVM(override val name: String,
     val userMap = ObservableSortedArrayMap(comparator, UserListComparator.instance)
 
     fun onMessage(nick: String, message: String) {
-        val user = getUserOrFail(nick) ?: return
-        add("${user.displayString}: $message")
+        val user = getUser(nick)
+        add("${user?.handle ?: nick}: $message")
     }
 
     fun onJoin(nick: String, self: Boolean) {
@@ -33,7 +32,7 @@ class ChannelVM(override val name: String,
 
         val user = UserVM(nick, null)
         addUser(nick, user)
-        add("${user.displayString} joined the channel")
+        add("${user.handle} joined the channel")
     }
 
     fun onName(nick: String, mode: List<Char>) {
@@ -46,7 +45,10 @@ class ChannelVM(override val name: String,
     }
 
     fun onNickChange(oldNick: String, newNick: String) {
-        val user = getUserOrFail(oldNick) ?: return
+        // If user is null then they simply mush not have been
+        // in this channel.
+        val user = getUser(oldNick) ?: return
+
         changeUserNick(user, newNick)
         add("$oldNick is now known as $newNick")
     }
@@ -55,7 +57,9 @@ class ChannelVM(override val name: String,
         if (self) {
             active = false
         }
-        removeUser(nick)
+        // If the user is not preset then something has gone
+        // wrong and we need to fail.
+        removeUser(nick) ?: return Timber.asTree().failAssert()
 
         add("$nick has parted from the channel")
     }
@@ -64,8 +68,10 @@ class ChannelVM(override val name: String,
         if (self) {
             active = false
         }
-        removeUser(nick)
 
+        // User being null means they are not in this channel and we
+        // don't need to do anything.
+        removeUser(nick) ?: return
         val suffix: String
         if (message == null) {
             suffix = ""
@@ -120,22 +126,19 @@ class ChannelVM(override val name: String,
         addUserToModeMap(user)
     }
 
-    private fun removeUser(nick: String) {
-        val user = treeMap.remove(nick) ?: return Timber.asTree().failAssert()
+    private fun removeUser(nick: String): UserVM? {
+        val user = treeMap.remove(nick) ?: return null
         removeUserFromModeMap(user)
+        return user
     }
 
-    private fun getUserOrFail(nick: String): UserVM? {
-        val userVM = treeMap[nick]
-        if (userVM == null) {
-            Timber.asTree().failAssert()
-        }
-        return userVM
+    private fun getUser(nick: String): UserVM? {
+        return treeMap[nick]
     }
 
     inner class UserVM(initialNick: String, initialMode: Char?) : BaseObservable() {
 
-        var displayString: String
+        var handle: String
             @Bindable get
             private set
 
@@ -144,17 +147,17 @@ class ChannelVM(override val name: String,
             private set
 
         init {
-            displayString = if (initialMode == null) initialNick else initialMode + initialNick
+            handle = if (initialMode == null) initialNick else initialMode + initialNick
             mode = initialMode
         }
 
         fun onNickUpdate(nick: String) {
-            displayString = if (mode == null) nick else mode!! + nick
+            handle = if (mode == null) nick else mode!! + nick
         }
 
         fun onUpdateMode(m: Char?) {
-            val nick = if (mode == null) displayString else displayString.substring(1)
-            displayString = if (m == null) displayString else m + nick
+            val nick = if (mode == null) handle else handle.substring(1)
+            handle = if (m == null) handle else m + nick
             mode = m
         }
     }

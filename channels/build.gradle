@@ -56,6 +56,8 @@ dependencies {
     compile rootProject.ext.appcompat
     compile rootProject.ext.recyclerview
     compile rootProject.ext.design
+    compile rootProject.ext.preferencev7
+    compile rootProject.ext.preferencev14
 
     compile 'com.github.brianegan:bansa:0.1.0'
     compile 'co.trikita:anvil-sdk15:0.3.1'
@@ -63,7 +65,13 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
 
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+
     compile 'com.tilal6991.messageloop:messageloop-android:0.2.0'
+    compile 'com.tilal6991.listen:listen:0.1.0-SNAPSHOT'
+    kapt 'com.tilal6991.listen:listen-compiler:0.1.0-SNAPSHOT'
 
     compile rootProject.ext.annotation
     compile rootProject.ext.dagger

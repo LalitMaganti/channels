@@ -4,13 +4,13 @@ import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.databinding.ObservableField
-import android.databinding.ObservableList
 import android.os.Handler
 import com.tilal6991.channels.BR
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
+import com.tilal6991.listen.Listener
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.MetaListener
 import com.tilal6991.relay.RelayClient
@@ -22,7 +22,7 @@ class ClientVM(private val context: Context,
                private val userMessageParser: UserMessageParser,
                val configuration: ChannelsConfiguration,
                val server: ServerVM,
-               val channels: ObservableList<ChannelVM>) : BaseObservable(), EventListener, MetaListener {
+               val channelManager: ChannelManagerVM) : BaseObservable(), EventListener, MetaListener {
 
     val name: CharSequence
         get() = configuration.name
@@ -41,15 +41,20 @@ class ClientVM(private val context: Context,
     val selectedChild: ObservableField<ClientChildVM>
 
     private val reconnectHandler: ReconnectHandler
+    private val statusDispatcher: StatusListenerDispatcher
 
     init {
         selectedChild = ObservableField(server)
         reconnectHandler = ReconnectHandler()
 
+        statusDispatcher = StatusListenerDispatcher()
+        statusDispatcher.addListener(server)
+        statusDispatcher.addListener(channelManager)
+
         client.init()
         client.connect()
 
-        server.onConnecting()
+        statusDispatcher.onConnecting()
     }
 
     fun select(child: ClientChildVM) {
@@ -63,7 +68,7 @@ class ClientVM(private val context: Context,
             // Because the reconnecting state is one which we introduced, we cannot
             // delegate to the RelayClient and wait for a response.
             updateStatus(DISCONNECTED)
-            server.onDisconnected()
+            statusDispatcher.onDisconnected()
         }
 
         if (statusInt == CONNECTED) {
@@ -72,7 +77,7 @@ class ClientVM(private val context: Context,
         client.disconnect()
 
         updateStatus(DISCONNECTING)
-        server.onDisconnecting()
+        statusDispatcher.onDisconnecting()
     }
 
     fun reconnect() {
@@ -104,35 +109,31 @@ class ClientVM(private val context: Context,
         updateStatus(SOCKET_CONNECTED)
         reconnectHandler.onSocketConnect()
 
-        server.onSocketConnect()
+        statusDispatcher.onSocketConnect()
     }
 
     override fun onDisconnect() {
+        statusDispatcher.onDisconnected()
+
         if (statusInt == DISCONNECTING) {
             updateStatus(DISCONNECTED)
-
-            server.onDisconnected()
-        } else {
-            server.onDisconnected()
-
-            if (reconnectHandler.onConnectionLost()) {
-                updateStatus(RECONNECTING)
-                server.onReconnecting()
-            }
+        } else if (reconnectHandler.onConnectionLost()) {
+            updateStatus(RECONNECTING)
+            statusDispatcher.onReconnecting()
         }
     }
 
     override fun onConnectFailed() {
         if (statusInt == DISCONNECTING) {
-            server.onDisconnected()
+            statusDispatcher.onDisconnected()
 
             updateStatus(DISCONNECTED)
         } else {
-            server.onConnectFailed()
+            statusDispatcher.onConnectFailed()
 
             if (reconnectHandler.onConnectionLost()) {
                 updateStatus(RECONNECTING)
-                server.onReconnecting()
+                statusDispatcher.onReconnecting()
             }
         }
     }
@@ -145,7 +146,7 @@ class ClientVM(private val context: Context,
         updateStatus(CONNECTING)
         client.connect()
 
-        server.onConnecting()
+        statusDispatcher.onConnecting()
     }
 
     private fun updateStatus(newStatus: Int) {
@@ -191,6 +192,16 @@ class ClientVM(private val context: Context,
         fun resetCounter() {
             reconnectCount = 0
         }
+    }
+
+    @Listener
+    interface StatusListener {
+        fun onSocketConnect() = Unit
+        fun onConnectFailed() = Unit
+        fun onDisconnecting() = Unit
+        fun onDisconnected() = Unit
+        fun onConnecting() = Unit
+        fun onReconnecting() = Unit
     }
 
     companion object {

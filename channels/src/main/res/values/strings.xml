@@ -20,6 +20,8 @@
     <string name="header_private_messages">PMs</string>
     <string name="header_active_clients">Active</string>
     <string name="header_inactive_clients">Inactive</string>
+    <string name="add_server">Add New Server</string>
+    <string name="settings">Settings</string>
 
     <!-- Actions -->
     <string name="actions">Actions</string>
@@ -66,7 +68,6 @@
     <string name="sasl_password">SASL Passsword</string>
     <string name="sasl_username">SASL Username</string>
     <string name="empty_error">Should not be empty</string>
-    <string name="add_server">Add New Server</string>
     <string name="manage_servers">Manage Servers</string>
     <string name="configuration_not_saved">
         CAUTION: your current configuration cannot be saved. Would you like to continue?
@@ -92,6 +93,10 @@
     <string name="notification_connecting_title">Connecting to %1$s</string>
     <string name="notification_disconnected_title">Disconnected from %1$s</string>
     <string name="notification_reconnecting_title">Reconnecting to %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_summary">Used throughout the application to tint the UI.</string>
 
     <!-- Main -->
     <string name="no_child_selected">Welcome to Channels!\nPlease select a client on the left to begin.</string>

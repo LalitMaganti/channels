@@ -29,18 +29,18 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         root.clear(pool)
     }
 
-    override fun getKeyAt(index: Int): CharSequence? {
+    override fun getKeyAt(index: Int): CharSequence {
         if (index < 0) {
             throw IndexOutOfBoundsException("Index cannot be negative.")
         }
-        return getKeyAt(index, root)
+        return getNodeOrParent(index, root, false)?.terminalKey!!
     }
 
-    override fun getValueAt(index: Int): V? {
+    override fun getValueAt(index: Int): V {
         if (index < 0) {
             throw IndexOutOfBoundsException("Index cannot be negative.")
         }
-        return getValueAt(index, root)
+        return getNodeOrParent(index, root, false)?.terminalValue!!
     }
 
     override fun indexOf(key: CharSequence): Int {
@@ -48,6 +48,11 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
     }
 
     override fun remove(key: CharSequence): V? {
+        return remove(key, root, 0)
+    }
+
+    override fun removeAt(index: Int): V? {
+        val key = getNodeOrParent(index, root, false)?.terminalKey!!
         return remove(key, root, 0)
     }
 
@@ -103,7 +108,8 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
             }
 
             node.incrementCount()
-            return put(oldKey, oldValue, node, offset)
+            put(oldKey, oldValue, node, offset)
+            return null
         }
 
         val terminalKey = node.terminalKey
@@ -185,60 +191,32 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
         return absIndex + indexOf(key, child, offset + 1)
     }
 
-    private fun getKeyAt(index: Int, node: Node<V>): CharSequence? {
-        if (index >= node.count) {
-            return null
+    private fun getNodeOrParent(index: Int, current: Node<V>, parent: Boolean): Node<V>? {
+        if (index >= current.count) {
+            throw IndexOutOfBoundsException()
         }
 
         var mapIndex = index
-        if (node.terminalKey != null) {
+        val key = current.terminalKey
+        if (key != null) {
             if (index == 0) {
-                return node.terminalKey
+                return if (parent) null else current
             }
             mapIndex--
         }
 
         var runningCount = 0
-        val mapView = node.mapView
+        val mapView = current.mapView
         for (i in 0..mapView.size - 1) {
-            val child = mapView.getValueAt(i)!!
+            val child = mapView.getValueAt(i)
             if (mapIndex < runningCount + child.count) {
-                return getKeyAt(mapIndex - runningCount)
+                return getNodeOrParent(mapIndex - runningCount, child, parent) ?: current
             }
             runningCount += child.count
         }
 
         // This means the running count did not match the actual count which is a bug.
-        // Timber.asTree().failAssert()
-        return null
-    }
-
-    private fun getValueAt(index: Int, node: Node<V>): V? {
-        if (index >= node.count) {
-            return null
-        }
-
-        var mapIndex = index
-        if (node.terminalKey != null) {
-            if (index == 0) {
-                return node.terminalValue
-            }
-            mapIndex--
-        }
-
-        var runningCount = 0
-        val mapView = node.mapView
-        for (i in 0..mapView.size - 1) {
-            val child = mapView.getValueAt(i)!!
-            if (mapIndex < runningCount + child.count) {
-                return getValueAt(mapIndex - runningCount)
-            }
-            runningCount += child.count
-        }
-
-        // This means the running count did not match the actual count which is a bug.
-        // Timber.asTree().failAssert()
-        return null
+        throw IllegalStateException()
     }
 
     private class Node<T : Any> {
@@ -281,7 +259,9 @@ class CharSequenceTreeMap<V : Any> : IndexedMap<CharSequence, V> {
 
         fun clear(pool: Pools.SimplePool<Node<T>>) {
             for (i in 0..map.size - 1) {
-                if (!pool.release(map.getValueAt(i))) break
+                val node = map.getValueAt(i)
+                node.clear(pool)
+                if (!pool.release(node)) break
             }
 
             map.clear()
