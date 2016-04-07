@@ -69,10 +69,6 @@ dependencies {
     compile 'com.tilal6991.listen:listen:0.1.0-SNAPSHOT'
     kapt 'com.tilal6991.listen:listen-compiler:0.1.0-SNAPSHOT'
 
-    compile rootProject.ext.annotation
-    compile rootProject.ext.dagger
-    kapt rootProject.ext.daggerCompiler
-
     compile rootProject.ext.parcellerApi
     kapt rootProject.ext.parceller
 

@@ -8,6 +8,6 @@ val Context.app: ChannelsApplication
     get() = applicationContext as ChannelsApplication
 
 val Context.relayVM: RelayVM
-    get() = app.provider.relayViewModel()
+    get() = app.relayHandle
 val Presenter.relayVM: RelayVM
     get() = context.relayVM
