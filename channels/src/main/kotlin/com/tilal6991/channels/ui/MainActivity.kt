@@ -13,13 +13,9 @@ import android.widget.EditText
 import android.widget.TextView
 import butterknife.bindView
 import com.tilal6991.channels.R
-import com.tilal6991.channels.base.relayVM
-import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.ui.*
 import com.tilal6991.channels.util.addAll
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.view.NavigationDrawerView
-import com.tilal6991.channels.viewmodel.ClientChildVM
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
