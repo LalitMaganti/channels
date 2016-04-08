@@ -11,6 +11,10 @@ android:
 env:
 - TERM=dumb
 
+before_script:
+- 'echo $JAVA_OPTS'
+- 'export JAVA_OPTS="-XX:MaxPermSize=512m -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -XX:+HeapDumpOnOutOfMemoryError -Xmx1024m"'
+
 before_install:
   - git clone https://github.com/tilal6991/relay-jvm.git
   - git clone https://github.com/tilal6991/MemorizingTrustManager.git
