@@ -13,9 +13,14 @@ import android.widget.EditText
 import android.widget.TextView
 import butterknife.bindView
 import com.tilal6991.channels.R
+import com.tilal6991.channels.databinding.NavigationClientBinding
 import com.tilal6991.channels.util.addAll
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.view.NavigationDrawerView
+import trikita.anvil.Anvil
+import trikita.anvil.BaseDSL
+import trikita.anvil.BaseDSL.xml
+import trikita.anvil.RenderableView
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -102,8 +107,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
-
-        delegate
         return super.onOptionsItemSelected(item)
     }
 

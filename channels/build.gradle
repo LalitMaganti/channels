@@ -61,6 +61,7 @@ dependencies {
 
     compile 'com.github.brianegan:bansa:0.1.0'
     compile 'co.trikita:anvil-sdk15:0.3.1'
+    compile 'com.github.andrewoma.dexx:kollection:0.6'
 
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'

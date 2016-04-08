@@ -1,4 +1,4 @@
-package com.tilal6991.channels.state
+package com.tilal6991.channels.anvil
 
 import android.databinding.BaseObservable
 import com.tilal6991.channels.collections.CharSequenceTreeMap
@@ -10,8 +10,8 @@ import com.tilal6991.channels.viewmodel.ChannelVM
 class ChannelState(override val name: String,
                    private val comparator: UserPrefixComparator) : ClientChildState() {
 
+    val userMap = ObservableSortedArrayMap(comparator, UserListComparator.Companion.instance)
     val treeMap = CharSequenceTreeMap<ChannelVM.UserVM>()
-    val userMap = ObservableSortedArrayMap(comparator, UserListComparator.instance)
 
     inner class User(initialNick: String, initialMode: Char?) : BaseObservable() {
 
