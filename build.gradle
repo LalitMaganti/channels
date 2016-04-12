@@ -29,6 +29,7 @@ ext {
     relaySemantic = ':relay-jvm:relay-semantic'
 
     messageLoop = 'com.tilal6991.messageloop:messageloop:0.3.0'
+    messageLoopAndroid = 'com.tilal6991.messageloop:messageloop-android:0.3.0'
     listen = 'com.tilal6991.listen:listen:0.2.0-SNAPSHOT'
     listenCompiler = 'com.tilal6991.listen:listen-compiler:0.2.0-SNAPSHOT'
 

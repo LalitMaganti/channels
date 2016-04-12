@@ -1,6 +1,5 @@
 package com.tilal6991.channels.redux.state
 
-import com.github.andrewoma.dexx.collection.HashMap
 import com.github.andrewoma.dexx.collection.IndexedList
 import com.github.andrewoma.dexx.collection.Map
 import com.github.andrewoma.dexx.collection.Vector
@@ -20,13 +19,23 @@ data class Server(override val name: String,
 }
 
 data class Channel(override val name: String,
-                   override val active: Boolean = false,
-                   override val buffer: IndexedList<CharSequence> = Vector.empty(),
-                   val userMap: Map<String, User> = HashMap.empty()) : ClientChild, Comparable<Channel> {
+                   override val active: Boolean,
+                   override val buffer: IndexedList<CharSequence>,
+                   val userMap: Map<String, User>) : ClientChild, Comparable<Channel> {
 
     override fun compareTo(other: Channel): Int {
         return name.compareTo(other.name, true)
     }
 
     class User(val nick: String, val mode: Char?)
+}
+
+fun Channel.mutate(name: String = this.name,
+                   active: Boolean = this.active,
+                   buffer: IndexedList<CharSequence> = this.buffer,
+                   userMap: Map<String, Channel.User> = this.userMap): Channel {
+    if (name === this.name && active === this.active && buffer === this.buffer && userMap === this.userMap) {
+        return this
+    }
+    return Channel(name, active, buffer, userMap)
 }

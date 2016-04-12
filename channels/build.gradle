@@ -74,9 +74,9 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
-    compile 'com.tilal6991.messageloop:messageloop-android:0.3.0'
-    compile 'com.tilal6991.listen:listen:0.1.0'
-    kapt 'com.tilal6991.listen:listen-compiler:0.1.0'
+    compile rootProject.ext.messageLoopAndroid
+    compile rootProject.ext.listen
+    kapt rootProject.ext.listenCompiler
 
     compile rootProject.ext.parcellerApi
     kapt rootProject.ext.parceller
@@ -88,7 +88,6 @@ dependencies {
     compile 'org.jetbrains.anko:anko-sqlite:0.8.3'
 
     compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
-    compile 'org.jetbrains.anko:anko-sdk21:0.8.3'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
     compile 'com.jakewharton.timber:timber:4.1.0'

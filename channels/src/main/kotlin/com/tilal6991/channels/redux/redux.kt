@@ -5,53 +5,58 @@ import com.github.andrewoma.dexx.collection.Vector
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.redux.bansa.applyMiddleware
 import com.tilal6991.channels.redux.bansa.createStore
+import com.tilal6991.channels.redux.reducer.channelsReducer
+import com.tilal6991.channels.redux.reducer.serverReducer
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.GlobalState
-import com.tilal6991.channels.redux.state.Server
 import com.tilal6991.channels.redux.state.mutate
-import com.tilal6991.channels.redux.util.SortedIndexedList
-import com.tilal6991.channels.redux.util.mutate
-import com.tilal6991.channels.redux.util.pullToFront
-import com.tilal6991.channels.redux.util.transform
+import com.tilal6991.channels.redux.util.*
 
 val initialState = GlobalState(
         SortedIndexedList(Vector.empty()),
         Vector.empty()
 )
 
-fun serverReducer(s: Server, a: Action): Server {
-    return when (a) {
-        is Action.Welcome -> welcome(s, a)
-        else -> s
-    }
+fun clientReducer(c: Client, a: Action): Client {
+    return c.mutate(
+            server = serverReducer(c.server, a),
+            nick = nickReducer(c, a),
+            channels = channelsReducer(c, c.channels, a))
 }
 
-fun clientReducer(c: Client, a: Action): Client {
-    return c.mutate(server = serverReducer(c.server, a), channels = c.channels)
+fun nickReducer(c: Client, a: Action): String = when (a) {
+    is Action.RelayEvent -> nickRelayEvent(c, a.event)
+    else -> c.nick
+}
+
+private fun nickRelayEvent(c: Client, event: Events.Event): String = when (event) {
+    is Events.OnWelcome -> event.target
+    is Events.OnNick -> if (event.prefix.nickFromPrefix() == c.nick) event.newNick else c.nick
+    else -> c.nick
 }
 
 val reducer: (GlobalState, Action) -> GlobalState = { g, a ->
     reduce(g, a)
 }
 
-fun reduce(g: GlobalState, a: Action): GlobalState {
-    when (a) {
-        is Action.NewConfigurations -> return g.mutate(
-                clients = mergeClientLists(g, a.configurations)
-        )
-        is Action.SelectClient -> return selectClient(g, a.configuration)
-    }
-    return g.mutate(g.clients.transform { clientReducer(it, a) })
+fun reduce(g: GlobalState, a: Action): GlobalState = when (a) {
+    is Action.NewConfigurations -> g.mutate(
+            clients = mergeClientLists(g, a.configurations)
+    )
+    is Action.SelectClient -> selectClient(g, a.configuration)
+    is Action.RelayEvent -> relayReducer(g, a)
+    else -> g.mutate(g.clients.transform { clientReducer(it, a) })
+}
+
+fun relayReducer(g: GlobalState, a: Action.RelayEvent): GlobalState {
+    return g.mutate(clients = g.clients.clientMutate(a.configuration) { clientReducer(it, a) })
 }
 
 fun selectClient(g: GlobalState, configuration: ChannelsConfiguration): GlobalState {
-    val index = g.clients.binarySearch(configuration) { it.configuration }
-    val client = g.clients[index].mutate(
-            selectedType = Client.SELECTED_SERVER,
-            selectedIndex = 0
-    )
-
-    return g.mutate(g.clients.mutate(index, client), g.selectedClients.pullToFront(configuration))
+    val list = g.clients.clientMutate(configuration) {
+        it.mutate(selectedType = Client.SELECTED_SERVER, selectedIndex = 0)
+    }
+    return g.mutate(list, g.selectedClients.pullToFront(configuration))
 }
 
 fun mergeClientLists(state: GlobalState,
@@ -105,7 +110,3 @@ fun mergeClientLists(state: GlobalState,
 }
 
 val store = applyMiddleware(relayMiddleware)(createStore(initialState, reducer))
-
-fun welcome(s: Server, a: Action.Welcome): Server {
-    return s.copy(buffer = s.buffer.append(a.message))
-}

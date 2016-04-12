@@ -6,6 +6,7 @@ import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.redux.bansa.Store
 import com.tilal6991.channels.redux.state.GlobalState
 import com.tilal6991.channels.relay.*
+import com.tilal6991.listen.EventObjectListener
 import com.tilal6991.messageloop.AndroidHandlerMessageLoop
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.RelayClient
@@ -61,15 +62,20 @@ fun createRelayClient(store: Store<GlobalState, Action>,
     core.addMetaListener(handshakeListener)
     core.addMetaListener(mainThreadListener)
 
-    mainThreadListener.addEventListener(Listener(store, configuration))
+    mainThreadListener.addEventListener(EventClassListener(store, configuration))
 
     return core
 }
 
-class Listener(private val store: Store<GlobalState, Action>,
-               private val configuration: ChannelsConfiguration) : EventListener {
+@EventObjectListener(className = "EventObjectDispatcher",
+        eventsClassName = "Events",
+        eventInterfaceClassName = "EventObjectListener")
+interface Listener : EventListener
 
-    override fun onWelcome(target: String, text: String) {
-        store.dispatch(Action.Welcome(configuration, target, text))
+class EventClassListener(private val store: Store<GlobalState, Action>,
+                         private val configuration: ChannelsConfiguration) : EventObjectDispatcher() {
+
+    override fun onEvent(event: Events.Event) {
+        store.dispatch(Action.RelayEvent(configuration, event))
     }
 }

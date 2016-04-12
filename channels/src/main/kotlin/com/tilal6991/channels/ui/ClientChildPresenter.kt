@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import com.tilal6991.channels.BR
-import com.tilal6991.channels.ui.MainActivity
 import com.tilal6991.channels.adapter.MainItemAdapter
 import com.tilal6991.channels.collections.ObservableListAdapterProxy
 import com.tilal6991.channels.ui.helper.ClientChildListener
@@ -15,7 +14,6 @@ import com.tilal6991.channels.ui.helper.MessageTextHandler
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ClientVM
-import org.jetbrains.anko.enabled
 
 class ClientChildPresenter(override val context: MainActivity,
                            private val messageInput: EditText,
@@ -89,7 +87,7 @@ class ClientChildPresenter(override val context: MainActivity,
     }
 
     private fun onMessageBoxEnableState(client: ClientVM?) {
-        messageInput.enabled = client != null && client.selectedChild.get().active &&
+        messageInput.isEnabled = client != null && client.selectedChild.get().active &&
                 (client.statusInt == ClientVM.CONNECTED || client.statusInt == ClientVM.SOCKET_CONNECTED)
     }
 

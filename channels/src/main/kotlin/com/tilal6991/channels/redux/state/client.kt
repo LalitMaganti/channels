@@ -6,6 +6,7 @@ import com.tilal6991.channels.redux.util.SortedIndexedList
 
 data class Client(val configuration: ChannelsConfiguration,
                   val status: Int = Client.STATUS_STOPPED,
+                  val nick: String = configuration.user.nicks.getOrNull(0) ?: "",
                   val server: Server = Server(configuration.name),
                   val channels: SortedIndexedList<Channel> = SortedIndexedList(Vector.empty(), null),
                   val selectedType: Int = SELECTED_SERVER,
@@ -27,12 +28,14 @@ data class Client(val configuration: ChannelsConfiguration,
 
 fun Client.mutate(status: Int = this.status,
                   server: Server = this.server,
+                  nick: String = this.nick,
                   channels: SortedIndexedList<Channel> = this.channels,
                   selectedType: Int = Client.SELECTED_SERVER,
                   selectedIndex: Int = 0): Client {
-    if (server === this.server && channels === this.channels && status === this.status &&
-            selectedType === this.selectedType && selectedIndex === this.selectedIndex) {
+    if (nick === this.nick && server === this.server && channels === this.channels &&
+            status === this.status && selectedType === this.selectedType &&
+            selectedIndex === this.selectedIndex) {
         return this
     }
-    return copy(configuration, status, server, channels, selectedType, selectedIndex)
+    return copy(configuration, status, nick, server, channels, selectedType, selectedIndex)
 }

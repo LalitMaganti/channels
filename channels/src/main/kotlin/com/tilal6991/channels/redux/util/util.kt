@@ -9,7 +9,14 @@ import com.github.andrewoma.dexx.collection.IndexedList
 import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Traversable
 import com.tilal6991.channels.R
+import com.tilal6991.channels.configuration.ChannelsConfiguration
+import com.tilal6991.channels.redux.state.Channel
+import com.tilal6991.channels.redux.state.Client
+import com.tilal6991.channels.redux.state.Server
+import com.tilal6991.relay.MoreStringUtils
+import com.tilal6991.relay.ReplyCodes
 import trikita.anvil.DSL.*
+import java.util.*
 
 sealed class Either<out A, out B> private constructor() {
     class Left<A>(val value: A) : Either<A, Nothing>()
@@ -58,12 +65,65 @@ fun <T> IndexedList<T>.pullToFront(item: T): IndexedList<T> {
             .build()
 }
 
-fun <T> SortedIndexedList<T>.mutate(index: Int, client: T): SortedIndexedList<T> {
-    if (get(index) === client) {
+inline fun SortedIndexedList<Client>.clientMutate(
+        item: ChannelsConfiguration,
+        transformer: (Client) -> Client?): SortedIndexedList<Client> {
+    return binaryMutate(item, { it.configuration }) {
+        if (it == null) null else transformer(it)
+    }
+}
+
+inline fun <T, E : Comparable<E>> SortedIndexedList<T>.binaryMutate(
+        item: E,
+        selector: (T) -> E,
+        transformer: (T?) -> T?): SortedIndexedList<T> {
+    return mutate(binarySearch(item, selector), transformer)
+}
+
+inline fun <T> SortedIndexedList<T>.mutate(index: Int,
+                                           transformer: (T?) -> T?): SortedIndexedList<T> {
+    if (index == -1) {
+        val new = transformer(null) ?: return this
+        return append(new)
+    }
+
+    val old = get(index)
+    val new = transformer(old)
+    if (old === new || new == null) {
         return this
     }
-    return set(index, client)
+    return set(index, new)
 }
+
+fun String.nickFromPrefix(): String {
+    return MoreStringUtils.nickFromPrefix(this)
+}
+
+fun Channel.append(text: String?): Channel {
+    if (text == null) {
+        return this
+    }
+    return copy(buffer = buffer.append(text))
+}
+
+fun Server.append(text: String?): Server {
+    if (text == null) {
+        return this
+    }
+    return copy(buffer = buffer.append(text))
+}
+
+internal fun Int.displayCode(): Boolean {
+    return displayedCodes.contains(this)
+}
+
+private val displayedCodes: Set<Int> = arrayOf(
+        ReplyCodes.RPL_YOURHOST, ReplyCodes.RPL_CREATED, ReplyCodes.RPL_MYINFO,
+        ReplyCodes.RPL_LUSERCLIENT, ReplyCodes.RPL_LUSEROP, ReplyCodes.RPL_LUSERUNKNOWN,
+        ReplyCodes.RPL_LUSERCHANNELS, ReplyCodes.RPL_LUSERME, ReplyCodes.RPL_LOCALUSERS,
+        ReplyCodes.RPL_GLOBALUSERS, ReplyCodes.RPL_STATSCONN, ReplyCodes.RPL_MOTDSTART,
+        ReplyCodes.RPL_MOTD, ReplyCodes.RPL_ENDOFMOTD
+).toCollection(HashSet())
 
 fun recyclerHeader(context: Context, id: Int) {
     textView {
