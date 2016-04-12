@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="active_client_count">
+        <item quantity="zero">No clients active</item>
         <item quantity="one">%d client active</item>
         <item quantity="other">%d clients active</item>
     </plurals>

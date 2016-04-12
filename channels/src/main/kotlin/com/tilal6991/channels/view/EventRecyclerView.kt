@@ -10,7 +10,8 @@ import kotlin.properties.Delegates
 
 class EventRecyclerView @JvmOverloads constructor(
         context: Context,
-        attrs: AttributeSet? = null) : RecyclerView(context, attrs) {
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0) : RecyclerView(context, attrs, defStyle) {
 
     private var layoutManager: LinearLayoutManager by Delegates.notNull<LinearLayoutManager>()
 
@@ -38,7 +39,7 @@ class EventRecyclerView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        val count = adapter.itemCount
+        val count = adapter?.itemCount ?: 0
         if (h < oldh && count != 0 && lastVisible == count - 1) {
             post { layoutManager.scrollToPositionWithOffset(lastVisible, 0) }
         }

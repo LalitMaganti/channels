@@ -5,6 +5,7 @@ allprojects {
         }
     }
     repositories {
+        mavenLocal()
         jcenter()
         maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     }
@@ -24,6 +25,12 @@ ext {
     preferencev14 = "com.android.support:preference-v14:$supportVersion"
 
     relay = ':relay-jvm:relay'
+    relayCore = ':relay-jvm:relay-core'
+    relaySemantic = ':relay-jvm:relay-semantic'
+
+    messageLoop = 'com.tilal6991.messageloop:messageloop:0.3.0'
+    listen = 'com.tilal6991.listen:listen:0.2.0-SNAPSHOT'
+    listenCompiler = 'com.tilal6991.listen:listen-compiler:0.2.0-SNAPSHOT'
 
     parcellerApi = 'org.parceler:parceler-api:1.0.4'
     parceller = 'org.parceler:parceler:1.0.4'

@@ -11,10 +11,10 @@ import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
 import com.tilal6991.listen.Listener
+import com.tilal6991.relay.ClientGenerator
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.MetaListener
 import com.tilal6991.relay.RelayClient
-import com.tilal6991.relay.protocol.ClientGenerator
 import timber.log.Timber
 
 class ClientVM(private val context: Context,

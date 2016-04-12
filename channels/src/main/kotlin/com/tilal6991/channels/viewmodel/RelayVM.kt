@@ -2,6 +2,7 @@ package com.tilal6991.channels.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.support.v4.util.ArrayMap
 import android.support.v4.util.SimpleArrayMap
 import android.support.v7.util.SortedList
 import com.tilal6991.channels.collections.ObservableSortedArrayMap
@@ -15,6 +16,7 @@ import com.tilal6991.channels.util.ChannelComparator
 import com.tilal6991.channels.util.ConfigurationComparator
 import com.tilal6991.channels.viewmodel.helper.UserMessageParser
 import com.tilal6991.messageloop.AndroidHandlerMessageLoop
+import com.tilal6991.relay.RegistrationDao
 import com.tilal6991.relay.RelayClient
 import de.duenndns.ssl.MemorizingTrustManager
 import rx.android.schedulers.AndroidSchedulers
@@ -139,7 +141,8 @@ class RelayVM(private val context: Context) {
 
         val channels = ObservableSortedArrayMap<String, ChannelVM>(
                 Comparator { o, t -> o.compareTo(t) }, ChannelComparator.instance)
-        val cManager = ChannelManagerVM(user.nicks[0], core.registrationDao, channels)
+        val cManager = ChannelManagerVM(
+                user.nicks[0], RegistrationDao(ArrayMap(), ArrayMap()), channels)
         val server = ServerVM("Server")
         val parser = UserMessageParser(cManager)
 
