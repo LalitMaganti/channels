@@ -1,9 +1,9 @@
 package com.tilal6991.channels.relay
 
 import android.util.Base64
+import com.tilal6991.relay.ClientGenerator
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.RelayClient
-import com.tilal6991.relay.protocol.ClientGenerator
 import java.nio.charset.StandardCharsets
 
 interface AuthHandler : EventListener {

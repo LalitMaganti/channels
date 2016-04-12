@@ -1,11 +1,7 @@
 package com.tilal6991.channels.relay
 
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.relay.EventListener
-import com.tilal6991.relay.MetaListener
-import com.tilal6991.relay.RelayClient
-import com.tilal6991.relay.protocol.Capabilities
-import com.tilal6991.relay.protocol.ClientGenerator
+import com.tilal6991.relay.*
 
 class HandshakeEventListener(
         private val client: RelayClient,

@@ -102,8 +102,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
-
-        delegate
         return super.onOptionsItemSelected(item)
     }
 

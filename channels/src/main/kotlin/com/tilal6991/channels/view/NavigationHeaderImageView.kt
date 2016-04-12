@@ -5,7 +5,9 @@ import android.util.AttributeSet
 import android.widget.ImageView
 
 class NavigationHeaderImageView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null) : ImageView(context, attrs) {
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0) : ImageView(context, attrs, defStyle) {
 
     override fun setOnClickListener(l: OnClickListener?) {
         super.setOnClickListener(l)

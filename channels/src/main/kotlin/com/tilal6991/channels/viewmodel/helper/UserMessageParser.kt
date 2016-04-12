@@ -3,7 +3,7 @@ package com.tilal6991.channels.viewmodel.helper
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ServerVM
-import com.tilal6991.relay.protocol.ClientGenerator
+import com.tilal6991.relay.ClientGenerator
 
 class UserMessageParser(private val listener: Listener) {
 

@@ -16,8 +16,11 @@ import com.amulyakhare.textdrawable.TextDrawable
 /**
  * BUGS: selecting one image and then another very quickly
  */
-class ClientCarouselView(
-        context: Context, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
+class ClientCarouselView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0) : RelativeLayout(context, attrs, defStyle) {
+
     private lateinit var viewArray: Array<ImageView>
 
     val clickListener: OnClickListener = View.OnClickListener {
