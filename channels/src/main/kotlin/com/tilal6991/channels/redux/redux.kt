@@ -45,6 +45,8 @@ fun reduce(g: GlobalState, a: Action): GlobalState = when (a) {
     )
     is Action.SelectClient -> selectClient(g, a.configuration)
     is Action.RelayEvent -> relayReducer(g, a)
+    is Action.ChangeSelectedChild ->
+        g.mutateSelected { it.mutate(selectedType = a.type, selectedIndex = a.position) }
     else -> g.mutate(g.clients.transform { clientReducer(it, a) })
 }
 
@@ -108,5 +110,3 @@ fun mergeClientLists(state: GlobalState,
 
     return SortedIndexedList(builder.build(), null)
 }
-
-val store = applyMiddleware(relayMiddleware)(createStore(initialState, reducer))

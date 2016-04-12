@@ -1,5 +1,6 @@
 package com.tilal6991.channels.redux
 
+import android.content.Context
 import android.support.v4.util.ArrayMap
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
@@ -10,34 +11,40 @@ import com.tilal6991.listen.EventObjectListener
 import com.tilal6991.messageloop.AndroidHandlerMessageLoop
 import com.tilal6991.relay.EventListener
 import com.tilal6991.relay.RelayClient
+import de.duenndns.ssl.MemorizingTrustManager
 
 val clients = ArrayMap<ChannelsConfiguration, RelayClient>()
-val relayMiddleware = { store: Store<GlobalState, Action> ->
-    { next: (Action) -> Unit -> { action: Action -> calculate(store, next, action) } }
+
+fun relayMiddleware(context: Context): (Store<GlobalState, Action>) -> ((Action) -> Unit) -> (Action) -> Unit {
+    return { store -> { next -> { action -> calculate(context, store, next, action) } } }
 }
 
-fun calculate(store: Store<GlobalState, Action>, next: (Action) -> Unit, action: Action) {
+fun calculate(context: Context,
+              store: Store<GlobalState, Action>,
+              next: (Action) -> Unit, action: Action) {
     when (action) {
         is Action.SelectClient -> {
             if (clients[action.configuration] != null) {
                 return next(action)
             }
 
-            val client = createRelayClient(store, action.configuration)
+            val client = createRelayClient(context, store, action.configuration)
             clients.put(action.configuration, client)
             client.init().connect()
         }
-        else -> next(action)
     }
+    next(action)
 }
 
-fun createRelayClient(store: Store<GlobalState, Action>,
+fun createRelayClient(context: Context,
+                      store: Store<GlobalState, Action>,
                       configuration: ChannelsConfiguration): RelayClient {
     val relayConfig = RelayClient.Configuration.create {
         hostname = configuration.server.hostname
         port = configuration.server.port
 
         ssl = configuration.server.ssl
+        sslTrustManager = MemorizingTrustManager(context)
     }
     val core = RelayClient.create(relayConfig, { AndroidHandlerMessageLoop.create(it) })
 

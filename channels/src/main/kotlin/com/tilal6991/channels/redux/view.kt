@@ -9,8 +9,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.util.TypedValue
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
@@ -28,24 +26,41 @@ import trikita.anvil.recyclerview.Recycler
 import trikita.anvil.support.v4.Supportv4DSL.drawerLayout
 
 class CorePresenter(context: Context) : RenderableView(context) {
-    private var contentAdapter: NavigationClientAdapter? = null
+    private var clientAdapter: NavigationClientAdapter? = null
+    private var childAdapter: NavigationChildAdapter? = null
+    private var currentAdapter: NavigationAdapter.Child? = null
     private var navigationAdapter: NavigationAdapter? = null
     private var eventAdapter: MainItemAdapter? = null
 
     private lateinit var subscription: Runnable
 
     override fun onAttachedToWindow() {
-        contentAdapter = NavigationClientAdapter(context, currentState.clients)
-        contentAdapter!!.setup()
+        clientAdapter = NavigationClientAdapter(context, currentState.clients)
+        clientAdapter!!.setup()
 
-        navigationAdapter = NavigationAdapter(context, contentAdapter!!)
+        childAdapter = NavigationChildAdapter(context)
+        childAdapter!!.setup()
+
+        navigationAdapter = NavigationAdapter(context, clientAdapter!!) {
+            currentAdapter = if (currentAdapter == clientAdapter) {
+                childAdapter
+            } else {
+                clientAdapter
+            }
+            navigationAdapter?.updateContentAdapter(currentAdapter!!)
+        }
+        currentAdapter = clientAdapter
+        navigationAdapter?.setHasStableIds(true)
 
         eventAdapter = MainItemAdapter(context)
-        eventAdapter?.setBuffer(selectedChild?.buffer)
+        eventAdapter?.setBuffer(selectedChild()?.buffer)
+        eventAdapter?.setHasStableIds(true)
 
-        subscription = subscribe {
-            contentAdapter?.setData(currentState.clients)
-            eventAdapter?.setBuffer(selectedChild?.buffer)
+        subscription = subscribe(this) {
+            childAdapter?.setData(selectedClient())
+            clientAdapter?.setData(it.clients)
+            eventAdapter?.setBuffer(selectedChild()?.buffer)
+            navigationAdapter?.notifyItemChanged(0)
         }
 
         super.onAttachedToWindow()
@@ -58,7 +73,7 @@ class CorePresenter(context: Context) : RenderableView(context) {
     }
 
     override fun view() {
-        val selectedChildBuffer = selectedChild?.buffer
+        val selectedChildBuffer = selectedChild()?.buffer
 
         drawerLayout {
             size(MATCH, MATCH)

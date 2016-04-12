@@ -54,13 +54,7 @@ class SortedIndexedList<T>(private val list: IndexedList<T>,
     }
 
     override fun append(elem: T): SortedIndexedList<T> {
-        val index = binarySearch(0, size(), elem)
-        val elementsBefore = if (index >= 0) index + 1 else index
-        return SortedIndexedList(IndexedLists.builder<T>()
-                .addAll(list.take(elementsBefore) as Traversable<T>)
-                .add(elem)
-                .addAll(list.drop(elementsBefore) as Traversable<T>)
-                .build(), comparator)
+        throw NotImplementedError()
     }
 
     override fun range(from: Int, fromInclusive: Boolean, to: Int, toInclusive: Boolean): SortedIndexedList<T> {
@@ -94,7 +88,17 @@ class SortedIndexedList<T>(private val list: IndexedList<T>,
         return list.iterator()
     }
 
-    inline fun <U : Comparable<U>> binarySearch(elem: U, selector: (T) -> U): Int {
+    fun add(elem: T): SortedIndexedList<T> {
+        val index = binarySearch(0, size(), elem)
+        val elementsBefore = if (index >= 0) index + 1 else -index - 1
+        return SortedIndexedList(IndexedLists.builder<T>()
+                .addAll(list.take(elementsBefore) as Traversable<T>)
+                .add(elem)
+                .addAll(list.drop(elementsBefore) as Traversable<T>)
+                .build(), comparator)
+    }
+
+    fun <U : Comparable<U>> binarySearch(elem: U, selector: (T) -> U): Int {
         var low = 0
         var high = size() - 1
 

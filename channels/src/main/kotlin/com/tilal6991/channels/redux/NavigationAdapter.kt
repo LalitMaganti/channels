@@ -13,13 +13,14 @@ import com.tilal6991.channels.view.ClientCarouselView
 import com.tilal6991.channels.view.NavigationHeaderImageView
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
-import trikita.anvil.appcompat.v7.AppCompatv7DSL.*
 import trikita.anvil.RenderableRecyclerViewAdapter
+import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
 import java.util.*
 
 class NavigationAdapter(
         private val context: Context,
-        private var contentAdapter: Child) : RenderableRecyclerViewAdapter() {
+        private var contentAdapter: Child,
+        private val headerClick: (View) -> Unit) : RenderableRecyclerViewAdapter() {
 
     private val headerCount = 1
     private val latestContentCount: Int
@@ -36,6 +37,8 @@ class NavigationAdapter(
         contentAdapter.unregisterAdapterDataObserver(observer)
         contentAdapter = adapter
         adapter.registerAdapterDataObserver(observer)
+
+        adapter.notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
@@ -64,6 +67,14 @@ class NavigationAdapter(
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        val viewType = getItemViewType(position)
+        if (viewType == VIEW_TYPE_HEADER) {
+            return -10000000
+        }
+        return contentAdapter.getItemId(position - headerCount)
+    }
+
     private fun headerView() {
         v(ClientCarouselView::class.java) {
             size(MATCH, dip(172))
@@ -74,13 +85,12 @@ class NavigationAdapter(
                         R.color.colorSecondary, null))
                 scaleType(ImageView.ScaleType.FIT_XY)
 
-                val resource = context.resolveDrawable(R.attr.selectableItemBackground)
-                imageResource(resource)
+                imageResource(context.resolveDrawable(R.attr.selectableItemBackground))
 
-                if (selectedClient == null) {
-                    onClick {}
+                if (selectedClient() == null) {
+                    onClick(null)
                 } else {
-                    onClick { store.dispatch(Action.ChangeNavigationType()) }
+                    onClick(headerClick)
                 }
             }
 
@@ -93,11 +103,11 @@ class NavigationAdapter(
                 attr({ v, n, o -> (v as TextView).setTextAppearance(n) },
                         R.style.TextAppearance_Channels_Navigation_SubHeader)
 
-                if (selectedClient == null) {
+                if (selectedClient() == null) {
                     text(context.resources
                             .getQuantityString(R.plurals.active_client_count, 0).format(0))
                 } else {
-                    text(selectedClient!!.configuration.name)
+                    text(selectedClient()!!.configuration.name)
                 }
             }
 
@@ -109,10 +119,10 @@ class NavigationAdapter(
                 attr({ v, n, o -> (v as TextView).setTextAppearance(n) },
                         R.style.TextAppearance_Channels_Navigation_Header)
 
-                if (selectedClient == null) {
+                if (selectedClient() == null) {
                     text(R.string.app_name)
                 } else {
-                    text(selectedClient!!.configuration.name)
+                    text(selectedClient()!!.configuration.name)
                 }
             }
 
@@ -223,6 +233,8 @@ class NavigationAdapter(
         fun notifyItemRangeRemoved(positionStart: Int, itemCount: Int) {
             observers?.forEach { it.onItemRangeRemoved(positionStart, itemCount) }
         }
+
+        abstract fun getItemId(position: Int): Long
     }
 
     companion object {

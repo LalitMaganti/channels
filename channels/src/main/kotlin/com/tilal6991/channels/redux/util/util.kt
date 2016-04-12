@@ -10,9 +10,7 @@ import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Traversable
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.redux.state.Channel
-import com.tilal6991.channels.redux.state.Client
-import com.tilal6991.channels.redux.state.Server
+import com.tilal6991.channels.redux.state.*
 import com.tilal6991.relay.MoreStringUtils
 import com.tilal6991.relay.ReplyCodes
 import trikita.anvil.DSL.*
@@ -48,7 +46,7 @@ fun Context.resolveColor(attr: Int): Int {
 }
 
 fun <T : Any> IndexedList<T>.getOrNull(index: Int): T? {
-    return if (index < size()) get(index) else null
+    return if (index >= 0 && index < size()) get(index) else null
 }
 
 fun <T> IndexedList<T>.pullToFront(item: T): IndexedList<T> {
@@ -65,7 +63,12 @@ fun <T> IndexedList<T>.pullToFront(item: T): IndexedList<T> {
             .build()
 }
 
-inline fun SortedIndexedList<Client>.clientMutate(
+fun GlobalState.mutateSelected(transformer: (Client) -> Client?): GlobalState {
+    val item = selectedClients.getOrNull(0) ?: return this
+    return mutate(clients.clientMutate(item, transformer))
+}
+
+fun SortedIndexedList<Client>.clientMutate(
         item: ChannelsConfiguration,
         transformer: (Client) -> Client?): SortedIndexedList<Client> {
     return binaryMutate(item, { it.configuration }) {
@@ -73,18 +76,18 @@ inline fun SortedIndexedList<Client>.clientMutate(
     }
 }
 
-inline fun <T, E : Comparable<E>> SortedIndexedList<T>.binaryMutate(
+fun <T, E : Comparable<E>> SortedIndexedList<T>.binaryMutate(
         item: E,
         selector: (T) -> E,
         transformer: (T?) -> T?): SortedIndexedList<T> {
     return mutate(binarySearch(item, selector), transformer)
 }
 
-inline fun <T> SortedIndexedList<T>.mutate(index: Int,
-                                           transformer: (T?) -> T?): SortedIndexedList<T> {
-    if (index == -1) {
+fun <T> SortedIndexedList<T>.mutate(index: Int,
+                                    transformer: (T?) -> T?): SortedIndexedList<T> {
+    if (index < 0) {
         val new = transformer(null) ?: return this
-        return append(new)
+        return add(new)
     }
 
     val old = get(index)

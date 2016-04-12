@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import android.widget.LinearLayout.VERTICAL
 import com.tilal6991.channels.R
+import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.recyclerHeader
 import com.tilal6991.channels.redux.util.resolveColor
@@ -13,6 +14,8 @@ import timber.log.Timber
 import trikita.anvil.DSL.*
 
 class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
+
+    private var displayedClient: Client? = null
 
     override fun headerView(section: Int) {
         val text: Int
@@ -28,12 +31,13 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
     }
 
     override fun itemView(section: Int, offset: Int) {
-        backgroundColor(context.resolveDrawable(R.attr.selectableItemBackground))
+        backgroundResource(context.resolveDrawable(R.attr.selectableItemBackground))
         onClick {
             val type = if (section == 0) Client.SELECTED_SERVER else Client.SELECTED_CHANNEL
-            store.dispatch(Action.ChangeSelectedChild(type, offset))
+            context.store.dispatch(Action.ChangeSelectedChild(type, offset))
         }
 
+        val child = if (section == 0) displayedClient?.server else displayedClient?.channels?.get(offset)
         linearLayout {
             size(MATCH, WRAP)
             orientation(VERTICAL)
@@ -45,7 +49,7 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
                 textColor(context.resolveColor(android.R.attr.textColorPrimary))
                 ellipsize(TextUtils.TruncateAt.END)
                 singleLine(true)
-                text(selectedChild?.name)
+                text(child?.name)
             }
 
             textView {
@@ -55,9 +59,21 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
                 margin(0, dip(4), 0, 0)
                 ellipsize(TextUtils.TruncateAt.END)
                 singleLine(true)
-                text(message(selectedChild))
+                text(message(child))
             }
         }
+    }
+
+    override fun getHeaderId(section: Int): Long {
+        return 10000 - 1
+    }
+
+    override fun getItemId(section: Int, offset: Int): Long {
+        if (section == 0) {
+            return 10000 + (displayedClient?.configuration?.id?.toLong() ?: 0)
+        }
+        val channel = displayedClient?.channels?.get(offset)
+        return channel?.name?.hashCode()?.toLong() ?: 0
     }
 
     override fun getSectionedItemViewType(section: Int, sectionOffset: Int): Int {
@@ -66,9 +82,9 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
 
     override fun getItemCountInSection(section: Int): Int {
         if (section == 0) {
-            return 1
+            return if (displayedClient == null) 0 else 1
         }
-        return selectedClient?.channels?.size() ?: 0
+        return displayedClient?.channels?.size() ?: 0
     }
 
     override fun isHeaderDisplayedForSection(section: Int): Boolean {
@@ -78,5 +94,14 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
     // TODO(tilal6991) make this 3 when PMs come into play.
     override fun getSectionCount(): Int {
         return 2
+    }
+
+    fun setData(selectedClient: Client?) {
+        if (selectedClient === this.displayedClient) {
+            return
+        }
+
+        displayedClient = selectedClient
+        notifySectionedDataSetChanged()
     }
 }

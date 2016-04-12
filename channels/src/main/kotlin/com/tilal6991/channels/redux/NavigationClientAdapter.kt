@@ -5,6 +5,7 @@ import android.text.TextUtils
 import android.widget.LinearLayout.*
 import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.R
+import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.recyclerHeader
 import com.tilal6991.channels.redux.util.resolveColor
@@ -12,7 +13,6 @@ import com.tilal6991.channels.redux.util.resolveDrawable
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import trikita.anvil.DSL.*
-import trikita.anvil.appcompat.v7.AppCompatv7DSL
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatImageView
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
 
@@ -43,13 +43,13 @@ class NavigationClientAdapter(private val context: Context,
     }
 
     private fun clientItemView(section: Int, offset: Int) {
-        val client = clients[offset]
-        onClick {
-            store.dispatch(Action.SelectClient(client.configuration))
-        }
-        backgroundResource(context.resolveDrawable(R.attr.selectableItemBackground))
-
         linearLayout {
+            val client = clients[offset]
+            onClick {
+                context.store.dispatch(Action.SelectClient(client.configuration))
+            }
+            backgroundResource(context.resolveDrawable(R.attr.selectableItemBackground))
+
             size(MATCH, dip(72))
             orientation(HORIZONTAL)
             padding(dip(16), dip(8), 0, dip(8))
@@ -141,6 +141,14 @@ class NavigationClientAdapter(private val context: Context,
 
     override fun getSectionCount(): Int {
         return SECTION_COUNT
+    }
+
+    override fun getHeaderId(section: Int): Long {
+        return -1
+    }
+
+    override fun getItemId(section: Int, offset: Int): Long {
+        return clients[offset].configuration.id.toLong()
     }
 
     fun setData(clients: IndexedList<Client>) {

@@ -1,7 +1,6 @@
 package com.tilal6991.channels.redux
 
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import java.util.*
@@ -36,6 +35,10 @@ abstract class SectionAdapter : NavigationAdapter.Child() {
     abstract fun getSectionCount(): Int
 
     abstract fun getItemCountInSection(section: Int): Int
+
+    abstract fun getHeaderId(section: Int): Long
+
+    abstract fun getItemId(section: Int, offset: Int): Long
 
     open fun getSectionedItemViewType(section: Int, sectionOffset: Int): Int {
         return ITEM_VIEW_TYPE
@@ -124,6 +127,16 @@ abstract class SectionAdapter : NavigationAdapter.Child() {
             return getHeaderViewType(section)
         }
         return getSectionedItemViewType(section, sectionOffset)
+    }
+
+    override final fun getItemId(position: Int): Long {
+        val section = getSectionForAdapterPosition(position)
+        val sectionOffset = getSectionOffsetForAdapterPosition(section, position)
+
+        if (sectionOffset == -1) {
+            return getHeaderId(section)
+        }
+        return getItemId(section, sectionOffset)
     }
 
     override fun view(position: Int) {

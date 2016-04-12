@@ -31,6 +31,10 @@ class MainItemAdapter(private val context: Context) : RenderableRecyclerViewAdap
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
     fun setBuffer(list: IndexedList<CharSequence>?)  {
         if (buffer === list) {
             return
