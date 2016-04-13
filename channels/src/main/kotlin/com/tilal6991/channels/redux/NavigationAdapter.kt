@@ -2,12 +2,12 @@ package com.tilal6991.channels.redux
 
 import android.content.Context
 import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.tilal6991.channels.R
-import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.resolveDrawable
 import com.tilal6991.channels.redux.util.statusToResource
 import com.tilal6991.channels.view.BezelImageView
@@ -102,7 +102,7 @@ class NavigationAdapter(
                 alignParentBottom()
                 margin(dip(16), 0, 0, dip(8))
                 padding(dip(4))
-                attr({ v, n, o -> (v as TextView).setTextAppearance(n) },
+                attr({ v, n, o -> TextViewCompat.setTextAppearance(v as TextView, n) },
                         R.style.TextAppearance_Channels_Navigation_SubHeader)
 
                 if (selectedClient() == null) {
@@ -118,7 +118,7 @@ class NavigationAdapter(
                 margin(dip(16), 0, 0, 0)
                 padding(dip(4))
                 above(R.id.header_subtitle)
-                attr({ v, n, o -> (v as TextView).setTextAppearance(n) },
+                attr({ v, n, o -> TextViewCompat.setTextAppearance(v as TextView, n) },
                         R.style.TextAppearance_Channels_Navigation_Header)
 
                 if (selectedClient() == null) {
