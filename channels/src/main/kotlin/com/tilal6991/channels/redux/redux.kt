@@ -20,8 +20,21 @@ val initialState = GlobalState(
 fun clientReducer(c: Client, a: Action): Client {
     return c.mutate(
             server = serverReducer(c.server, a),
+            status = statusReducer(c.status, a),
             nick = nickReducer(c, a),
             channels = channelsReducer(c, c.channels, a))
+}
+
+fun statusReducer(status: Int, a: Action): Int {
+    return when (a) {
+        is Action.RelayEvent -> when (a.event) {
+            is Events.OnWelcome -> Client.STATUS_CONNECTED
+            is Events.OnSocketConnect -> Client.STATUS_REGISTERING
+            is Events.OnDisconnect, is Events.OnConnectFailed -> Client.STATUS_DISCONNECTED
+            else -> status
+        }
+        else -> status
+    }
 }
 
 fun nickReducer(c: Client, a: Action): String = when (a) {

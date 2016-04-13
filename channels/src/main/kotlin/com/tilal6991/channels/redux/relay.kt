@@ -10,6 +10,7 @@ import com.tilal6991.channels.relay.*
 import com.tilal6991.listen.EventObjectListener
 import com.tilal6991.messageloop.AndroidHandlerMessageLoop
 import com.tilal6991.relay.EventListener
+import com.tilal6991.relay.MetaListener
 import com.tilal6991.relay.RelayClient
 import de.duenndns.ssl.MemorizingTrustManager
 
@@ -69,7 +70,9 @@ fun createRelayClient(context: Context,
     core.addMetaListener(handshakeListener)
     core.addMetaListener(mainThreadListener)
 
-    mainThreadListener.addEventListener(EventClassListener(store, configuration))
+    val listener = EventClassListener(store, configuration)
+    mainThreadListener.addMetaListener(listener)
+    mainThreadListener.addEventListener(listener)
 
     return core
 }
@@ -77,7 +80,7 @@ fun createRelayClient(context: Context,
 @EventObjectListener(className = "EventObjectDispatcher",
         eventsClassName = "Events",
         eventInterfaceClassName = "EventObjectListener")
-interface Listener : EventListener
+interface Listener : EventListener, MetaListener
 
 class EventClassListener(private val store: Store<GlobalState, Action>,
                          private val configuration: ChannelsConfiguration) : EventObjectDispatcher() {
