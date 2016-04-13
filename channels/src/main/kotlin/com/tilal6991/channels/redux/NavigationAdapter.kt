@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.resolveDrawable
+import com.tilal6991.channels.redux.util.statusToResource
 import com.tilal6991.channels.view.BezelImageView
 import com.tilal6991.channels.view.ClientCarouselView
 import com.tilal6991.channels.view.NavigationHeaderImageView
@@ -108,7 +109,7 @@ class NavigationAdapter(
                     text(context.resources
                             .getQuantityString(R.plurals.active_client_count, 0).format(0))
                 } else {
-                    text(statusToString())
+                    text(statusToResource(selectedClient()!!.status))
                 }
             }
 
@@ -160,18 +161,6 @@ class NavigationAdapter(
                 imageResource(R.drawable.person_image_empty)
                 visibility(View.INVISIBLE)
             }
-        }
-    }
-
-    private fun statusToString(): Int {
-        return when(selectedClient()!!.status) {
-            Client.STATUS_CONNECTED -> R.string.status_connected
-            Client.STATUS_STOPPED -> R.string.status_disconnected
-            Client.STATUS_DISCONNECTED -> R.string.status_disconnected
-            Client.STATUS_CONNECTING -> R.string.status_connecting
-            Client.STATUS_REGISTERING -> R.string.status_registering
-            Client.STATUS_RECONNECTING -> R.string.status_reconnecting
-            else -> R.string.app_name
         }
     }
 

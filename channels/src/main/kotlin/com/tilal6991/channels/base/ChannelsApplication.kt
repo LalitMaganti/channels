@@ -32,17 +32,6 @@ class ChannelsApplication : Application() {
                 .subscribe { store.dispatch(Action.NewConfigurations(it)) }
 
         LeakCanary.install(this)
-        Timber.plant(object : Timber.DebugTree() {
-            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                if (priority == Log.ERROR) {
-                    if (t != null) {
-                        throw RuntimeException(t)
-                    } else {
-                        throw IllegalStateException(message)
-                    }
-                }
-                super.log(priority, tag, message, t)
-            }
-        })
+        Timber.plant(Timber.DebugTree())
     }
 }

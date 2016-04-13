@@ -12,6 +12,7 @@ import com.tilal6991.channels.redux.util.binaryMutate
 import com.tilal6991.channels.redux.util.nickFromPrefix
 import com.tilal6991.channels.redux.util.transform
 import com.tilal6991.channels.util.failAssert
+import com.tilal6991.relay.MoreStringUtils
 import timber.log.Timber
 
 fun channelsReducer(client: Client,
@@ -24,9 +25,17 @@ fun channelsReducer(client: Client,
 fun channelRelayReducer(client: Client,
                         channels: SortedIndexedList<Channel>,
                         event: Events.Event): SortedIndexedList<Channel> = when (event) {
-    is Events.OnJoin ->
-        channels.binaryMutate(event.channel, { it.name }) { joinReducer(client, it, event) }
-    else -> channels.transform { channelReducer(client, it, event) }
+    is Events.OnJoin -> channels.findNullable(event.channel) { joinReducer(client, it, event) }
+    is Events.OnPart -> channels.find(event.channel) { partReducer(it, event) }
+    else -> channels.transform { channelReducer(it, event) }
+}
+
+fun partReducer(channel: Channel, event: Events.OnPart): Channel {
+    return channel.findUser(event.prefix) {
+        channel.mutate(
+                userMap = channel.userMap.remove(it.nick),
+                buffer = channel.buffer.append("${it.nick} has parted from the channel"))
+    }
 }
 
 fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channel {
@@ -34,6 +43,7 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
     val message = "$nick joined the channel"
     if (channel == null) {
         if (client.nick != nick) {
+            Timber.v("Failed finding: $channel ${client.nick} $nick")
             Timber.asTree().failAssert()
         }
 
@@ -49,8 +59,33 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
             userMap = channel.userMap.put(nick, Channel.User(nick, null)))
 }
 
-fun channelReducer(client: Client,
-                   channel: Channel,
+fun SortedIndexedList<Channel>.find(name: String, fn: (Channel) -> Channel): SortedIndexedList<Channel> {
+    return binaryMutate(name, { it.name }, { if (it == null) null else fn(it) })
+}
+
+fun SortedIndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): SortedIndexedList<Channel> {
+    return binaryMutate(name, { it.name }, fn)
+}
+
+fun channelReducer(channel: Channel,
                    event: Events.Event): Channel = when (event) {
+    is Events.OnQuit -> {
+        channel.findUser(event.prefix) {
+            channel.mutate(
+                    userMap = channel.userMap.remove(it.nick),
+                    buffer = channel.buffer.append("${it.nick} has quit the server${getReason(event.message)}"))
+        }
+    }
     else -> channel
+}
+
+fun getReason(message: String?): String {
+    return if (message == null) "" else " ($message)"
+}
+
+fun Channel.findUser(prefix: String, fn: (Channel.User) -> Channel): Channel {
+    val nick = MoreStringUtils.nickFromPrefix(prefix)
+    val user = userMap.get(nick) ?: return this
+    return fn(user)
+
 }

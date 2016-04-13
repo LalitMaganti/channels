@@ -11,8 +11,10 @@ import com.github.andrewoma.dexx.collection.Traversable
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.redux.state.*
+import com.tilal6991.channels.util.failAssert
 import com.tilal6991.relay.MoreStringUtils
 import com.tilal6991.relay.ReplyCodes
+import timber.log.Timber
 import trikita.anvil.DSL.*
 import java.util.*
 
@@ -83,10 +85,24 @@ fun <T, E : Comparable<E>> SortedIndexedList<T>.binaryMutate(
     return mutate(binarySearch(item, selector), transformer)
 }
 
+fun statusToResource(status: Int): Int = when (status) {
+    Client.STATUS_CONNECTED -> R.string.status_connected
+    Client.STATUS_STOPPED -> R.string.status_disconnected
+    Client.STATUS_DISCONNECTED -> R.string.status_disconnected
+    Client.STATUS_CONNECTING -> R.string.status_connecting
+    Client.STATUS_REGISTERING -> R.string.status_registering
+    Client.STATUS_RECONNECTING -> R.string.status_reconnecting
+    else -> R.string.app_name
+}
+
 fun <T> SortedIndexedList<T>.mutate(index: Int,
                                     transformer: (T?) -> T?): SortedIndexedList<T> {
     if (index < 0) {
-        val new = transformer(null) ?: return this
+        val new = transformer(null)
+        if (new == null) {
+            Timber.asTree().failAssert()
+            return this
+        }
         return add(new)
     }
 

@@ -10,6 +10,7 @@ import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.recyclerHeader
 import com.tilal6991.channels.redux.util.resolveColor
 import com.tilal6991.channels.redux.util.resolveDrawable
+import com.tilal6991.channels.redux.util.statusToResource
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import trikita.anvil.DSL.*
@@ -76,8 +77,11 @@ class NavigationClientAdapter(private val context: Context,
                     ellipsize(TextUtils.TruncateAt.END)
                     singleLine(true)
 
-                    val server = client.configuration.server
-                    text(if (client.status == Client.STATUS_STOPPED) server.hostname else client.status.toString())
+                    if (client.status == Client.STATUS_STOPPED) {
+                        text(client.configuration.server.hostname)
+                    } else {
+                        text(statusToResource(client.status))
+                    }
                 }
             }
 
