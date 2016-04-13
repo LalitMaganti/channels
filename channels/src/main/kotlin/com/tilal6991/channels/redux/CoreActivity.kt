@@ -2,16 +2,29 @@ package com.tilal6991.channels.redux
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import trikita.anvil.DSL.text
-import trikita.anvil.DSL.textView
-import trikita.anvil.RenderableView
-import trikita.anvil.recyclerview.Recycler
+import android.widget.FrameLayout
+import trikita.anvil.Anvil
 
 class CoreActivity : AppCompatActivity() {
+    private lateinit var corePresenter: CorePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(CorePresenter(this))
+
+        corePresenter = CorePresenter(this)
+        setContentView(Anvil.mount(FrameLayout(this), corePresenter))
+        corePresenter.setup()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        corePresenter.bind()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        corePresenter.unbind()
     }
 }

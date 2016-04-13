@@ -1,8 +1,8 @@
 package com.tilal6991.channels.redux
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.bansa.Subscription
 import com.tilal6991.channels.redux.state.Client
@@ -17,16 +17,16 @@ private val handler = Handler(Looper.getMainLooper())
 private val mainThreadSubscribers = ArrayList<(GlobalState) -> Unit>()
 private var s: Subscription? = null
 
-fun subscribe(view: View, fn: (GlobalState) -> Unit): Runnable {
+fun subscribe(context: Context, fn: (GlobalState) -> Unit): Runnable {
     if (s == null) {
-        s = view.context.store.subscribe { state ->
+        s = context.store.subscribe { state ->
             handler.post {
                 currentState = state
                 mainThreadSubscribers.forEach { it(currentState) }
                 Anvil.render()
             }
         }
-        currentState = view.context.store.state
+        currentState = context.store.state
         Anvil.render()
         fn(currentState)
     }

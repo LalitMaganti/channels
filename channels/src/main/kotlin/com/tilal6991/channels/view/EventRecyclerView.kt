@@ -18,22 +18,15 @@ class EventRecyclerView @JvmOverloads constructor(
     private var firstVisible = -1
     private var lastVisible = -1
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
-        layoutManager = LinearLayoutManager(context)
-        setLayoutManager(layoutManager)
-
-        if (isInEditMode) {
-            return
-        }
-
+    override fun onAttachedToWindow() {
         addOnScrollListener(object : OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 firstVisible = layoutManager.findLastCompletelyVisibleItemPosition()
                 lastVisible = layoutManager.findLastCompletelyVisibleItemPosition()
             }
         })
+
+        super.onAttachedToWindow()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -67,6 +60,11 @@ class EventRecyclerView @JvmOverloads constructor(
 
     fun forceScroll(position: Int) = post {
         layoutManager.scrollToPositionWithOffset(position, 0)
+    }
+
+    override fun setLayoutManager(layout: LayoutManager) {
+        super.setLayoutManager(layout)
+        layoutManager = layout as LinearLayoutManager
     }
 
     fun scroll(position: Int) = post {

@@ -148,6 +148,9 @@ class NavigationClientAdapter(private val context: Context,
     }
 
     override fun getItemId(section: Int, offset: Int): Long {
+        if (section == MANAGE_SECTION) {
+            return 1345 + offset.toLong()
+        }
         return clients[offset].configuration.id.toLong()
     }
 

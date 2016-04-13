@@ -1,6 +1,7 @@
 package com.tilal6991.channels.redux
 
 import android.content.Context
+import android.content.res.Resources
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.content.res.ResourcesCompat
@@ -15,17 +16,17 @@ import android.widget.LinearLayout
 import com.tilal6991.channels.R
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.view.NavigationDrawerView.Companion.navigationDrawerView
+import trikita.anvil.Anvil
 import trikita.anvil.Anvil.currentView
 import trikita.anvil.DSL
 import trikita.anvil.DSL.*
-import trikita.anvil.RenderableView
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.*
 import trikita.anvil.design.DesignDSL.appBarLayout
 import trikita.anvil.design.DesignDSL.coordinatorLayout
 import trikita.anvil.recyclerview.Recycler
 import trikita.anvil.support.v4.Supportv4DSL.drawerLayout
 
-class CorePresenter(context: Context) : RenderableView(context) {
+class CorePresenter(private val context: Context) : Anvil.Renderable {
     private var clientAdapter: NavigationClientAdapter? = null
     private var childAdapter: NavigationChildAdapter? = null
     private var currentAdapter: NavigationAdapter.Child? = null
@@ -34,7 +35,10 @@ class CorePresenter(context: Context) : RenderableView(context) {
 
     private lateinit var subscription: Runnable
 
-    override fun onAttachedToWindow() {
+    val resources: Resources
+        get() = context.resources
+
+    fun setup() {
         clientAdapter = NavigationClientAdapter(context, currentState.clients)
         clientAdapter!!.setup()
 
@@ -55,20 +59,18 @@ class CorePresenter(context: Context) : RenderableView(context) {
         eventAdapter = MainItemAdapter(context)
         eventAdapter?.setBuffer(selectedChild()?.buffer)
         eventAdapter?.setHasStableIds(true)
+    }
 
-        subscription = subscribe(this) {
+    fun bind() {
+        subscription = subscribe(context) {
             childAdapter?.setData(selectedClient())
             clientAdapter?.setData(it.clients)
             eventAdapter?.setBuffer(selectedChild()?.buffer)
             navigationAdapter?.notifyItemChanged(0)
         }
-
-        super.onAttachedToWindow()
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-
+    fun unbind() {
         subscription.run()
     }
 
@@ -76,6 +78,7 @@ class CorePresenter(context: Context) : RenderableView(context) {
         val selectedChildBuffer = selectedChild()?.buffer
 
         drawerLayout {
+            id(R.id.drawer_layout)
             size(MATCH, MATCH)
             fitsSystemWindows(true)
             backgroundColor(ResourcesCompat.getColor(resources, android.R.color.transparent, null))
@@ -85,19 +88,20 @@ class CorePresenter(context: Context) : RenderableView(context) {
                 DSL.orientation(LinearLayout.VERTICAL)
 
                 coordinatorLayout {
+                    id(R.id.main_content)
                     size(MATCH, dip(0))
                     weight(1.0f)
 
                     v(EventRecyclerView::class.java) {
                         init {
-                            val recycler = currentView<EventRecyclerView>()
-                            recycler.layoutManager = LinearLayoutManager(context)
+                            Recycler.layoutManager(LinearLayoutManager(context))
                         }
 
                         val layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
                         layoutParams.behavior = AppBarLayout.ScrollingViewBehavior()
                         layoutParams(layoutParams)
 
+                        id(R.id.event_recycler)
                         padding(dip(8))
                         clipToPadding(false)
                         visibility(selectedChildBuffer != null)
@@ -156,10 +160,10 @@ class CorePresenter(context: Context) : RenderableView(context) {
                 Recycler.view {
                     init {
                         Recycler.layoutManager(LinearLayoutManager(context))
-                        Recycler.adapter(navigationAdapter)
                     }
 
                     size(MATCH, MATCH)
+                    Recycler.adapter(navigationAdapter)
                 }
             }
         }
