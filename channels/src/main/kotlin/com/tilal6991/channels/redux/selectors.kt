@@ -21,9 +21,11 @@ fun subscribe(context: Context, fn: (GlobalState) -> Unit): Runnable {
     if (s == null) {
         s = context.store.subscribe { state ->
             handler.post {
-                currentState = state
-                mainThreadSubscribers.forEach { it(currentState) }
-                Anvil.render()
+                if (currentState !== state) {
+                    currentState = state
+                    mainThreadSubscribers.forEach { it(currentState) }
+                    Anvil.render()
+                }
             }
         }
         currentState = context.store.state
