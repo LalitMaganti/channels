@@ -206,7 +206,7 @@ class ClientVM(private val context: Context,
 
     companion object {
         const val CONNECTING: Int = R.string.status_connecting
-        const val SOCKET_CONNECTED: Int = R.string.status_socket_connected
+        const val SOCKET_CONNECTED: Int = R.string.status_registering
         const val CONNECTED: Int = R.string.status_connected
         const val DISCONNECTING: Int = R.string.status_disconnecting
         const val DISCONNECTED: Int = R.string.status_disconnected

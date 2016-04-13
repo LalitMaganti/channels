@@ -14,6 +14,7 @@ class CoreActivity : AppCompatActivity() {
         corePresenter = CorePresenter(this)
         setContentView(Anvil.mount(FrameLayout(this), corePresenter))
         corePresenter.setup()
+        Anvil.render()
     }
 
     override fun onStart() {

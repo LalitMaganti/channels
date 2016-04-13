@@ -9,7 +9,7 @@
 
     <!-- Status -->
     <string name="status_connecting">Connecting</string>
-    <string name="status_socket_connected">Socket Connected</string>
+    <string name="status_registering">Registering</string>
     <string name="status_connected">Connected</string>
     <string name="status_disconnecting">Disconnecting</string>
     <string name="status_disconnected">Disconnected</string>
