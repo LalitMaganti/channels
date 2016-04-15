@@ -2,7 +2,9 @@ package com.tilal6991.channels.redux
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.tilal6991.channels.R
 import trikita.anvil.Anvil
 
 class CoreActivity : AppCompatActivity() {
@@ -12,7 +14,11 @@ class CoreActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         corePresenter = CorePresenter(this)
-        setContentView(Anvil.mount(FrameLayout(this), corePresenter))
+
+        val parent = findViewById(android.R.id.content) as ViewGroup
+        val drawerLayout = layoutInflater.inflate(R.layout.activity_core, parent, false)
+        setContentView(Anvil.mount(drawerLayout, corePresenter))
+
         corePresenter.setup()
         Anvil.render()
     }

@@ -44,7 +44,7 @@ class CorePresenter(private val context: Context) : Anvil.Renderable {
 
         childAdapter = NavigationChildAdapter(context)
         childAdapter!!.setup()
-
+z
         navigationAdapter = NavigationAdapter(context, clientAdapter!!) {
             currentAdapter = if (currentAdapter == clientAdapter) {
                 childAdapter
@@ -77,95 +77,87 @@ class CorePresenter(private val context: Context) : Anvil.Renderable {
     override fun view() {
         val selectedChildBuffer = selectedChild()?.buffer
 
-        fitsSystemWindows(true)
-        drawerLayout {
-            id(R.id.drawer_layout)
+        linearLayout {
             size(MATCH, MATCH)
-            fitsSystemWindows(true)
-            backgroundColor(ResourcesCompat.getColor(resources, android.R.color.transparent, null))
+            DSL.orientation(LinearLayout.VERTICAL)
 
-            linearLayout {
-                size(MATCH, MATCH)
-                DSL.orientation(LinearLayout.VERTICAL)
+            coordinatorLayout {
+                id(R.id.main_content)
+                size(MATCH, dip(0))
+                weight(1.0f)
 
-                coordinatorLayout {
-                    id(R.id.main_content)
-                    size(MATCH, dip(0))
-                    weight(1.0f)
-
-                    v(EventRecyclerView::class.java) {
-                        init {
-                            Recycler.layoutManager(LinearLayoutManager(context))
-                        }
-
-                        val layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                        layoutParams.behavior = AppBarLayout.ScrollingViewBehavior()
-                        layoutParams(layoutParams)
-
-                        id(R.id.event_recycler)
-                        padding(dip(8))
-                        clipToPadding(false)
-                        visibility(selectedChildBuffer != null)
-
-                        Recycler.adapter(eventAdapter)
-                    }
-
-                    appCompatTextView {
-                        size(MATCH, MATCH)
-                        enabled(false)
-                        DSL.gravity(CENTER)
-                        padding(dip(32))
-                        text(R.string.no_child_selected)
-                        visibility(selectedChildBuffer == null)
-                    }
-
-                    appBarLayout {
-                        size(MATCH, WRAP)
-
-                        toolbar {
-                            init {
-                                val currentView = currentView<Toolbar>()
-                                currentView.popupTheme = R.style.ThemeOverlay_AppCompat_ActionBar
-                            }
-
-                            val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT, getActionBarHeight())
-                            layoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-                            layoutParams(layoutParams)
-
-                            backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
-                        }
-                    }
-                }
-
-                frameLayout {
-                    size(MATCH, WRAP)
-
-                    appCompatEditText {
-                        size(MATCH, WRAP)
-
-                        hint(R.string.message_hint)
-                        DSL.imeOptions(EditorInfo.IME_ACTION_SEND)
-                        DSL.inputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
-                                InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
-                    }
-                }
-            }
-
-            navigationDrawerView {
-                size(resources.getDimensionPixelSize(R.dimen.navigation_drawer_width), MATCH)
-                attr({ v, n, o -> (v.layoutParams as DrawerLayout.LayoutParams).gravity = n }, START)
-                backgroundColor(ResourcesCompat.getColor(
-                        resources, R.color.navigation_background_color, null))
-                fitsSystemWindows(true)
-
-                Recycler.view {
+                v(EventRecyclerView::class.java) {
                     init {
                         Recycler.layoutManager(LinearLayoutManager(context))
                     }
 
-                    size(MATCH, MATCH)
-                    Recycler.adapter(navigationAdapter)
+                    val layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                    layoutParams.behavior = AppBarLayout.ScrollingViewBehavior()
+                    layoutParams(layoutParams)
+
+                    id(R.id.event_recycler)
+                    padding(dip(8))
+                    clipToPadding(false)
+                    visibility(selectedChildBuffer != null)
+
+                    Recycler.adapter(eventAdapter)
                 }
+
+                appCompatTextView {
+                    size(MATCH, MATCH)
+                    enabled(false)
+                    DSL.gravity(CENTER)
+                    padding(dip(32))
+                    text(R.string.no_child_selected)
+                    visibility(selectedChildBuffer == null)
+                }
+
+                appBarLayout {
+                    size(MATCH, WRAP)
+
+                    toolbar {
+                        init {
+                            val currentView = currentView<Toolbar>()
+                            currentView.popupTheme = R.style.ThemeOverlay_AppCompat_ActionBar
+                        }
+
+                        val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT, getActionBarHeight())
+                        layoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                        layoutParams(layoutParams)
+
+                        backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+                    }
+                }
+            }
+
+            frameLayout {
+                size(MATCH, WRAP)
+
+                appCompatEditText {
+                    size(MATCH, WRAP)
+
+                    hint(R.string.message_hint)
+                    DSL.imeOptions(EditorInfo.IME_ACTION_SEND)
+                    DSL.inputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
+                            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+                }
+            }
+        }
+
+        navigationDrawerView {
+            size(resources.getDimensionPixelSize(R.dimen.navigation_drawer_width), MATCH)
+            attr({ v, n, o -> (v.layoutParams as DrawerLayout.LayoutParams).gravity = n }, START)
+            backgroundColor(ResourcesCompat.getColor(
+                    resources, R.color.navigation_background_color, null))
+            fitsSystemWindows(true)
+
+            Recycler.view {
+                init {
+                    Recycler.layoutManager(LinearLayoutManager(context))
+                }
+
+                size(MATCH, MATCH)
+                Recycler.adapter(navigationAdapter)
             }
         }
     }
