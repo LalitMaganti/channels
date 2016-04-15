@@ -1,19 +1,17 @@
 package com.tilal6991.channels.redux.state
 
-import com.github.andrewoma.dexx.collection.IndexedList
 import com.github.andrewoma.dexx.collection.Map
-import com.github.andrewoma.dexx.collection.Vector
 import com.tilal6991.channels.redux.util.TransactingIndexedList
 
 interface ClientChild {
 
     val name: CharSequence
     val active: Boolean
-    val buffer: IndexedList<CharSequence>
+    val buffer: TransactingIndexedList<CharSequence>
 }
 
 data class Server(override val name: String,
-                  override val buffer: IndexedList<CharSequence> = Vector.empty()) : ClientChild {
+                  override val buffer: TransactingIndexedList<CharSequence> = TransactingIndexedList()) : ClientChild {
 
     override val active: Boolean
         get() = true

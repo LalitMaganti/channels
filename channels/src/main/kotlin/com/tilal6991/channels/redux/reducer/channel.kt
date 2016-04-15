@@ -8,6 +8,7 @@ import com.tilal6991.channels.redux.Events
 import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.mutate
+import com.tilal6991.channels.redux.util.TransactingIndexedList
 import com.tilal6991.channels.redux.util.binaryMutate
 import com.tilal6991.channels.redux.util.nickFromPrefix
 import com.tilal6991.channels.redux.util.transform
@@ -16,15 +17,15 @@ import com.tilal6991.relay.MoreStringUtils
 import timber.log.Timber
 
 fun channelsReducer(client: Client,
-                    channels: IndexedList<Channel>,
-                    a: Action): IndexedList<Channel> = when (a) {
+                    channels: TransactingIndexedList<Channel>,
+                    a: Action): TransactingIndexedList<Channel> = when (a) {
     is Action.RelayEvent -> channelRelayReducer(client, channels, a.event)
     else -> channels
 }
 
 fun channelRelayReducer(client: Client,
-                        channels: IndexedList<Channel>,
-                        event: Events.Event): IndexedList<Channel> = when (event) {
+                        channels: TransactingIndexedList<Channel>,
+                        event: Events.Event): TransactingIndexedList<Channel> = when (event) {
     is Events.OnJoin -> channels.findNullable(event.channel) { joinReducer(client, it, event) }
     is Events.OnPart -> channels.find(event.channel) { partReducer(it, event) }
     else -> channels.transform { channelReducer(it, event) }
@@ -50,7 +51,7 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
         return Channel(
                 event.channel,
                 if (client.nick == nick) true else false,
-                IndexedLists.of<CharSequence>(message),
+                TransactingIndexedList.builder<CharSequence>().add(message).build(),
                 Maps.of(nick, Channel.User(nick, null)))
     }
 
@@ -59,11 +60,11 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
             userMap = channel.userMap.put(nick, Channel.User(nick, null)))
 }
 
-fun IndexedList<Channel>.find(name: String, fn: (Channel) -> Channel): IndexedList<Channel> {
+fun TransactingIndexedList<Channel>.find(name: String, fn: (Channel) -> Channel): TransactingIndexedList<Channel> {
     return binaryMutate(name, { it.name }, { if (it == null) null else fn(it) })
 }
 
-fun IndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): IndexedList<Channel> {
+fun TransactingIndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): TransactingIndexedList<Channel> {
     return binaryMutate(name, { it.name }, fn)
 }
 

@@ -77,6 +77,7 @@ class CorePresenter(private val context: Context) : Anvil.Renderable {
     override fun view() {
         val selectedChildBuffer = selectedChild()?.buffer
 
+        fitsSystemWindows(true)
         drawerLayout {
             id(R.id.drawer_layout)
             size(MATCH, MATCH)
