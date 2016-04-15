@@ -70,14 +70,6 @@ class NavigationAdapter(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        val viewType = getItemViewType(position)
-        if (viewType == VIEW_TYPE_HEADER) {
-            return -10000000
-        }
-        return contentAdapter.getItemId(position - headerCount)
-    }
-
     private fun headerView() {
         v(ClientCarouselView::class.java) {
             size(MATCH, dip(172))

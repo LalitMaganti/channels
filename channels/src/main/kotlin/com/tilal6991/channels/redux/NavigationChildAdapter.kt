@@ -108,6 +108,7 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
         displayedClient = selectedClient
 
         if (oldClient?.configuration?.name != selectedClient?.configuration?.name) {
+            transactionNumber = selectedClient?.channels?.transactionNumber() ?: 0
             return notifySectionedDataSetChanged()
         }
 

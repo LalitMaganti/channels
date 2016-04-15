@@ -58,7 +58,6 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
             navigationAdapter?.updateContentAdapter(currentAdapter!!)
         }
         currentAdapter = clientAdapter
-        navigationAdapter?.setHasStableIds(true)
 
         eventAdapter = MainItemAdapter(context)
         eventAdapter?.setData(selectedChild()?.buffer)

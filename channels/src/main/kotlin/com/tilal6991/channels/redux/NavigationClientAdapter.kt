@@ -7,10 +7,7 @@ import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.state.Client
-import com.tilal6991.channels.redux.util.recyclerHeader
-import com.tilal6991.channels.redux.util.resolveColor
-import com.tilal6991.channels.redux.util.resolveDrawable
-import com.tilal6991.channels.redux.util.statusToResource
+import com.tilal6991.channels.redux.util.*
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import trikita.anvil.DSL.*
@@ -158,7 +155,7 @@ class NavigationClientAdapter(private val context: Context,
         return clients[offset].configuration.id.toLong()
     }
 
-    fun setData(clients: IndexedList<Client>) {
+    fun setData(clients: TransactingIndexedList<Client>) {
         if (clients === this.clients) {
             return
         }
