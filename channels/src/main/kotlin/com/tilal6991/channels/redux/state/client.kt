@@ -1,16 +1,19 @@
 package com.tilal6991.channels.redux.state
 
-import com.github.andrewoma.dexx.collection.Vector
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.redux.util.SortedIndexedList
+import com.tilal6991.channels.redux.util.TransactingIndexedList
 
 data class Client(val configuration: ChannelsConfiguration,
                   val status: Int = Client.STATUS_STOPPED,
                   val nick: String = configuration.user.nicks.getOrNull(0) ?: "",
                   val server: Server = Server(configuration.name),
-                  val channels: SortedIndexedList<Channel> = SortedIndexedList(Vector.empty(), null),
+                  val channels: TransactingIndexedList<Channel> = TransactingIndexedList(),
                   val selectedType: Int = SELECTED_SERVER,
-                  val selectedIndex: Int = 0) {
+                  val selectedIndex: Int = 0) : Comparable<Client> {
+
+    override fun compareTo(other: Client): Int {
+        return configuration.compareTo(other.configuration)
+    }
 
     companion object {
         const val STATUS_STOPPED = 0
@@ -29,7 +32,7 @@ data class Client(val configuration: ChannelsConfiguration,
 fun Client.mutate(status: Int = this.status,
                   server: Server = this.server,
                   nick: String = this.nick,
-                  channels: SortedIndexedList<Channel> = this.channels,
+                  channels: TransactingIndexedList<Channel> = this.channels,
                   selectedType: Int = Client.SELECTED_SERVER,
                   selectedIndex: Int = 0): Client {
     if (nick === this.nick && server === this.server && channels === this.channels &&

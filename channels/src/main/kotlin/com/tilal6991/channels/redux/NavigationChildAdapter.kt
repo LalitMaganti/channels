@@ -6,6 +6,7 @@ import android.widget.LinearLayout.VERTICAL
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.state.Client
+import com.tilal6991.channels.redux.util.TransactingIndexedList
 import com.tilal6991.channels.redux.util.recyclerHeader
 import com.tilal6991.channels.redux.util.resolveColor
 import com.tilal6991.channels.redux.util.resolveDrawable
@@ -16,6 +17,7 @@ import trikita.anvil.DSL.*
 class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
 
     private var displayedClient: Client? = null
+    private val channelTransactionCount = 0
 
     override fun headerView(section: Int) {
         val text: Int
@@ -101,7 +103,36 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
             return
         }
 
+        val oldClient = displayedClient
         displayedClient = selectedClient
-        notifySectionedDataSetChanged()
+
+        if (oldClient?.server !== selectedClient?.server) {
+            notifyItemRangeChangedInSection(0, 0, 1)
+        }
+
+        if (selectedClient != null && oldClient?.channels !== selectedClient.channels) {
+            val channels = selectedClient.channels
+            val current = channels.transactionNumber()
+            val diff = current - channelTransactionCount
+            if (diff > channels.maxSize()) {
+                notifySectionedDataSetChanged()
+            } else {
+                val transactions = channels.transactions
+                val start = transactions.size() - diff - 1
+                for (i in start..transactions.size() - 1) {
+                    val t = transactions.get(i)
+                    when (t.type) {
+                        TransactingIndexedList.ADD ->
+                            notifyItemRangeInsertedInSection(1, t.startIndex, t.count)
+                        TransactingIndexedList.REMOVE ->
+                            notifyItemRangeInsertedInSection(1, t.startIndex, t.count)
+                        TransactingIndexedList.MOVE ->
+                            notifyItemRangeMovedInSection(1, t.startIndex, t.toIndex, t.count)
+                        TransactingIndexedList.CHANGE ->
+                            notifyItemRangeChangedInSection(1, t.startIndex, t.count)
+                    }
+                }
+            }
+        }
     }
 }

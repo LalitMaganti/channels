@@ -1,10 +1,6 @@
 package com.tilal6991.channels.redux
 
-import com.github.andrewoma.dexx.collection.IndexedLists
-import com.github.andrewoma.dexx.collection.Vector
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.redux.bansa.applyMiddleware
-import com.tilal6991.channels.redux.bansa.createStore
 import com.tilal6991.channels.redux.reducer.channelsReducer
 import com.tilal6991.channels.redux.reducer.serverReducer
 import com.tilal6991.channels.redux.state.Client
@@ -13,8 +9,8 @@ import com.tilal6991.channels.redux.state.mutate
 import com.tilal6991.channels.redux.util.*
 
 val initialState = GlobalState(
-        SortedIndexedList(Vector.empty()),
-        Vector.empty()
+        TransactingIndexedList(),
+        TransactingIndexedList()
 )
 
 fun clientReducer(c: Client, a: Action): Client {
@@ -75,21 +71,21 @@ fun selectClient(g: GlobalState, configuration: ChannelsConfiguration): GlobalSt
 }
 
 fun mergeClientLists(state: GlobalState,
-                     configurations: List<ChannelsConfiguration>): SortedIndexedList<Client> {
+                     configurations: List<ChannelsConfiguration>): TransactingIndexedList<Client> {
     val newConfigs = configurations.toMutableList()
     newConfigs.sort()
 
     if (state.clients.isEmpty) {
-        val builder = IndexedLists.builder<Client>()
+        val builder = TransactingIndexedList.builder<Client>()
         for (it in newConfigs) {
             builder.add(Client(it))
         }
-        return SortedIndexedList(builder.build(), null)
+        return builder.build()
     }
 
     val oldClients = state.clients
 
-    val builder = IndexedLists.builder<Client>()
+    val builder = TransactingIndexedList.builder<Client>()
     var oldIndex = 0
     var newIndex = 0
     while (true) {
@@ -121,5 +117,5 @@ fun mergeClientLists(state: GlobalState,
         }
     }
 
-    return SortedIndexedList(builder.build(), null)
+    return builder.build()
 }

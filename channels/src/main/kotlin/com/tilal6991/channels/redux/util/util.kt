@@ -51,18 +51,14 @@ fun <T : Any> IndexedList<T>.getOrNull(index: Int): T? {
     return if (index >= 0 && index < size()) get(index) else null
 }
 
-fun <T> IndexedList<T>.pullToFront(item: T): IndexedList<T> {
+fun <T> TransactingIndexedList<T>.pullToFront(item: T): TransactingIndexedList<T> {
     val i = indexOf(item)
     if (i == 0) {
         return this
     } else if (i < 0) {
         return prepend(item)
     }
-    return IndexedLists.builder<T>()
-            .add(item)
-            .addAll(take(i) as Traversable<T>)
-            .addAll(drop(i + 1) as Traversable<T>)
-            .build()
+    return move(i, 0)
 }
 
 fun GlobalState.mutateSelected(transformer: (Client) -> Client?): GlobalState {
@@ -70,18 +66,18 @@ fun GlobalState.mutateSelected(transformer: (Client) -> Client?): GlobalState {
     return mutate(clients.clientMutate(item, transformer))
 }
 
-fun SortedIndexedList<Client>.clientMutate(
+fun TransactingIndexedList<Client>.clientMutate(
         item: ChannelsConfiguration,
-        transformer: (Client) -> Client?): SortedIndexedList<Client> {
+        transformer: (Client) -> Client?): TransactingIndexedList<Client> {
     return binaryMutate(item, { it.configuration }) {
         if (it == null) null else transformer(it)
     }
 }
 
-fun <T, E : Comparable<E>> SortedIndexedList<T>.binaryMutate(
+fun <T : Comparable<T>, E : Comparable<E>> TransactingIndexedList<T>.binaryMutate(
         item: E,
         selector: (T) -> E,
-        transformer: (T?) -> T?): SortedIndexedList<T> {
+        transformer: (T?) -> T?): TransactingIndexedList<T> {
     return mutate(binarySearch(item, selector), transformer)
 }
 
@@ -95,15 +91,16 @@ fun statusToResource(status: Int): Int = when (status) {
     else -> R.string.app_name
 }
 
-fun <T> SortedIndexedList<T>.mutate(index: Int,
-                                    transformer: (T?) -> T?): SortedIndexedList<T> {
+fun <T : Comparable<T>> TransactingIndexedList<T>.mutate(
+        index: Int,
+        transformer: (T?) -> T?): TransactingIndexedList<T> {
     if (index < 0) {
         val new = transformer(null)
         if (new == null) {
             Timber.asTree().failAssert()
             return this
         }
-        return add(new)
+        return addSorted(new)
     }
 
     val old = get(index)

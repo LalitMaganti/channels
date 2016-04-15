@@ -1,5 +1,6 @@
 package com.tilal6991.channels.redux.reducer
 
+import com.github.andrewoma.dexx.collection.IndexedList
 import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Maps
 import com.tilal6991.channels.redux.Action
@@ -7,7 +8,6 @@ import com.tilal6991.channels.redux.Events
 import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.mutate
-import com.tilal6991.channels.redux.util.SortedIndexedList
 import com.tilal6991.channels.redux.util.binaryMutate
 import com.tilal6991.channels.redux.util.nickFromPrefix
 import com.tilal6991.channels.redux.util.transform
@@ -16,15 +16,15 @@ import com.tilal6991.relay.MoreStringUtils
 import timber.log.Timber
 
 fun channelsReducer(client: Client,
-                    channels: SortedIndexedList<Channel>,
-                    a: Action): SortedIndexedList<Channel> = when (a) {
+                    channels: IndexedList<Channel>,
+                    a: Action): IndexedList<Channel> = when (a) {
     is Action.RelayEvent -> channelRelayReducer(client, channels, a.event)
     else -> channels
 }
 
 fun channelRelayReducer(client: Client,
-                        channels: SortedIndexedList<Channel>,
-                        event: Events.Event): SortedIndexedList<Channel> = when (event) {
+                        channels: IndexedList<Channel>,
+                        event: Events.Event): IndexedList<Channel> = when (event) {
     is Events.OnJoin -> channels.findNullable(event.channel) { joinReducer(client, it, event) }
     is Events.OnPart -> channels.find(event.channel) { partReducer(it, event) }
     else -> channels.transform { channelReducer(it, event) }
@@ -59,11 +59,11 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
             userMap = channel.userMap.put(nick, Channel.User(nick, null)))
 }
 
-fun SortedIndexedList<Channel>.find(name: String, fn: (Channel) -> Channel): SortedIndexedList<Channel> {
+fun IndexedList<Channel>.find(name: String, fn: (Channel) -> Channel): IndexedList<Channel> {
     return binaryMutate(name, { it.name }, { if (it == null) null else fn(it) })
 }
 
-fun SortedIndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): SortedIndexedList<Channel> {
+fun IndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): IndexedList<Channel> {
     return binaryMutate(name, { it.name }, fn)
 }
 

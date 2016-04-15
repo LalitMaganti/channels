@@ -5,9 +5,11 @@ import android.os.Handler
 import android.os.Looper
 import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.bansa.Subscription
+import com.tilal6991.channels.redux.reselect.Reselect.createSelector
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ClientChild
 import com.tilal6991.channels.redux.state.GlobalState
+import com.tilal6991.channels.redux.util.binarySearch
 import com.tilal6991.channels.redux.util.getOrNull
 import trikita.anvil.Anvil
 import java.util.*
@@ -39,10 +41,17 @@ fun subscribe(context: Context, fn: (GlobalState) -> Unit): Runnable {
     }
 }
 
+private val selectedClientSelector = createSelector(
+        { state: GlobalState, p: Unit -> state.selectedClients },
+        { state, p -> state.clients },
+        { selected, clients ->
+            val configuration = selected.getOrNull(0) ?: return@createSelector null
+            val index = clients.binarySearch(configuration) { it.configuration }
+            if (index < 0) null else clients[index]
+        })
+
 fun selectedClient(): Client? {
-    val configuration = currentState.selectedClients.getOrNull(0) ?: return null
-    val index = currentState.clients.binarySearch(configuration) { it.configuration }
-    return if (index < 0) null else currentState.clients[index]
+    return selectedClientSelector(currentState, Unit)
 }
 
 fun selectedChild(): ClientChild? {

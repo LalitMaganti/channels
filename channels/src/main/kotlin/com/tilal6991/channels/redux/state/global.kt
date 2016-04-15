@@ -1,14 +1,13 @@
 package com.tilal6991.channels.redux.state
 
-import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.redux.util.SortedIndexedList
+import com.tilal6991.channels.redux.util.TransactingIndexedList
 
-data class GlobalState(val clients: SortedIndexedList<Client>,
-                       val selectedClients: IndexedList<ChannelsConfiguration>)
+data class GlobalState(val clients: TransactingIndexedList<Client>,
+                       val selectedClients: TransactingIndexedList<ChannelsConfiguration>)
 
-fun GlobalState.mutate(clients: SortedIndexedList<Client> = this.clients,
-                       selectedClients: IndexedList<ChannelsConfiguration> = this.selectedClients): GlobalState {
+fun GlobalState.mutate(clients: TransactingIndexedList<Client> = this.clients,
+                       selectedClients: TransactingIndexedList<ChannelsConfiguration> = this.selectedClients): GlobalState {
     if (clients !== this.clients && selectedClients !== this.selectedClients) {
         return GlobalState(clients = clients, selectedClients = selectedClients)
     } else if (clients !== this.clients) {

@@ -5,6 +5,7 @@ import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.RecyclerView
 import android.widget.TextView
 import com.github.andrewoma.dexx.collection.IndexedList
+import com.tilal6991.channels.redux.util.TransactingIndexedList
 import com.tilal6991.channels.redux.util.resolveTextAppearance
 import trikita.anvil.DSL.*
 import trikita.anvil.RenderableRecyclerViewAdapter
@@ -35,7 +36,7 @@ class MainItemAdapter(private val context: Context) : RenderableRecyclerViewAdap
         return position.toLong()
     }
 
-    fun setBuffer(list: IndexedList<CharSequence>?)  {
+    fun setBuffer(list: TransactingIndexedList<CharSequence>?)  {
         if (buffer === list) {
             return
         }
