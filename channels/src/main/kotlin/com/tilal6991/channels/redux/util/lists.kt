@@ -1,6 +1,7 @@
 package com.tilal6991.channels.redux.util
 
 import com.github.andrewoma.dexx.collection.IndexedList
+import java.util.*
 
 inline fun <T> TransactingIndexedList<T>.transform(fn: (T) -> T): TransactingIndexedList<T> {
     var list = this
@@ -28,6 +29,26 @@ fun <T, U : Comparable<U>> IndexedList<T>.binarySearch(elem: U, selector: (T) ->
         val mid = (low + high).ushr(1) // safe from overflows
         val midVal = get(mid)
         val cmp = selector(midVal).compareTo(elem)
+
+        if (cmp < 0) {
+            low = mid + 1
+        } else if (cmp > 0) {
+            high = mid - 1
+        } else {
+            return mid
+        }
+    }
+    return -(low + 1)
+}
+
+fun <T, U> IndexedList<T>.binarySearch(elem: U, selector: (T) -> U, comparator: Comparator<U>): Int {
+    var low = 0
+    var high = size() - 1
+
+    while (low <= high) {
+        val mid = (low + high).ushr(1) // safe from overflows
+        val midVal = get(mid)
+        val cmp = comparator.compare(selector(midVal), elem)
 
         if (cmp < 0) {
             low = mid + 1

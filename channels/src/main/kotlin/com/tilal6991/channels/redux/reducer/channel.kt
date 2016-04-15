@@ -13,6 +13,7 @@ import com.tilal6991.channels.redux.util.transform
 import com.tilal6991.channels.util.failAssert
 import com.tilal6991.relay.MoreStringUtils
 import timber.log.Timber
+import java.util.*
 
 fun channelsReducer(client: Client,
                     channels: TransactingIndexedList<Channel>,
@@ -43,6 +44,10 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
     if (channel == null) {
         if (client.nick != nick) {
             Timber.v("Failed finding: ${event.channel} ${client.nick} $nick")
+            for (i in client.channels) {
+                println("In list: ${i.name} with compare ${i.name.compareTo(event.channel)}")
+            }
+
             Timber.asTree().failAssert()
         }
 
@@ -58,12 +63,14 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
             userMap = channel.userMap.put(nick, Channel.User(nick, null)))
 }
 
+
+val ignoreCaseComparator = Comparator<String> { lhs, rhs -> lhs.compareTo(rhs, ignoreCase = true) }
 fun TransactingIndexedList<Channel>.find(name: String, fn: (Channel) -> Channel): TransactingIndexedList<Channel> {
-    return binaryMutate(name, { it.name }, { if (it == null) null else fn(it) })
+    return binaryMutate(name, { it.name }, { if (it == null) null else fn(it) }, ignoreCaseComparator)
 }
 
 fun TransactingIndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): TransactingIndexedList<Channel> {
-    return binaryMutate(name, { it.name }, fn)
+    return binaryMutate(name, { it.name }, fn, ignoreCaseComparator)
 }
 
 fun channelReducer(channel: Channel,

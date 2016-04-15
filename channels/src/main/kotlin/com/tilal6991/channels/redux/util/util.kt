@@ -81,6 +81,14 @@ fun <T : Comparable<T>, E : Comparable<E>> TransactingIndexedList<T>.binaryMutat
     return mutate(binarySearch(item, selector), transformer)
 }
 
+fun <T : Comparable<T>, E> TransactingIndexedList<T>.binaryMutate(
+        item: E,
+        selector: (T) -> E,
+        transformer: (T?) -> T?,
+        comparator: Comparator<E>): TransactingIndexedList<T> {
+    return mutate(binarySearch(item, selector, comparator), transformer)
+}
+
 fun statusToResource(status: Int): Int = when (status) {
     Client.STATUS_CONNECTED -> R.string.status_connected
     Client.STATUS_STOPPED -> R.string.status_disconnected
