@@ -44,7 +44,7 @@ fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channe
     val message = "$nick joined the channel"
     if (channel == null) {
         if (client.nick != nick) {
-            Timber.v("Failed finding: $channel ${client.nick} $nick")
+            Timber.v("Failed finding: ${event.channel} ${client.nick} $nick")
             Timber.asTree().failAssert()
         }
 

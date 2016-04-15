@@ -1,11 +1,12 @@
 package com.tilal6991.channels.redux
 
-import android.content.Context
 import android.content.res.Resources
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.text.InputType
@@ -24,9 +25,8 @@ import trikita.anvil.appcompat.v7.AppCompatv7DSL.*
 import trikita.anvil.design.DesignDSL.appBarLayout
 import trikita.anvil.design.DesignDSL.coordinatorLayout
 import trikita.anvil.recyclerview.Recycler
-import trikita.anvil.support.v4.Supportv4DSL.drawerLayout
 
-class CorePresenter(private val context: Context) : Anvil.Renderable {
+class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
     private var clientAdapter: NavigationClientAdapter? = null
     private var childAdapter: NavigationChildAdapter? = null
     private var currentAdapter: NavigationAdapter.Child? = null
@@ -44,7 +44,7 @@ class CorePresenter(private val context: Context) : Anvil.Renderable {
 
         childAdapter = NavigationChildAdapter(context)
         childAdapter!!.setup()
-z
+
         navigationAdapter = NavigationAdapter(context, clientAdapter!!) {
             currentAdapter = if (currentAdapter == clientAdapter) {
                 childAdapter
@@ -115,16 +115,17 @@ z
                 appBarLayout {
                     size(MATCH, WRAP)
 
-                    toolbar {
+                    xml(R.layout.core_toolbar) {
                         init {
-                            val currentView = currentView<Toolbar>()
-                            currentView.popupTheme = R.style.ThemeOverlay_AppCompat_ActionBar
+                            currentView<Toolbar>().navigationIcon = DrawerArrowDrawable(context)
                         }
 
                         val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT, getActionBarHeight())
                         layoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                         layoutParams(layoutParams)
 
+                        title(selectedChild()?.name ?: "Channels")
+                        subtitle(selectedClient()?.configuration?.name)
                         backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
                     }
                 }
