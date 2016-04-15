@@ -8,12 +8,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.tilal6991.channels.R
+import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.resolveDrawable
 import com.tilal6991.channels.redux.util.statusToResource
 import com.tilal6991.channels.view.BezelImageView
 import com.tilal6991.channels.view.ClientCarouselView
 import com.tilal6991.channels.view.NavigationHeaderImageView
-import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.RenderableRecyclerViewAdapter
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
@@ -29,6 +29,7 @@ class NavigationAdapter(
         get() = contentAdapter.itemCount
     private var cachedContentCount: Int = 0
 
+    private var displayedClient: Client? = null
     private val observer = ChildAdapterObserver()
 
     init {
@@ -82,14 +83,16 @@ class NavigationAdapter(
             size(MATCH, dip(172))
 
             v(NavigationHeaderImageView::class.java) {
+                init {
+                    imageResource(context.resolveDrawable(R.attr.selectableItemBackground))
+                }
+
                 size(MATCH, MATCH)
                 backgroundColor(ResourcesCompat.getColor(context.resources,
                         R.color.colorSecondary, null))
                 scaleType(ImageView.ScaleType.FIT_XY)
 
-                imageResource(context.resolveDrawable(R.attr.selectableItemBackground))
-
-                if (selectedClient() == null) {
+                if (displayedClient == null) {
                     onClick(null)
                 } else {
                     onClick(headerClick)
@@ -97,7 +100,7 @@ class NavigationAdapter(
             }
 
             appCompatTextView {
-                init { Anvil.currentView<View>().id = R.id.header_subtitle }
+                id(R.id.header_subtitle)
                 size(WRAP, WRAP)
                 alignParentBottom()
                 margin(dip(16), 0, 0, dip(8))
@@ -105,11 +108,11 @@ class NavigationAdapter(
                 attr({ v, n, o -> TextViewCompat.setTextAppearance(v as TextView, n) },
                         R.style.TextAppearance_Channels_Navigation_SubHeader)
 
-                if (selectedClient() == null) {
+                if (displayedClient == null) {
                     text(context.resources
                             .getQuantityString(R.plurals.active_client_count, 0).format(0))
                 } else {
-                    text(statusToResource(selectedClient()!!.status))
+                    text(statusToResource(displayedClient!!.status))
                 }
             }
 
@@ -121,10 +124,10 @@ class NavigationAdapter(
                 attr({ v, n, o -> TextViewCompat.setTextAppearance(v as TextView, n) },
                         R.style.TextAppearance_Channels_Navigation_Header)
 
-                if (selectedClient() == null) {
+                if (displayedClient == null) {
                     text(R.string.app_name)
                 } else {
-                    text(selectedClient()!!.configuration.name)
+                    text(displayedClient!!.configuration.name)
                 }
             }
 
@@ -241,5 +244,18 @@ class NavigationAdapter(
 
     companion object {
         const val VIEW_TYPE_HEADER: Int = 0
+    }
+
+    fun setData(selectedClient: Client?) {
+        if (displayedClient === selectedClient) {
+            return
+        } else if (selectedClient?.configuration?.name === displayedClient?.configuration?.name
+                && selectedClient?.status === displayedClient?.status) {
+            displayedClient = selectedClient
+            return
+        }
+
+        displayedClient = selectedClient
+        notifyItemChanged(0)
     }
 }

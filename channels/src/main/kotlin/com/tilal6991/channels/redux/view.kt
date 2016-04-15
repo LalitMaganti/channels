@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
@@ -35,6 +36,9 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
 
     private lateinit var subscription: Runnable
 
+    private var locked = DrawerLayout.LOCK_MODE_LOCKED_OPEN
+    private var drawerVisible = true
+
     val resources: Resources
         get() = context.resources
 
@@ -57,7 +61,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
         navigationAdapter?.setHasStableIds(true)
 
         eventAdapter = MainItemAdapter(context)
-        eventAdapter?.setBuffer(selectedChild()?.buffer)
+        eventAdapter?.setData(selectedChild()?.buffer)
         eventAdapter?.setHasStableIds(true)
     }
 
@@ -65,8 +69,14 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
         subscription = subscribe(context) {
             childAdapter?.setData(selectedClient())
             clientAdapter?.setData(it.clients)
-            eventAdapter?.setBuffer(selectedChild()?.buffer)
-            navigationAdapter?.notifyItemChanged(0)
+            eventAdapter?.setData(selectedChild()?.buffer)
+            navigationAdapter?.setData(selectedClient())
+
+            if (selectedChild() == null) {
+                locked = DrawerLayout.LOCK_MODE_LOCKED_OPEN
+            } else {
+                locked = DrawerLayout.LOCK_MODE_UNLOCKED
+            }
         }
     }
 
@@ -117,12 +127,18 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
 
                     xml(R.layout.core_toolbar) {
                         init {
-                            currentView<Toolbar>().navigationIcon = DrawerArrowDrawable(context)
+                            val currentView = currentView<Toolbar>()
+                            currentView.navigationIcon = DrawerArrowDrawable(context)
                         }
 
                         val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT, getActionBarHeight())
                         layoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                         layoutParams(layoutParams)
+
+                        navigationOnClickListener {
+                            drawerVisible = !drawerVisible
+                            Anvil.render()
+                        }
 
                         title(selectedChild()?.name ?: "Channels")
                         subtitle(selectedClient()?.configuration?.name)
@@ -160,6 +176,17 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                 size(MATCH, MATCH)
                 Recycler.adapter(navigationAdapter)
             }
+        }
+
+        attr({ v, n, o -> (v as DrawerLayout).setDrawerLockMode(n) }, locked)
+        if (locked == DrawerLayout.LOCK_MODE_UNLOCKED) {
+            attr({ v, n, o ->
+                if (n) {
+                    (v as DrawerLayout).openDrawer(Gravity.START)
+                } else {
+                    (v as DrawerLayout).closeDrawer(Gravity.START)
+                }
+            }, drawerVisible)
         }
     }
 

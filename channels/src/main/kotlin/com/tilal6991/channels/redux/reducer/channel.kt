@@ -1,7 +1,5 @@
 package com.tilal6991.channels.redux.reducer
 
-import com.github.andrewoma.dexx.collection.IndexedList
-import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Maps
 import com.tilal6991.channels.redux.Action
 import com.tilal6991.channels.redux.Events

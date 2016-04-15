@@ -36,7 +36,7 @@ class MainItemAdapter(private val context: Context) : RenderableRecyclerViewAdap
         return position.toLong()
     }
 
-    fun setBuffer(list: TransactingIndexedList<CharSequence>?)  {
+    fun setData(list: TransactingIndexedList<CharSequence>?)  {
         if (buffer === list) {
             return
         }
