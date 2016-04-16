@@ -1,4 +1,4 @@
-package com.tilal6991.channels.redux
+package com.tilal6991.channels.redux.presenter
 
 import android.content.res.Resources
 import android.support.design.widget.AppBarLayout
@@ -8,13 +8,16 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import com.tilal6991.channels.R
+import com.tilal6991.channels.redux.*
 import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.util.resolveDimen
 import com.tilal6991.channels.view.EventRecyclerView
@@ -30,13 +33,13 @@ import trikita.anvil.design.DesignDSL.coordinatorLayout
 import trikita.anvil.recyclerview.Recycler
 
 class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
+    private lateinit var eventPresenter: EventPresenter
     private lateinit var userPresenter: UserPresenter
 
     private lateinit var clientAdapter: NavigationClientAdapter
     private lateinit var childAdapter: NavigationChildAdapter
     private lateinit var currentAdapter: NavigationAdapter.Child
     private lateinit var navigationAdapter: NavigationAdapter
-    private lateinit var eventAdapter: MainItemAdapter
 
     private lateinit var subscription: Runnable
 
@@ -63,9 +66,8 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
         }
         currentAdapter = clientAdapter
 
-        eventAdapter = MainItemAdapter(context)
-        eventAdapter.setData(selectedChild()?.buffer)
-        eventAdapter.setHasStableIds(true)
+        eventPresenter = EventPresenter(context)
+        eventPresenter.setup()
 
         userPresenter = UserPresenter(context)
         userPresenter.setup()
@@ -75,7 +77,6 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
         subscription = subscribe(context) {
             childAdapter.setData(selectedClient())
             clientAdapter.setData(it.clients)
-            eventAdapter.setData(selectedChild()?.buffer)
             navigationAdapter.setData(selectedClient())
 
             if (selectedChild() == null) {
@@ -91,11 +92,13 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
             }
         }
         userPresenter.bind()
+        eventPresenter.bind()
     }
 
     fun unbind() {
         subscription.run()
         userPresenter.unbind()
+        eventPresenter.unbind()
     }
 
     override fun view() {
@@ -108,22 +111,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                 size(MATCH, dip(0))
                 weight(1.0f)
 
-                v(EventRecyclerView::class.java) {
-                    init {
-                        Recycler.layoutManager(LinearLayoutManager(context))
-                    }
-
-                    val layoutParams = CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                    layoutParams.behavior = AppBarLayout.ScrollingViewBehavior()
-                    layoutParams(layoutParams)
-
-                    id(R.id.event_recycler)
-                    padding(dip(8))
-                    clipToPadding(false)
-                    visibility(selectedChild() != null)
-
-                    Recycler.adapter(eventAdapter)
-                }
+                eventPresenter.view()
 
                 appCompatTextView {
                     size(MATCH, MATCH)

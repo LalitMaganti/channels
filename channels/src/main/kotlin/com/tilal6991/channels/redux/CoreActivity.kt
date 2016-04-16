@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.tilal6991.channels.R
+import com.tilal6991.channels.redux.presenter.CorePresenter
 import trikita.anvil.Anvil
 
 class CoreActivity : AppCompatActivity() {

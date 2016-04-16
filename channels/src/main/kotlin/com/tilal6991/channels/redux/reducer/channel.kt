@@ -1,6 +1,5 @@
 package com.tilal6991.channels.redux.reducer
 
-import com.github.andrewoma.dexx.collection.IndexedList
 import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Maps
 import com.tilal6991.channels.redux.Action
@@ -35,16 +34,18 @@ fun namesReducer(client: Client, channel: Channel, event: Events.OnNames): Chann
     var userMap = channel.userMap
     var modeMap = channel.modeMap
 
+    // TODO(tilal6991) - make this more intelligent by using builders and the like.
     for (i in event.nickList.indices) {
         val nick = event.nickList[i]
         val mode = event.modeList[i]
 
         val newMode = mode.getOrNull(0)
         val oldUser = userMap.get(nick)
-        val newUser = Channel.User(nick, newMode)
 
         if (oldUser == null) {
+            val newUser = Channel.User(nick, newMode)
             userMap = userMap.put(nick, newUser)
+            modeMap = modeMap.addToUserList(client, newUser)
         } else if (oldUser.mode != newMode) {
             // This is actually a bug but let's take the opportunity to correct the effect of it.
             val oldMode = oldUser.mode ?: Channel.User.NULL_MODE_CHAR
@@ -61,13 +62,10 @@ fun namesReducer(client: Client, channel: Channel, event: Events.OnNames): Chann
                     }
                 }
             }
+            modeMap = modeMap.addToUserList(client, Channel.User(nick, newMode))
         }
-        modeMap = modeMap.addToUserList(client, newUser)
     }
-
-    return channel.mutate(
-            userMap = userMap,
-            modeMap = modeMap)
+    return channel.mutate(userMap = userMap, modeMap = modeMap)
 }
 
 fun partReducer(client: Client, channel: Channel, event: Events.OnPart): Channel {
@@ -79,7 +77,7 @@ fun partReducer(client: Client, channel: Channel, event: Events.OnPart): Channel
     }
 }
 
-fun userComparator(ordering: IndexedList<Char>): Comparator<ModeSection> {
+fun userComparator(ordering: String): Comparator<ModeSection> {
     return Comparator { l, r ->
         if (l.char == r.char) {
             0

@@ -1,4 +1,4 @@
-package com.tilal6991.channels.redux
+package com.tilal6991.channels.redux.presenter
 
 import android.content.Context
 import android.content.res.Resources
@@ -11,11 +11,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.R
+import com.tilal6991.channels.redux.SectionAdapter
+import com.tilal6991.channels.redux.selectedChild
+import com.tilal6991.channels.redux.selectedClient
 import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ClientChild
+import com.tilal6991.channels.redux.subscribe
 import com.tilal6991.channels.redux.util.*
-import timber.log.Timber
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView

@@ -32,7 +32,7 @@ data class Client(val configuration: ChannelsConfiguration,
     }
 }
 
-data class ConnectionInfo(val prefixes: IndexedList<Char> = IndexedLists.of('@', '+'))
+data class ConnectionInfo(val prefixes: String = "@+")
 
 fun Client.mutate(status: Int = this.status,
                   connectionInfo: ConnectionInfo = this.connectionInfo,

@@ -1,49 +1,16 @@
 package com.tilal6991.channels.redux
 
 import com.tilal6991.channels.configuration.ChannelsConfiguration
-import com.tilal6991.channels.redux.reducer.channelsReducer
-import com.tilal6991.channels.redux.reducer.serverReducer
+import com.tilal6991.channels.redux.reducer.clientReducer
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.GlobalState
 import com.tilal6991.channels.redux.state.mutate
 import com.tilal6991.channels.redux.util.*
-import timber.log.Timber
 
 val initialState = GlobalState(
         TransactingIndexedList.empty(),
         TransactingIndexedList.empty()
 )
-
-fun clientReducer(c: Client, a: Action): Client {
-    return c.mutate(
-            server = serverReducer(c.server, a),
-            status = statusReducer(c.status, a),
-            nick = nickReducer(c, a),
-            channels = channelsReducer(c, c.channels, a))
-}
-
-fun statusReducer(status: Int, a: Action): Int {
-    return when (a) {
-        is Action.RelayEvent -> when (a.event) {
-            is Events.OnWelcome -> Client.STATUS_CONNECTED
-            is Events.OnSocketConnect -> Client.STATUS_REGISTERING
-            is Events.OnDisconnect, is Events.OnConnectFailed -> Client.STATUS_DISCONNECTED
-            else -> status
-        }
-        else -> status
-    }
-}
-
-fun nickReducer(c: Client, a: Action): String = when (a) {
-    is Action.RelayEvent -> nickRelayEvent(c, a.event)
-    else -> c.nick
-}
-
-private fun nickRelayEvent(c: Client, event: Events.Event): String = when (event) {
-    is Events.OnWelcome -> event.target
-    is Events.OnNick -> if (event.prefix.nickFromPrefix() == c.nick) event.newNick else c.nick
-    else -> c.nick
-}
 
 val reducer: (GlobalState, Action) -> GlobalState = { g, a ->
     reduce(g, a)
