@@ -32,7 +32,7 @@ data class Channel(override val name: String,
 
     data class User(val nick: String, val mode: Char?) : Comparable<User> {
         override fun compareTo(other: User): Int {
-            return nick.compareTo(other.nick)
+            return nick.compareTo(other.nick, ignoreCase = true)
         }
 
         companion object {

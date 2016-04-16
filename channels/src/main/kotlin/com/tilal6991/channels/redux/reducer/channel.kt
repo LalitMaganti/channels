@@ -81,7 +81,15 @@ fun partReducer(client: Client, channel: Channel, event: Events.OnPart): Channel
 
 fun userComparator(ordering: IndexedList<Char>): Comparator<ModeSection> {
     return Comparator { l, r ->
-        if (l == r) 0 else ordering.indexOf(l.char).compareTo(ordering.indexOf(r.char))
+        if (l.char == r.char) {
+            0
+        } else if (l.char == Channel.User.NULL_MODE_CHAR) {
+            1
+        } else if (r.char == Channel.User.NULL_MODE_CHAR) {
+            -1
+        } else {
+            ordering.indexOf(l.char).compareTo(ordering.indexOf(r.char))
+        }
     }
 }
 
@@ -140,7 +148,6 @@ fun TransactingIndexedList<ModeSection>.addToUserList(client: Client, user: Chan
                 userComparator(client.connectionInfo.prefixes))
     }
 }
-
 
 fun channelReducer(channel: Channel,
                    event: Events.Event): Channel = when (event) {
