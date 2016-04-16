@@ -59,7 +59,7 @@ class DashboardPresenter(override val context: MainActivity) : Presenter {
             theme = R.style.Theme_Design_Light_BottomSheetDialog
         }
 
-        dialog = BottomSheetDialog(context,theme)
+        dialog = BottomSheetDialog(context, theme)
 
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.dashboard_layout, null, false)

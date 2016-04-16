@@ -77,7 +77,7 @@ class ConfigurationComparator private constructor() : ObservableSortedList.Hyper
     }
 }
 
-class CharComparator  : ObservableSortedArrayMap.HyperComparator<Char>,
+class CharComparator : ObservableSortedArrayMap.HyperComparator<Char>,
         ObservableSortedList.HyperComparator<Char> {
 
     override fun areItemsTheSame(item1: Char, item2: Char): Boolean {

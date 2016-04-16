@@ -18,7 +18,7 @@ abstract class ClientStatusListener(private val relayVM: RelayVM) : Bindable {
                 if (!client.active) {
                     client.removeOnPropertyChangedCallback(this)
                 }
-            }  else if (propertyId == BR.statusInt) {
+            } else if (propertyId == BR.statusInt) {
                 onStatusChanged(relayVM.activeConfigs)
             }
         }

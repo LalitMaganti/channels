@@ -150,7 +150,7 @@ class NavigationPresenter(override val context: MainActivity,
         private lateinit var inactiveClientListener: ListSectionProxy<ChannelsConfiguration>
 
         override fun setup() {
-            val addClick: (View) -> Unit =  {
+            val addClick: (View) -> Unit = {
                 context.startActivityForResult(Intent(context, ConfigurationEditActivity::class.java), MainActivity.REQUEST_EDIT)
             }
 
@@ -165,7 +165,7 @@ class NavigationPresenter(override val context: MainActivity,
                 context.startActivityForResult(intent, MainActivity.REQUEST_SETTINGS)
             }
 
-            val clientClick: (ChannelsConfiguration) -> Unit =  {
+            val clientClick: (ChannelsConfiguration) -> Unit = {
                 if (relayVM.select(it)) {
                     drawerLayout.closeDrawer(view)
                 }
