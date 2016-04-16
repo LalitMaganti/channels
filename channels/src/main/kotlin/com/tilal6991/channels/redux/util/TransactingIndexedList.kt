@@ -1,7 +1,9 @@
 package com.tilal6991.channels.redux.util
 
 import com.github.andrewoma.dexx.collection.*
+import com.tilal6991.channels.redux.reducer.userComparator
 import com.tilal6991.channels.redux.state.Channel
+import com.tilal6991.channels.redux.state.ModeSection
 
 class TransactingIndexedList<T> private constructor(
         private val actual: IndexedList<T>,
@@ -175,6 +177,10 @@ class TransactingIndexedList<T> private constructor(
 
         fun <T> wrapping(list: IndexedList<T>): TransactingIndexedList<T> {
             return TransactingIndexedList(list, Vector.empty(), DEFAULT_MAX_SIZE, 0)
+        }
+
+        fun <T> of(item: T): TransactingIndexedList<T> {
+            return TransactingIndexedList(IndexedLists.of(item), Vector.empty(), DEFAULT_MAX_SIZE, 0)
         }
     }
 }

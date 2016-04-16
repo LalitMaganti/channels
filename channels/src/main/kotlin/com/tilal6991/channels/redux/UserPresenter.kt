@@ -15,6 +15,7 @@ import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ClientChild
 import com.tilal6991.channels.redux.util.*
+import timber.log.Timber
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
@@ -89,8 +90,8 @@ class UserPresenter(private val context: Context) : Anvil.Renderable {
         }
 
         override fun itemView(section: Int, offset: Int) {
-            val valueAt = displayedChild?.modeMap?.getValueAt(section)
-            val displayString = valueAt?.get(offset)?.nick
+            val valueAt = displayedChild?.modeMap?.get(section)
+            val displayString = valueAt?.users?.get(offset)?.nick
 
             appCompatTextView {
                 size(MATCH, WRAP)
@@ -108,8 +109,8 @@ class UserPresenter(private val context: Context) : Anvil.Renderable {
 
         override fun headerView(section: Int) {
             val userMap = displayedChild?.modeMap
-            val (key, value) = userMap?.getAt(section) ?: return
-            recyclerHeader(context, "${value.size()} $key users")
+            val secItem = userMap?.get(section) ?: return
+            recyclerHeader(context, "${secItem.users.size()} ${secItem.char} users")
         }
 
         override fun getHeaderId(section: Int): Long {
@@ -125,9 +126,7 @@ class UserPresenter(private val context: Context) : Anvil.Renderable {
         }
 
         override fun getItemCountInSection(section: Int): Int {
-            val modeMap = displayedChild?.modeMap
-            val key = modeMap?.keys()?.getAt(section) ?: return 0
-            return modeMap?.get(key)?.size() ?: 0
+            return displayedChild?.modeMap?.get(section)?.users?.size() ?: 0
         }
 
         fun onChildChanged(client: Client?, clientChild: ClientChild?) {

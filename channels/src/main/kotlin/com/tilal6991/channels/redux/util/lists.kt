@@ -1,6 +1,9 @@
 package com.tilal6991.channels.redux.util
 
 import com.github.andrewoma.dexx.collection.IndexedList
+import com.tilal6991.channels.redux.reducer.userComparator
+import com.tilal6991.channels.redux.state.Channel
+import com.tilal6991.channels.redux.state.ModeSection
 import java.util.*
 
 inline fun <T> TransactingIndexedList<T>.transform(fn: (T) -> T): TransactingIndexedList<T> {

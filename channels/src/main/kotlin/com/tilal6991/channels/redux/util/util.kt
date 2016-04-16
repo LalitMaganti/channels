@@ -19,17 +19,6 @@ import timber.log.Timber
 import trikita.anvil.DSL.*
 import java.util.*
 
-fun <T> Iterable<T>.getAt(index: Int): T? {
-    var i = 0
-    val iterator = iterator()
-    while (iterator.hasNext()) {
-        if (index == i++) {
-            return iterator.next()
-        }
-    }
-    return null
-}
-
 fun Context.resolveDrawable(attr: Int): Int {
     val tv = TypedValue();
     if (theme.resolveAttribute(attr, tv, true)) {
