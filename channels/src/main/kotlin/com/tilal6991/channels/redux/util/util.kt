@@ -1,6 +1,7 @@
 package com.tilal6991.channels.redux.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.widget.TextViewCompat
 import android.util.TypedValue
@@ -40,7 +41,7 @@ fun Context.resolveDrawable(attr: Int): Int {
 fun Context.resolveDimen(attr: Int): Int {
     val tv = TypedValue();
     if (theme.resolveAttribute(attr, tv, true)) {
-        return tv.data
+        return TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics);
     }
     return 0
 }
@@ -61,14 +62,6 @@ fun Context.resolveColor(attr: Int): Int {
     return 0
 }
 
-fun getActionBarHeight(context: Context): Int {
-    // Calculate ActionBar height
-    val tv = TypedValue();
-    if (context.theme.resolveAttribute(R.attr.actionBarSize, tv, true)) {
-        return TypedValue.complexToDimensionPixelSize(tv.data, context.resources.displayMetrics);
-    }
-    return 0
-}
 
 fun <T : Any> IndexedList<T>.getOrNull(index: Int): T? {
     return if (index >= 0 && index < size()) get(index) else null

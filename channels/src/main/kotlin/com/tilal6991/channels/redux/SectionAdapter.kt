@@ -136,16 +136,6 @@ abstract class SectionAdapter : NavigationAdapter.Child() {
         return count + getSectionHeadersBefore(getSectionCount())
     }
 
-    override final fun getItemId(position: Int): Long {
-        val section = getSectionForAdapterPosition(position)
-        val sectionOffset = getSectionOffsetForAdapterPosition(section, position)
-
-        if (sectionOffset == -1) {
-            return getHeaderId(section)
-        }
-        return getItemId(section, sectionOffset)
-    }
-
     override fun view(position: Int) {
         val section = getSectionForAdapterPosition(position)
         val sectionOffset = getSectionOffsetForAdapterPosition(section, position)

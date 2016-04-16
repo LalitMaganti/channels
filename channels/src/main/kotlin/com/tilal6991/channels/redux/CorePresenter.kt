@@ -4,30 +4,29 @@ import android.content.res.Resources
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.view.ViewCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.text.InputType
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import com.tilal6991.channels.R
-import com.tilal6991.channels.redux.util.getActionBarHeight
+import com.tilal6991.channels.redux.state.Channel
+import com.tilal6991.channels.redux.util.resolveDimen
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.view.NavigationDrawerView.Companion.navigationDrawerView
-import com.tilal6991.channels.view.ScrimInsetsLinearLayout
 import trikita.anvil.Anvil
 import trikita.anvil.Anvil.currentView
 import trikita.anvil.DSL
 import trikita.anvil.DSL.*
 import trikita.anvil.appcompat.v7.AppCompatv7DSL
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.*
-import trikita.anvil.design.DesignDSL.*
+import trikita.anvil.design.DesignDSL.appBarLayout
+import trikita.anvil.design.DesignDSL.coordinatorLayout
 import trikita.anvil.recyclerview.Recycler
 
 class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
@@ -41,7 +40,8 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
 
     private lateinit var subscription: Runnable
 
-    private var locked = DrawerLayout.LOCK_MODE_LOCKED_OPEN
+    private var navigationLockedState = DrawerLayout.LOCK_MODE_LOCKED_OPEN
+    private var userLockedState = DrawerLayout.LOCK_MODE_LOCKED_CLOSED
     private var drawerVisible = true
 
     val resources: Resources
@@ -79,9 +79,15 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
             navigationAdapter.setData(selectedClient())
 
             if (selectedChild() == null) {
-                locked = DrawerLayout.LOCK_MODE_LOCKED_OPEN
+                navigationLockedState = DrawerLayout.LOCK_MODE_LOCKED_OPEN
             } else {
-                locked = DrawerLayout.LOCK_MODE_UNLOCKED
+                navigationLockedState = DrawerLayout.LOCK_MODE_UNLOCKED
+            }
+
+            if (selectedChild() is Channel) {
+                userLockedState = DrawerLayout.LOCK_MODE_UNLOCKED
+            } else {
+                userLockedState = DrawerLayout.LOCK_MODE_LOCKED_CLOSED
             }
         }
         userPresenter.bind()
@@ -138,7 +144,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                         }
 
                         val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT,
-                                getActionBarHeight(context))
+                                context.resolveDimen(R.attr.actionBarSize))
                         layoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                         layoutParams(layoutParams)
 
@@ -188,8 +194,9 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
 
         userPresenter.view()
 
-        attr({ v, n, o -> (v as DrawerLayout).setDrawerLockMode(n, Gravity.START) }, locked)
-        if (locked == DrawerLayout.LOCK_MODE_UNLOCKED) {
+        attr({ v, n, o -> (v as DrawerLayout).setDrawerLockMode(n, Gravity.START) }, navigationLockedState)
+        attr({ v, n, o -> (v as DrawerLayout).setDrawerLockMode(n, Gravity.END) }, userLockedState)
+        if (navigationLockedState == DrawerLayout.LOCK_MODE_UNLOCKED) {
             attr({ v, n, o ->
                 if (n) {
                     (v as DrawerLayout).openDrawer(Gravity.START)

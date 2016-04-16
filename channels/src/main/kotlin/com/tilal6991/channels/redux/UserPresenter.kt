@@ -58,7 +58,7 @@ class UserPresenter(private val context: Context) : Anvil.Renderable {
 
             view {
                 id(R.id.user_toolbar)
-                size(MATCH, getActionBarHeight(context))
+                size(MATCH, context.resolveDimen(R.attr.actionBarSize))
                 backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             }
 
