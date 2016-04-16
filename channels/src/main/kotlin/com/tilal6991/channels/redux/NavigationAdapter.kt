@@ -37,6 +37,10 @@ class NavigationAdapter(
     }
 
     fun updateContentAdapter(adapter: Child) {
+        if (contentAdapter == adapter) {
+            return
+        }
+
         contentAdapter.unregisterAdapterDataObserver(observer)
         contentAdapter = adapter
         adapter.registerAdapterDataObserver(observer)

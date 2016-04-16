@@ -54,13 +54,20 @@ fun selectedClient(): Client? {
     return selectedClientSelector(currentState, Unit)
 }
 
+private val selectedChildSelector = createSelector(
+        { state: GlobalState, p: Unit -> selectedClient() },
+        {
+            if (it == null) return@createSelector null
+            when (it.selectedType) {
+                Client.SELECTED_SERVER -> it.server
+                Client.SELECTED_CHANNEL -> it.channels[it.selectedIndex]
+                else -> null
+            }
+        }
+)
+
 fun selectedChild(): ClientChild? {
-    val currentClient = selectedClient() ?: return null
-    return when (currentClient.selectedType) {
-        Client.SELECTED_SERVER -> currentClient.server
-        Client.SELECTED_CHANNEL -> currentClient.channels[currentClient.selectedIndex]
-        else -> null
-    }
+    return selectedChildSelector(currentState, Unit)
 }
 
 fun message(child: ClientChild?): CharSequence? {

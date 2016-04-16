@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.view.ViewCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
@@ -16,23 +17,27 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import com.tilal6991.channels.R
+import com.tilal6991.channels.redux.util.getActionBarHeight
 import com.tilal6991.channels.view.EventRecyclerView
 import com.tilal6991.channels.view.NavigationDrawerView.Companion.navigationDrawerView
+import com.tilal6991.channels.view.ScrimInsetsLinearLayout
 import trikita.anvil.Anvil
 import trikita.anvil.Anvil.currentView
 import trikita.anvil.DSL
 import trikita.anvil.DSL.*
+import trikita.anvil.appcompat.v7.AppCompatv7DSL
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.*
-import trikita.anvil.design.DesignDSL.appBarLayout
-import trikita.anvil.design.DesignDSL.coordinatorLayout
+import trikita.anvil.design.DesignDSL.*
 import trikita.anvil.recyclerview.Recycler
 
 class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
-    private var clientAdapter: NavigationClientAdapter? = null
-    private var childAdapter: NavigationChildAdapter? = null
-    private var currentAdapter: NavigationAdapter.Child? = null
-    private var navigationAdapter: NavigationAdapter? = null
-    private var eventAdapter: MainItemAdapter? = null
+    private lateinit var userPresenter: UserPresenter
+
+    private lateinit var clientAdapter: NavigationClientAdapter
+    private lateinit var childAdapter: NavigationChildAdapter
+    private lateinit var currentAdapter: NavigationAdapter.Child
+    private lateinit var navigationAdapter: NavigationAdapter
+    private lateinit var eventAdapter: MainItemAdapter
 
     private lateinit var subscription: Runnable
 
@@ -44,32 +49,31 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
 
     fun setup() {
         clientAdapter = NavigationClientAdapter(context, currentState.clients)
-        clientAdapter!!.setup()
+        clientAdapter.setup()
 
         childAdapter = NavigationChildAdapter(context)
-        childAdapter!!.setup()
+        childAdapter.setup()
 
-        navigationAdapter = NavigationAdapter(context, clientAdapter!!) {
+        navigationAdapter = NavigationAdapter(context, clientAdapter) {
             currentAdapter = if (currentAdapter == clientAdapter) {
                 childAdapter
             } else {
                 clientAdapter
             }
-            navigationAdapter?.updateContentAdapter(currentAdapter!!)
         }
         currentAdapter = clientAdapter
 
         eventAdapter = MainItemAdapter(context)
-        eventAdapter?.setData(selectedChild()?.buffer)
-        eventAdapter?.setHasStableIds(true)
+        eventAdapter.setData(selectedChild()?.buffer)
+        eventAdapter.setHasStableIds(true)
     }
 
     fun bind() {
         subscription = subscribe(context) {
-            childAdapter?.setData(selectedClient())
-            clientAdapter?.setData(it.clients)
-            eventAdapter?.setData(selectedChild()?.buffer)
-            navigationAdapter?.setData(selectedClient())
+            childAdapter.setData(selectedClient())
+            clientAdapter.setData(it.clients)
+            eventAdapter.setData(selectedChild()?.buffer)
+            navigationAdapter.setData(selectedClient())
 
             if (selectedChild() == null) {
                 locked = DrawerLayout.LOCK_MODE_LOCKED_OPEN
@@ -84,8 +88,6 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
     }
 
     override fun view() {
-        val selectedChildBuffer = selectedChild()?.buffer
-
         linearLayout {
             size(MATCH, MATCH)
             DSL.orientation(LinearLayout.VERTICAL)
@@ -107,7 +109,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                     id(R.id.event_recycler)
                     padding(dip(8))
                     clipToPadding(false)
-                    visibility(selectedChildBuffer != null)
+                    visibility(selectedChild() != null)
 
                     Recycler.adapter(eventAdapter)
                 }
@@ -118,7 +120,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                     DSL.gravity(CENTER)
                     padding(dip(32))
                     text(R.string.no_child_selected)
-                    visibility(selectedChildBuffer == null)
+                    visibility(selectedChild() == null)
                 }
 
                 appBarLayout {
@@ -130,7 +132,8 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                             currentView.navigationIcon = DrawerArrowDrawable(context)
                         }
 
-                        val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT, getActionBarHeight())
+                        val layoutParams = AppBarLayout.LayoutParams(MATCH_PARENT,
+                                getActionBarHeight(context))
                         layoutParams.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                         layoutParams(layoutParams)
 
@@ -139,7 +142,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                             Anvil.render()
                         }
 
-                        title(selectedChild()?.name ?: "Channels")
+                        AppCompatv7DSL.title(selectedChild()?.name ?: "Channels")
                         subtitle(selectedClient()?.configuration?.name)
                         backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
                     }
@@ -174,10 +177,13 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
 
                 size(MATCH, MATCH)
                 Recycler.adapter(navigationAdapter)
+                navigationAdapter.updateContentAdapter(currentAdapter)
             }
         }
 
-        attr({ v, n, o -> (v as DrawerLayout).setDrawerLockMode(n) }, locked)
+        userPresenter.view()
+
+        attr({ v, n, o -> (v as DrawerLayout).setDrawerLockMode(n, Gravity.START) }, locked)
         if (locked == DrawerLayout.LOCK_MODE_UNLOCKED) {
             attr({ v, n, o ->
                 if (n) {
@@ -187,14 +193,5 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                 }
             }, drawerVisible)
         }
-    }
-
-    private fun getActionBarHeight(): Int {
-        // Calculate ActionBar height
-        val tv = TypedValue();
-        if (context.theme.resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            return TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics);
-        }
-        return 0
     }
 }

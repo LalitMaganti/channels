@@ -47,6 +47,15 @@ fun Context.resolveColor(attr: Int): Int {
     return 0
 }
 
+fun getActionBarHeight(context: Context): Int {
+    // Calculate ActionBar height
+    val tv = TypedValue();
+    if (context.theme.resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        return TypedValue.complexToDimensionPixelSize(tv.data, context.resources.displayMetrics);
+    }
+    return 0
+}
+
 fun <T : Any> IndexedList<T>.getOrNull(index: Int): T? {
     return if (index >= 0 && index < size()) get(index) else null
 }
