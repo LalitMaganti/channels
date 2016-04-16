@@ -27,7 +27,13 @@ fun channelRelayReducer(client: Client,
     is Events.OnJoin -> channels.findNullable(event.channel) { joinReducer(client, it, event) }
     is Events.OnPart -> channels.find(event.channel) { partReducer(client, it, event) }
     is Events.OnNames -> channels.find(event.channelName) { namesReducer(client, it, event) }
+    is Events.OnPrivmsg -> channels.findNullable(event.target) { privmsgReducer(it, event) }
     else -> channels.transform { channelReducer(it, event) }
+}
+
+fun privmsgReducer(channel: Channel?, event: Events.OnPrivmsg): Channel? {
+    // TODO(tilal6991) - more advanced parsing here based on CHANTYPES ISUPPORT token.
+    return channel?.append("${event.prefix.nickFromPrefix()}: ${event.message}")
 }
 
 fun namesReducer(client: Client, channel: Channel, event: Events.OnNames): Channel {
@@ -131,7 +137,7 @@ fun TransactingIndexedList<Channel>.find(name: String, fn: (Channel) -> Channel)
     return binaryMutate(name, { it.name }, { if (it == null) null else fn(it) }, ignoreCaseComparator)
 }
 
-fun TransactingIndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel): TransactingIndexedList<Channel> {
+fun TransactingIndexedList<Channel>.findNullable(name: String, fn: (Channel?) -> Channel?): TransactingIndexedList<Channel> {
     return binaryMutate(name, { it.name }, fn, ignoreCaseComparator)
 }
 

@@ -135,6 +135,13 @@ fun Server.append(text: String?): Server {
     return copy(buffer = buffer.append(text))
 }
 
+fun Channel.append(text: String?): Channel {
+    if (text == null) {
+        return this
+    }
+    return copy(buffer = buffer.append(text))
+}
+
 internal fun Int.displayCode(): Boolean {
     return displayedCodes.contains(this)
 }
