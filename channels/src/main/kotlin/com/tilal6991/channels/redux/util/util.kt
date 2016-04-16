@@ -18,15 +18,29 @@ import timber.log.Timber
 import trikita.anvil.DSL.*
 import java.util.*
 
-sealed class Either<out A, out B> private constructor() {
-    class Left<A>(val value: A) : Either<A, Nothing>()
-    class Right<B>(val value: B) : Either<Nothing, B>()
+fun <T> Iterable<T>.getAt(index: Int): T? {
+    var i = 0
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        if (index == i++) {
+            return iterator.next()
+        }
+    }
+    return null
 }
 
 fun Context.resolveDrawable(attr: Int): Int {
     val tv = TypedValue();
     if (theme.resolveAttribute(attr, tv, true)) {
         return tv.resourceId
+    }
+    return 0
+}
+
+fun Context.resolveDimen(attr: Int): Int {
+    val tv = TypedValue();
+    if (theme.resolveAttribute(attr, tv, true)) {
+        return tv.data
     }
     return 0
 }
@@ -132,13 +146,6 @@ fun String.nickFromPrefix(): String {
     return MoreStringUtils.nickFromPrefix(this)
 }
 
-fun Channel.append(text: String?): Channel {
-    if (text == null) {
-        return this
-    }
-    return copy(buffer = buffer.append(text))
-}
-
 fun Server.append(text: String?): Server {
     if (text == null) {
         return this
@@ -158,7 +165,15 @@ private val displayedCodes: Set<Int> = arrayOf(
         ReplyCodes.RPL_MOTD, ReplyCodes.RPL_ENDOFMOTD
 ).toCollection(HashSet())
 
-fun recyclerHeader(context: Context, id: Int) {
+fun recyclerHeader(context: Context, id: Int) = recyclerHeader(context) {
+    text(id)
+}
+
+fun recyclerHeader(context: Context, string: String) = recyclerHeader(context) {
+    text(string)
+}
+
+private inline fun recyclerHeader(context: Context, crossinline textSetter: () -> Unit) {
     textView {
         size(MATCH, WRAP)
         gravity(CENTER_VERTICAL or START)
@@ -167,6 +182,6 @@ fun recyclerHeader(context: Context, id: Int) {
         attr({ v, n, o -> TextViewCompat.setTextAppearance((v as TextView), n) },
                 R.style.TextAppearance_AppCompat_Body2)
         textColor(context.resolveColor(android.R.attr.textColorSecondary))
-        text(id)
+        textSetter()
     }
 }

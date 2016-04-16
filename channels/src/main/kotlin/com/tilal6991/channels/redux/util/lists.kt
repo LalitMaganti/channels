@@ -21,6 +21,12 @@ fun <T : Comparable<T>> TransactingIndexedList<T>.addSorted(elem: T): Transactin
     return addAt(elem, elementsBefore)
 }
 
+fun <T> TransactingIndexedList<T>.addSorted(elem: T, comparator: Comparator<T>): TransactingIndexedList<T> {
+    val index = binarySearch(elem, { it }, comparator)
+    val elementsBefore = if (index >= 0) index + 1 else -index - 1
+    return addAt(elem, elementsBefore)
+}
+
 fun <T, U : Comparable<U>> IndexedList<T>.binarySearch(elem: U, selector: (T) -> U): Int {
     var low = 0
     var high = size() - 1

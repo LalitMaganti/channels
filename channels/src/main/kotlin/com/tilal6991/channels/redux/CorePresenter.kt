@@ -66,6 +66,9 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
         eventAdapter = MainItemAdapter(context)
         eventAdapter.setData(selectedChild()?.buffer)
         eventAdapter.setHasStableIds(true)
+
+        userPresenter = UserPresenter(context)
+        userPresenter.setup()
     }
 
     fun bind() {
@@ -81,10 +84,12 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                 locked = DrawerLayout.LOCK_MODE_UNLOCKED
             }
         }
+        userPresenter.bind()
     }
 
     fun unbind() {
         subscription.run()
+        userPresenter.unbind()
     }
 
     override fun view() {

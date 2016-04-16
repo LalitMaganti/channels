@@ -108,7 +108,7 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
         displayedClient = selectedClient
 
         if (oldClient?.configuration?.name != selectedClient?.configuration?.name) {
-            transactionNumber = selectedClient?.channels?.transactionNumber() ?: 0
+            transactionNumber = selectedClient?.channels?.transactionCount() ?: 0
             return notifySectionedDataSetChanged()
         }
 
@@ -118,13 +118,13 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
 
         if (selectedClient != null && oldClient?.channels !== selectedClient.channels) {
             val channels = selectedClient.channels
-            val toConsume = channels.transactionNumber() - transactionNumber
+            val toConsume = channels.transactionCount() - transactionNumber
             if (toConsume > channels.maxSize()) {
                 notifySectionedDataSetChanged()
             } else if (toConsume > 0) {
                 consumeTransactions(channels.transactions, toConsume)
             }
-            transactionNumber = channels.transactionNumber()
+            transactionNumber = channels.transactionCount()
         }
     }
 

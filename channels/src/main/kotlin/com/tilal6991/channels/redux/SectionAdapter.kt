@@ -1,17 +1,13 @@
 package com.tilal6991.channels.redux
 
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.ViewGroup
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import java.util.*
 
 abstract class SectionAdapter : NavigationAdapter.Child() {
-
-    override val itemCount: Int
-        get() {
-            checkSetup()
-            return count + getSectionHeadersBefore(getSectionCount())
-        }
 
     private val sectionAbsolutePositions: MutableList<Int>
     private var count: Int = 0
@@ -24,6 +20,10 @@ abstract class SectionAdapter : NavigationAdapter.Child() {
     fun setup() {
         setupComplete = true
         notifySectionedDataSetChanged()
+    }
+
+    override final fun view(holder: RecyclerView.ViewHolder) {
+        view(holder.adapterPosition)
     }
 
     abstract fun isHeaderDisplayedForSection(section: Int): Boolean
@@ -82,11 +82,13 @@ abstract class SectionAdapter : NavigationAdapter.Child() {
         count += insertCount
     }
 
-    fun notifyItemRangeMovedInSection(section: Int, fromPosition: Int, toPosition: Int, itemCount: Int) {
+    fun notifyItemRangeMovedInSection(section: Int, fromPosition: Int, toPosition: Int, count: Int) {
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
-        notifyItemRangeMoved(sectionItemStart + fromPosition, sectionItemStart + toPosition, itemCount)
+        for (i in 0..count - 1) {
+            notifyItemMoved(sectionItemStart + fromPosition + i, sectionItemStart + toPosition + i)
+        }
     }
 
     fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int) {
@@ -127,6 +129,11 @@ abstract class SectionAdapter : NavigationAdapter.Child() {
             return getHeaderViewType(section)
         }
         return getSectionedItemViewType(section, sectionOffset)
+    }
+
+    override fun getItemCount(): Int {
+        checkSetup()
+        return count + getSectionHeadersBefore(getSectionCount())
     }
 
     override final fun getItemId(position: Int): Long {

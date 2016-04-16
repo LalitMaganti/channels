@@ -1,8 +1,7 @@
 package com.tilal6991.channels.redux.util
 
 import com.github.andrewoma.dexx.collection.*
-import com.github.andrewoma.dexx.collection.Vector
-import java.util.ArrayList
+import com.tilal6991.channels.redux.state.Channel
 
 class TransactingIndexedList<T> private constructor(
         private val actual: IndexedList<T>,
@@ -10,9 +9,7 @@ class TransactingIndexedList<T> private constructor(
         private val maxSize: Int,
         private val runningCount: Int) : IndexedList<T> by actual {
 
-    constructor(maxSize: Int = DEFAULT_MAX_SIZE) : this(Vector.empty(), Vector.empty(), maxSize, 0)
-
-    fun transactionNumber(): Int {
+    fun transactionCount(): Int {
         return runningCount
     }
 
@@ -109,64 +106,44 @@ class TransactingIndexedList<T> private constructor(
     }
 
     private fun maxAppend(list: IndexedList<Transaction>, elem: Transaction): IndexedList<Transaction> {
-        if (maxSize >= list.size()) {
-            val i = maxSize - list.size() - 1
+        if (list.size() >= maxSize) {
+            val i = list.size() - maxSize + 1
             return list.drop(i).append(elem)
         }
         return list.append(elem)
     }
 
+    override fun toString(): String {
+        return actual.joinToString(limit = 10)
+    }
+
     class TransactingBuilder<T> internal constructor() : Builder<T, TransactingIndexedList<T>> {
 
-        private val transactions = ArrayList<Transaction>()
-        private var actualBuilder: Builder<T, IndexedList<T>> = IndexedLists.builder<T>()
-        private var count = 0
+        private var actualBuilder = IndexedLists.builder<T>()
         private var maxSize = DEFAULT_MAX_SIZE
 
         override fun add(element: T): Builder<T, TransactingIndexedList<T>> {
-            transactions.add(Transaction(ADD, count++, -1, 1))
             actualBuilder = actualBuilder.add(element)
             return this
         }
 
         override fun addAll(elements: Traversable<T>): Builder<T, TransactingIndexedList<T>> {
-            transactions.add(Transaction(ADD, count, -1, elements.size()))
-            count += elements.size()
             actualBuilder = actualBuilder.addAll(elements)
             return this
         }
 
         override fun addAll(elements: MutableIterable<T>): Builder<T, TransactingIndexedList<T>> {
-            var runningCount = 0
-            for (i in elements) {
-                actualBuilder = actualBuilder.add(i)
-                runningCount++
-            }
-            transactions.add(Transaction(ADD, count, -1, runningCount))
-            count += runningCount
+            actualBuilder = actualBuilder.addAll(elements)
             return this
         }
 
         override fun addAll(iterator: MutableIterator<T>): Builder<T, TransactingIndexedList<T>> {
-            var runningCount = 0
-            for (i in iterator) {
-                actualBuilder = actualBuilder.add(i)
-                runningCount++
-            }
-            transactions.add(Transaction(ADD, count, -1, runningCount))
-            count += runningCount
+            actualBuilder = actualBuilder.addAll(iterator)
             return this
         }
 
         override fun addAll(e1: T, e2: T, vararg es: T): Builder<T, TransactingIndexedList<T>> {
-            var runningCount = 2
-            actualBuilder = actualBuilder.add(e1).add(e2)
-            for (i in es) {
-                actualBuilder = actualBuilder.add(i)
-                runningCount++
-            }
-            transactions.add(Transaction(ADD, count, -1, runningCount))
-            count += runningCount
+            actualBuilder = actualBuilder.addAll(e1, e2, *es)
             return this
         }
 
@@ -175,10 +152,7 @@ class TransactingIndexedList<T> private constructor(
         }
 
         override fun build(): TransactingIndexedList<T> {
-            return TransactingIndexedList(actualBuilder.build(),
-                    IndexedLists.copyOf(transactions),
-                    maxSize,
-                    transactions.size)
+            return TransactingIndexedList(actualBuilder.build(), Vector.empty(), maxSize, 0)
         }
     }
 
@@ -193,6 +167,14 @@ class TransactingIndexedList<T> private constructor(
 
         fun <T> builder(): TransactingIndexedList.TransactingBuilder<T> {
             return TransactingIndexedList.TransactingBuilder()
+        }
+
+        fun <T> empty(): TransactingIndexedList<T> {
+            return TransactingIndexedList(Vector.empty(), Vector.empty(), DEFAULT_MAX_SIZE, 0)
+        }
+
+        fun <T> wrapping(list: IndexedList<T>): TransactingIndexedList<T> {
+            return TransactingIndexedList(list, Vector.empty(), DEFAULT_MAX_SIZE, 0)
         }
     }
 }

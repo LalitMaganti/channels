@@ -7,10 +7,11 @@ import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.GlobalState
 import com.tilal6991.channels.redux.state.mutate
 import com.tilal6991.channels.redux.util.*
+import timber.log.Timber
 
 val initialState = GlobalState(
-        TransactingIndexedList(),
-        TransactingIndexedList()
+        TransactingIndexedList.empty(),
+        TransactingIndexedList.empty()
 )
 
 fun clientReducer(c: Client, a: Action): Client {

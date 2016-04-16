@@ -14,12 +14,12 @@ class CoreActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         corePresenter = CorePresenter(this)
+        corePresenter.setup()
 
         val parent = findViewById(android.R.id.content) as ViewGroup
         val drawerLayout = layoutInflater.inflate(R.layout.activity_core, parent, false)
         setContentView(Anvil.mount(drawerLayout, corePresenter))
 
-        corePresenter.setup()
         Anvil.render()
     }
 

@@ -5,6 +5,7 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.tilal6991.channels.R
@@ -197,45 +198,8 @@ class NavigationAdapter(
         }
     }
 
-    abstract class Child {
-        abstract val itemCount: Int
-        private var observers: MutableList<RecyclerView.AdapterDataObserver>? = null
-
-        abstract fun getItemViewType(position: Int): Int
+    abstract class Child : RenderableRecyclerViewAdapter() {
         abstract fun view(position: Int)
-
-        fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
-            if (observers == null) {
-                observers = ArrayList()
-            }
-            observers!!.add(observer)
-        }
-
-        fun unregisterAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
-            observers?.remove(observer)
-        }
-
-        fun notifyDataSetChanged() {
-            observers?.forEach { it.onChanged() }
-        }
-
-        fun notifyItemRangeInserted(positionStart: Int, itemCount: Int) {
-            observers?.forEach { it.onItemRangeInserted(positionStart, itemCount) }
-        }
-
-        fun notifyItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
-            observers?.forEach { it.onItemRangeMoved(fromPosition, toPosition, itemCount) }
-        }
-
-        fun notifyItemRangeChanged(positionStart: Int, itemCount: Int) {
-            observers?.forEach { it.onItemRangeChanged(positionStart, itemCount) }
-        }
-
-        fun notifyItemRangeRemoved(positionStart: Int, itemCount: Int) {
-            observers?.forEach { it.onItemRangeRemoved(positionStart, itemCount) }
-        }
-
-        abstract fun getItemId(position: Int): Long
     }
 
     companion object {

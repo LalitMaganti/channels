@@ -19,7 +19,7 @@ public class ScrimInsetsLinearLayout extends LinearLayout {
 
     private Rect mInsets;
 
-    private Rect mTempRect = new Rect();
+    private final Rect mTempRect = new Rect();
 
     public ScrimInsetsLinearLayout(Context context) {
         this(context, null);
