@@ -25,17 +25,12 @@ import com.tilal6991.channels.databinding.ConfigurationEditAuthBinding
 import com.tilal6991.channels.databinding.ConfigurationEditServerBinding
 import com.tilal6991.channels.databinding.ConfigurationEditUserBinding
 import com.tilal6991.channels.db.connectionDb
-import com.tilal6991.channels.ui.ConfigurationAuthPresenter
-import com.tilal6991.channels.ui.ConfigurationServerPresenter
-import com.tilal6991.channels.ui.ConfigurationUserPresenter
-import com.tilal6991.channels.ui.Presenter
 import com.tilal6991.channels.ui.helper.CommitingBooleanWatcher
 import com.tilal6991.channels.ui.helper.CommitingIntWatcher
 import com.tilal6991.channels.ui.helper.CommitingNullableWatcher
 import com.tilal6991.channels.ui.helper.CommitingWatcher
 import com.tilal6991.channels.util.addAll
 import org.parceler.Parcels
-import rx.schedulers.Schedulers
 import java.util.*
 
 class ConfigurationEditActivity : AppCompatActivity() {

@@ -1,8 +1,9 @@
 package com.tilal6991.channels.redux.reducer
 
+import com.brianegan.bansa.Action
 import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Maps
-import com.tilal6991.channels.redux.Action
+import com.tilal6991.channels.redux.Actions
 import com.tilal6991.channels.redux.Events
 import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.state.Client
@@ -17,7 +18,7 @@ import java.util.*
 fun channelsReducer(client: Client,
                     channels: TransactingIndexedList<Channel>,
                     a: Action): TransactingIndexedList<Channel> = when (a) {
-    is Action.RelayEvent -> channelRelayReducer(client, channels, a.event)
+    is Actions.RelayEvent -> channelRelayReducer(client, channels, a.event)
     else -> channels
 }
 

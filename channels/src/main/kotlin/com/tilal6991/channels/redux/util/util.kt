@@ -1,14 +1,11 @@
 package com.tilal6991.channels.redux.util
 
 import android.content.Context
-import android.content.res.Resources
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.widget.TextViewCompat
 import android.util.TypedValue
 import android.widget.TextView
 import com.github.andrewoma.dexx.collection.IndexedList
-import com.github.andrewoma.dexx.collection.IndexedLists
-import com.github.andrewoma.dexx.collection.Traversable
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.redux.state.*

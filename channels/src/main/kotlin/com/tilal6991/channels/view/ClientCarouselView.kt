@@ -8,10 +8,10 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import com.amulyakhare.textdrawable.TextDrawable
 import com.tilal6991.channels.R
 import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.SelectedClientsVM
-import com.amulyakhare.textdrawable.TextDrawable
 
 /**
  * BUGS: selecting one image and then another very quickly

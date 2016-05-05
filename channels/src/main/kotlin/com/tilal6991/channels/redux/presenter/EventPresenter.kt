@@ -13,7 +13,8 @@ import com.tilal6991.channels.redux.subscribe
 import com.tilal6991.channels.view.EventRecyclerView
 import trikita.anvil.Anvil.currentView
 import trikita.anvil.DSL.*
-import trikita.anvil.recyclerview.Recycler
+import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.adapter
+import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.layoutManager
 
 class EventPresenter(private val context: Context) {
     private lateinit var eventAdapter: MainItemAdapter
@@ -44,7 +45,7 @@ class EventPresenter(private val context: Context) {
                         currentView(), linearLayoutManager, eventAdapter)
                 attr({ v, n, o -> (v as EventRecyclerView).addOnScrollListener(n) }, listener)
                 attr({ v, n, o -> v.addOnLayoutChangeListener(n) }, listener)
-                Recycler.layoutManager(linearLayoutManager)
+                layoutManager(linearLayoutManager)
             }
 
             val layoutParams = CoordinatorLayout.LayoutParams(MATCH, MATCH)
@@ -56,7 +57,7 @@ class EventPresenter(private val context: Context) {
             clipToPadding(false)
             visibility(selectedChild() != null)
 
-            Recycler.adapter(eventAdapter)
+            adapter(eventAdapter)
         }
     }
 

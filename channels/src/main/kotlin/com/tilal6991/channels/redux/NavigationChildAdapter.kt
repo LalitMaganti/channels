@@ -5,7 +5,6 @@ import android.text.TextUtils
 import android.widget.LinearLayout.VERTICAL
 import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.R
-import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.TransactingIndexedList
 import com.tilal6991.channels.redux.util.recyclerHeader
@@ -15,7 +14,8 @@ import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import trikita.anvil.DSL.*
 
-class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
+class NavigationChildAdapter(private val context: Context,
+                             private val clickListener: (Int, Int) -> Unit) : SectionAdapter() {
 
     private var displayedClient: Client? = null
     private var transactionNumber = 0
@@ -35,10 +35,8 @@ class NavigationChildAdapter(private val context: Context) : SectionAdapter() {
 
     override fun itemView(section: Int, offset: Int) {
         backgroundResource(context.resolveDrawable(R.attr.selectableItemBackground))
-        onClick {
-            val type = if (section == 0) Client.SELECTED_SERVER else Client.SELECTED_CHANNEL
-            context.store.dispatch(Action.ChangeSelectedChild(type, offset))
-        }
+        val type = if (section == 0) Client.SELECTED_SERVER else Client.SELECTED_CHANNEL
+        onClick { clickListener(type, offset) }
 
         val child = if (section == 0) displayedClient?.server else displayedClient?.channels?.get(offset)
         linearLayout {

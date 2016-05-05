@@ -1,11 +1,9 @@
 package com.tilal6991.channels.view
 
 import android.content.Context
-import android.support.design.internal.ScrimInsetsFrameLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.widget.ImageView
 import butterknife.bindView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.adapter.NavigationAdapter

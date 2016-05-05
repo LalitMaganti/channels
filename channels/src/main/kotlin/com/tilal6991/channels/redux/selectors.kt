@@ -3,8 +3,8 @@ package com.tilal6991.channels.redux
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.brianegan.bansa.Subscription
 import com.tilal6991.channels.base.store
-import com.tilal6991.channels.redux.bansa.Subscription
 import com.tilal6991.channels.redux.reselect.Reselect.createSelector
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ClientChild

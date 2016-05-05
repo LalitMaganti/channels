@@ -5,7 +5,6 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.tilal6991.channels.R
@@ -18,7 +17,6 @@ import com.tilal6991.channels.view.NavigationHeaderImageView
 import trikita.anvil.DSL.*
 import trikita.anvil.RenderableRecyclerViewAdapter
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
-import java.util.*
 
 class NavigationAdapter(
         private val context: Context,

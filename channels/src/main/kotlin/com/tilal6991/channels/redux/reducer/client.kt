@@ -1,6 +1,7 @@
 package com.tilal6991.channels.redux.reducer
 
-import com.tilal6991.channels.redux.Action
+import com.brianegan.bansa.Action
+import com.tilal6991.channels.redux.Actions
 import com.tilal6991.channels.redux.Events
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ConnectionInfo
@@ -17,7 +18,7 @@ fun clientReducer(c: Client, a: Action): Client {
 }
 
 fun connectionInfoReducer(ci: ConnectionInfo, a: Action): ConnectionInfo = when (a) {
-    is Action.RelayEvent -> when (a.event) {
+    is Actions.RelayEvent -> when (a.event) {
         is Events.OnIsupport -> {
             val index = a.event.keys.indexOf("PREFIX")
             if (index >= 0) {
@@ -34,7 +35,7 @@ fun connectionInfoReducer(ci: ConnectionInfo, a: Action): ConnectionInfo = when 
 
 fun statusReducer(status: Int, a: Action): Int {
     return when (a) {
-        is Action.RelayEvent -> when (a.event) {
+        is Actions.RelayEvent -> when (a.event) {
             is Events.OnWelcome -> Client.STATUS_CONNECTED
             is Events.OnSocketConnect -> Client.STATUS_REGISTERING
             is Events.OnDisconnect, is Events.OnConnectFailed -> Client.STATUS_DISCONNECTED
@@ -45,7 +46,7 @@ fun statusReducer(status: Int, a: Action): Int {
 }
 
 fun nickReducer(c: Client, a: Action): String = when (a) {
-    is Action.RelayEvent -> {
+    is Actions.RelayEvent -> {
         val event = a.event
         when (event) {
             is Events.OnWelcome -> event.target

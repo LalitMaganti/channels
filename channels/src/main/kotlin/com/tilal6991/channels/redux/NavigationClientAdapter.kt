@@ -5,7 +5,6 @@ import android.text.TextUtils
 import android.widget.LinearLayout.*
 import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.R
-import com.tilal6991.channels.base.store
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.util.*
 import com.tilal6991.channels.util.failAssert
@@ -15,7 +14,8 @@ import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatImageView
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
 
 class NavigationClientAdapter(private val context: Context,
-                              private var clients: IndexedList<Client>) : SectionAdapter() {
+                              private var clients: IndexedList<Client>,
+                              private val clientClick: (Client) -> Unit) : SectionAdapter() {
 
     override fun headerView(section: Int) {
         val textId: Int
@@ -43,9 +43,7 @@ class NavigationClientAdapter(private val context: Context,
     private fun clientItemView(section: Int, offset: Int) {
         linearLayout {
             val client = clients[offset]
-            onClick {
-                context.store.dispatch(Action.SelectClient(client.configuration))
-            }
+            onClick { clientClick(client) }
             backgroundResource(context.resolveDrawable(R.attr.selectableItemBackground))
 
             size(MATCH, dip(72))

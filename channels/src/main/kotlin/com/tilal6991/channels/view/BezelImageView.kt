@@ -17,7 +17,6 @@
 package com.tilal6991.channels.view
 
 import android.content.Context
-import android.databinding.ObservableList
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.v4.view.ViewCompat

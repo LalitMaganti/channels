@@ -1,7 +1,5 @@
 package com.tilal6991.channels.redux.state
 
-import com.github.andrewoma.dexx.collection.IndexedList
-import com.github.andrewoma.dexx.collection.IndexedLists
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.redux.util.TransactingIndexedList
 

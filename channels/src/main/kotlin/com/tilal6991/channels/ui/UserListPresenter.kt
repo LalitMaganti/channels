@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.adapter.HeaderViewHolder
-import com.tilal6991.channels.adapter.NavigationClientAdapter
 import com.tilal6991.channels.adapter.SectionAdapter
 import com.tilal6991.channels.ui.helper.ClientChildListener
 import com.tilal6991.channels.viewmodel.ChannelVM

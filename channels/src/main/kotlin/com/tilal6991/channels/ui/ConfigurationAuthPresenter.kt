@@ -14,7 +14,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.tilal6991.channels.R
-import com.tilal6991.channels.ui.ConfigurationEditActivity
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.databinding.ConfigurationEditAuthBinding

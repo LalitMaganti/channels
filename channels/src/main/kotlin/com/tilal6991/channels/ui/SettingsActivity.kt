@@ -9,7 +9,6 @@ import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.widget.Toolbar
 import butterknife.bindView
 import com.tilal6991.channels.R
-import org.jetbrains.anko.db.INTEGER
 
 class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 

@@ -2,9 +2,12 @@ package com.tilal6991.channels.redux
 
 import android.content.Context
 import android.support.v4.util.ArrayMap
+import com.brianegan.bansa.Action
+import com.brianegan.bansa.Middleware
+import com.brianegan.bansa.NextDispatcher
+import com.brianegan.bansa.Store
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
-import com.tilal6991.channels.redux.bansa.Store
 import com.tilal6991.channels.redux.state.GlobalState
 import com.tilal6991.channels.relay.*
 import com.tilal6991.listen.EventObjectListener
@@ -16,30 +19,24 @@ import de.duenndns.ssl.MemorizingTrustManager
 
 val clients = ArrayMap<ChannelsConfiguration, RelayClient>()
 
-fun relayMiddleware(context: Context): (Store<GlobalState, Action>) -> ((Action) -> Unit) -> (Action) -> Unit {
-    return { store -> { next -> { action -> calculate(context, store, next, action) } } }
-}
+fun relayMiddleware(context: Context): Middleware<GlobalState> = RelayMiddleware(context)
 
-fun calculate(context: Context,
-              store: Store<GlobalState, Action>,
-              next: (Action) -> Unit, action: Action) {
-    when (action) {
-        is Action.SelectClient -> {
-            if (clients[action.configuration] != null) {
-                return next(action)
+class RelayMiddleware<S>(private val context: Context) : Middleware<S> {
+    override fun dispatch(store: Store<S>, action: Action, next: NextDispatcher) {
+        when (action) {
+            is Actions.SelectClient -> if (clients[action.configuration] == null) {
+                val client = createRelayClient(context, store, action.configuration)
+                clients.put(action.configuration, client)
+                client.init().connect()
             }
-
-            val client = createRelayClient(context, store, action.configuration)
-            clients.put(action.configuration, client)
-            client.init().connect()
         }
+        next.dispatch(action)
     }
-    next(action)
 }
 
-fun createRelayClient(context: Context,
-                      store: Store<GlobalState, Action>,
-                      configuration: ChannelsConfiguration): RelayClient {
+fun <S> createRelayClient(context: Context,
+                          store: Store<S>,
+                          configuration: ChannelsConfiguration): RelayClient {
     val relayConfig = RelayClient.Configuration.create {
         hostname = configuration.server.hostname
         port = configuration.server.port
@@ -82,10 +79,10 @@ fun createRelayClient(context: Context,
         eventInterfaceClassName = "EventObjectListener")
 interface Listener : EventListener, MetaListener
 
-class EventClassListener(private val store: Store<GlobalState, Action>,
-                         private val configuration: ChannelsConfiguration) : EventObjectDispatcher() {
+class EventClassListener<S>(private val store: Store<S>,
+                            private val configuration: ChannelsConfiguration) : EventObjectDispatcher() {
 
     override fun onEvent(event: Events.Event) {
-        store.dispatch(Action.RelayEvent(configuration, event))
+        store.dispatch(Actions.RelayEvent(configuration, event))
     }
 }

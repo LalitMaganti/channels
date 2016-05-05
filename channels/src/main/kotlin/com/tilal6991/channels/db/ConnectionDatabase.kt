@@ -6,12 +6,10 @@ import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.squareup.sqlbrite.SqlBrite
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.ServerConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
-import com.squareup.sqlbrite.BriteDatabase
-import com.squareup.sqlbrite.SqlBrite
-import org.jetbrains.anko.db.transaction
 import rx.Completable
 import rx.Observable
 import rx.schedulers.Schedulers

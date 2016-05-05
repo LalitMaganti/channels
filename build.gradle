@@ -16,13 +16,22 @@ ext {
     kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    supportVersion = '23.2.1'
+    supportVersion = '23.3.0'
     supportv4 = "com.android.support:support-v4:$supportVersion"
     appcompat = "com.android.support:appcompat-v7:$supportVersion"
     recyclerview = "com.android.support:recyclerview-v7:$supportVersion"
     design = "com.android.support:design:$supportVersion"
     preferencev7 = "com.android.support:preference-v7:$supportVersion"
     preferencev14 = "com.android.support:preference-v14:$supportVersion"
+
+    anvilVersion = '0.3.6'
+    anvil = "co.trikita:anvil-sdk19:$anvilVersion"
+    anvilSupportv4 = "co.trikita:anvil-support-v4:$anvilVersion"
+    anvilAppCompat = "co.trikita:anvil-appcompat-v7:$anvilVersion"
+    anvilDesign = "co.trikita:anvil-design:$anvilVersion"
+    anvilRecycler = "co.trikita:anvil-recyclerview-v7:$anvilVersion"
+
+    bansa = 'com.github.brianegan.bansa:bansa:1.0.0-beta'
 
     relay = ':relay-jvm:relay'
     relayCore = ':relay-jvm:relay-core'

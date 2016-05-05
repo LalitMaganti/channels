@@ -6,7 +6,6 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.TextViewCompat
-import android.support.v7.widget.LinearLayoutManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.github.andrewoma.dexx.collection.IndexedList
@@ -22,7 +21,7 @@ import com.tilal6991.channels.redux.util.*
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.appcompat.v7.AppCompatv7DSL.appCompatTextView
-import trikita.anvil.recyclerview.Recycler
+import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.*
 import java.util.*
 
 class UserPresenter(private val context: Context) : Anvil.Renderable {
@@ -52,30 +51,29 @@ class UserPresenter(private val context: Context) : Anvil.Renderable {
         xml(R.layout.user_drawer) {
             id(R.id.user_drawer_view)
             size(resources.getDimensionPixelSize(R.dimen.user_drawer_width), MATCH)
-            attr({ v, n, o -> (v.layoutParams as DrawerLayout.LayoutParams).gravity = n }, END)
             backgroundColor(ResourcesCompat.getColor(
                     resources, R.color.navigation_background_color, null))
             backgroundColor(ResourcesCompat.getColor(resources, android.R.color.white, null))
             orientation(LinearLayout.VERTICAL)
 
+            attr({ v, n, o -> (v.layoutParams as DrawerLayout.LayoutParams).gravity = n }, END)
             attr({ v, n, o -> ViewCompat.setElevation(v, n) }, dip(10.0f))
 
             view {
                 id(R.id.user_toolbar)
+
                 size(MATCH, context.resolveDimen(R.attr.actionBarSize))
                 backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             }
 
-            Recycler.view {
-                init {
-                    Recycler.layoutManager(LinearLayoutManager(context))
-                }
-
+            recyclerView {
                 id(R.id.user_list_recycler)
-                Recycler.adapter(adapter)
                 size(MATCH, MATCH)
                 clipToPadding(false)
                 padding(0, dip(8), 0, dip(8))
+
+                adapter(adapter)
+                linearLayoutManager()
             }
         }
     }

@@ -13,8 +13,6 @@ import android.support.v4.content.res.ResourcesCompat
 import android.text.TextUtils
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.relayVM
-import com.tilal6991.channels.collections.ObservableListChangedProxy
-import com.tilal6991.channels.collections.ObservableSortedList
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.ui.helper.ClientStatusListener
 import com.tilal6991.channels.viewmodel.ClientVM

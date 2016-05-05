@@ -2,7 +2,6 @@ package com.tilal6991.channels.redux
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.ViewGroup
 import com.tilal6991.channels.util.failAssert
 import timber.log.Timber
 import java.util.*

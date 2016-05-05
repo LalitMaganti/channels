@@ -1,5 +1,7 @@
 package com.tilal6991.channels.redux
 
+import com.brianegan.bansa.Action
+import com.brianegan.bansa.Reducer
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.redux.reducer.clientReducer
 import com.tilal6991.channels.redux.state.Client
@@ -12,22 +14,22 @@ val initialState = GlobalState(
         TransactingIndexedList.empty()
 )
 
-val reducer: (GlobalState, Action) -> GlobalState = { g, a ->
+val reducer = Reducer<GlobalState> { g, a ->
     reduce(g, a)
 }
 
 fun reduce(g: GlobalState, a: Action): GlobalState = when (a) {
-    is Action.NewConfigurations -> g.mutate(
+    is Actions.NewConfigurations -> g.mutate(
             clients = mergeClientLists(g, a.configurations)
     )
-    is Action.SelectClient -> selectClient(g, a.configuration)
-    is Action.RelayEvent -> relayReducer(g, a)
-    is Action.ChangeSelectedChild ->
+    is Actions.SelectClient -> selectClient(g, a.configuration)
+    is Actions.RelayEvent -> relayReducer(g, a)
+    is Actions.ChangeSelectedChild ->
         g.mutateSelected { it.mutate(selectedType = a.type, selectedIndex = a.position) }
     else -> g.mutate(g.clients.transform { clientReducer(it, a) })
 }
 
-fun relayReducer(g: GlobalState, a: Action.RelayEvent): GlobalState {
+fun relayReducer(g: GlobalState, a: Actions.RelayEvent): GlobalState {
     return g.mutate(clients = g.clients.clientMutate(a.configuration) { clientReducer(it, a) })
 }
 

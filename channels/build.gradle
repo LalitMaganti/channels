@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-beta1'
+        classpath 'com.android.tools.build:gradle:2.1.0'
         classpath rootProject.ext.kotlinPlugin
     }
 }
@@ -59,13 +59,15 @@ dependencies {
     compile rootProject.ext.preferencev7
     compile rootProject.ext.preferencev14
 
-    compile 'co.trikita:anvil-sdk19:0.3.5'
-    compile 'co.trikita:anvil-support-v4:0.3.5'
-    compile 'co.trikita:anvil-appcompat-v7:0.3.5'
-    compile 'co.trikita:anvil-design:0.3.5'
+    compile rootProject.ext.anvil
+    compile rootProject.ext.anvilSupportv4
+    compile rootProject.ext.anvilAppCompat
+    compile rootProject.ext.anvilDesign
+    compile rootProject.ext.anvilRecycler
+
+    compile rootProject.ext.bansa
 
     compile 'com.github.andrewoma.dexx:kollection:0.6'
-    compile 'com.github.trikita:anvil-recyclerview:1.2'
 
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'io.reactivex:rxandroid:1.1.0'
@@ -97,7 +99,7 @@ dependencies {
     testCompile rootProject.ext.assertj
 
     // Keep this at the bottom.
-    kapt 'com.android.databinding:compiler:2.1.0-alpha5'
+    kapt 'com.android.databinding:compiler:2.1.0'
 }
 
 kapt {

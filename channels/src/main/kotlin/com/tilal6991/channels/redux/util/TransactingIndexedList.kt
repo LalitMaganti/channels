@@ -1,9 +1,6 @@
 package com.tilal6991.channels.redux.util
 
 import com.github.andrewoma.dexx.collection.*
-import com.tilal6991.channels.redux.reducer.userComparator
-import com.tilal6991.channels.redux.state.Channel
-import com.tilal6991.channels.redux.state.ModeSection
 
 class TransactingIndexedList<T> private constructor(
         private val actual: IndexedList<T>,
