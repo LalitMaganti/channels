@@ -18,7 +18,7 @@ android {
     buildToolsVersion '23.0.3'
 
     defaultConfig {
-        applicationId "co.fusionx.channels"
+        applicationId "com.tilal6991.channels"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
