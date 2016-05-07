@@ -1,10 +1,13 @@
 package com.tilal6991.channels.redux.reducer
 
+import android.support.v4.util.ArrayMap
 import com.brianegan.bansa.Action
 import com.github.andrewoma.dexx.collection.IndexedLists
 import com.github.andrewoma.dexx.collection.Maps
+import com.github.andrewoma.dexx.collection.Pair
 import com.tilal6991.channels.redux.Actions
 import com.tilal6991.channels.redux.Events
+import com.tilal6991.channels.redux.RelayAction
 import com.tilal6991.channels.redux.state.Channel
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ModeSection
@@ -15,10 +18,13 @@ import com.tilal6991.relay.MoreStringUtils.nickFromPrefix
 import timber.log.Timber
 import java.util.*
 
+private val Channel.User.modeChar: Char
+    get() = mode ?: Channel.User.NULL_MODE_CHAR
+
 fun channelsReducer(client: Client,
                     channels: TransactingIndexedList<Channel>,
                     a: Action): TransactingIndexedList<Channel> = when (a) {
-    is Actions.RelayEvent -> channelRelayReducer(client, channels, a.event)
+    is RelayAction.EventAction -> channelRelayReducer(client, channels, a.event)
     else -> channels
 }
 
@@ -38,10 +44,13 @@ fun privmsgReducer(channel: Channel?, event: Events.OnPrivmsg): Channel? {
 }
 
 fun namesReducer(client: Client, channel: Channel, event: Events.OnNames): Channel {
-    var userMap = channel.userMap
-    var modeMap = channel.modeMap
+    val modeBuilders = TreeMap<Char, MutableList<Channel.User>>(
+            userCharComparator(client.connectionInfo.prefixes))
+    for (it in channel.modeMap) {
+        modeBuilders.put(it.char, ArrayList(it.users.asList()))
+    }
 
-    // TODO(tilal6991) - make this more intelligent by using builders and the like.
+    var userMap = channel.userMap
     for (i in event.nickList.indices) {
         val nick = event.nickList[i]
         val mode = event.modeList[i]
@@ -49,30 +58,38 @@ fun namesReducer(client: Client, channel: Channel, event: Events.OnNames): Chann
         val newMode = mode.getOrNull(0)
         val oldUser = userMap.get(nick)
 
-        if (oldUser == null) {
-            val newUser = Channel.User(nick, newMode)
-            userMap = userMap.put(nick, newUser)
-            modeMap = modeMap.addToUserList(client, newUser)
-        } else if (oldUser.mode != newMode) {
+        if (oldUser != null) {
+            if (oldUser.mode == newMode) {
+                // Everything as the current is so simply continue.
+                continue
+            }
+
+            val users = modeBuilders[oldUser.modeChar]
             // This is actually a bug but let's take the opportunity to correct the effect of it.
-            val oldMode = oldUser.mode ?: Channel.User.NULL_MODE_CHAR
-            val index = modeMap.indexOfFirst { oldMode == it.char }
-            if (index >= 0) {
-                val users = modeMap.get(index).users
+            if (users != null) {
                 val listIndex = users.binarySearch(oldUser.nick) { it.nick }
 
                 if (listIndex >= 0) {
-                    if (users.size() == 1) {
-                        modeMap = modeMap.removeAt(index)
+                    if (users.size == 1) {
+                        modeBuilders.remove(oldUser.modeChar)
                     } else {
-                        modeMap = modeMap.set(index, ModeSection(oldMode, users.removeAt(listIndex)))
+                        users.removeAt(listIndex)
                     }
                 }
             }
-            modeMap = modeMap.addToUserList(client, Channel.User(nick, newMode))
         }
+
+        val newUser = Channel.User(nick, newMode)
+        userMap = userMap.put(nick, newUser)
+        modeBuilders.addToUserList(newUser)
     }
-    return channel.mutate(userMap = userMap, modeMap = modeMap)
+
+    val modeBuilder = TransactingIndexedList.builder<ModeSection>()
+    for (it in modeBuilders) {
+        modeBuilder.add(ModeSection(it.key,
+                TransactingIndexedList.builder<Channel.User>().addAll(it.value).build()))
+    }
+    return channel.mutate(userMap = userMap, modeMap = modeBuilder.build())
 }
 
 fun partReducer(client: Client, channel: Channel, event: Events.OnPart): Channel {
@@ -84,18 +101,23 @@ fun partReducer(client: Client, channel: Channel, event: Events.OnPart): Channel
     }
 }
 
-fun userComparator(ordering: String): Comparator<ModeSection> {
+fun userCharComparator(ordering: String): Comparator<Char> {
     return Comparator { l, r ->
-        if (l.char == r.char) {
+        if (l == r) {
             0
-        } else if (l.char == Channel.User.NULL_MODE_CHAR) {
+        } else if (l == Channel.User.NULL_MODE_CHAR) {
             1
-        } else if (r.char == Channel.User.NULL_MODE_CHAR) {
+        } else if (r == Channel.User.NULL_MODE_CHAR) {
             -1
         } else {
-            ordering.indexOf(l.char).compareTo(ordering.indexOf(r.char))
+            ordering.indexOf(l).compareTo(ordering.indexOf(r))
         }
     }
+}
+
+fun userComparator(ordering: String): Comparator<ModeSection> {
+    val charComparator = userCharComparator(ordering)
+    return Comparator { l, r -> charComparator.compare(l.char, r.char) }
 }
 
 fun joinReducer(client: Client, channel: Channel?, event: Events.OnJoin): Channel {
@@ -142,8 +164,12 @@ fun TransactingIndexedList<Channel>.findNullable(name: String, fn: (Channel?) ->
     return binaryMutate(name, { it.name }, fn, ignoreCaseComparator)
 }
 
+fun MutableMap<Char, MutableList<Channel.User>>.addToUserList(user: Channel.User) {
+    getOrPut(user.modeChar) { ArrayList() }.addSorted(user)
+}
+
 fun TransactingIndexedList<ModeSection>.addToUserList(client: Client, user: Channel.User): TransactingIndexedList<ModeSection> {
-    val modeChar = user.mode ?: Channel.User.NULL_MODE_CHAR
+    val modeChar = user.modeChar
     val index = indexOfFirst { modeChar == it.char }
     if (index >= 0) {
         val modePair = get(index)

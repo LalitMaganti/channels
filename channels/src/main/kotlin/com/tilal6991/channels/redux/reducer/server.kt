@@ -1,14 +1,14 @@
 package com.tilal6991.channels.redux.reducer
 
 import com.brianegan.bansa.Action
-import com.tilal6991.channels.redux.Actions
 import com.tilal6991.channels.redux.Events
+import com.tilal6991.channels.redux.RelayAction
 import com.tilal6991.channels.redux.state.Server
 import com.tilal6991.channels.redux.util.append
 import com.tilal6991.channels.redux.util.displayCode
 
 fun serverReducer(s: Server, a: Action): Server = when (a) {
-    is Actions.RelayEvent -> server(s, a.event)
+    is RelayAction.EventAction -> server(s, a.event)
     else -> s
 }
 

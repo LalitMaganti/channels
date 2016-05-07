@@ -23,13 +23,13 @@ fun reduce(g: GlobalState, a: Action): GlobalState = when (a) {
             clients = mergeClientLists(g, a.configurations)
     )
     is Actions.SelectClient -> selectClient(g, a.configuration)
-    is Actions.RelayEvent -> relayReducer(g, a)
+    is RelayAction.EventAction -> relayReducer(g, a)
     is Actions.ChangeSelectedChild ->
         g.mutateSelected { it.mutate(selectedType = a.type, selectedIndex = a.position) }
     else -> g.mutate(g.clients.transform { clientReducer(it, a) })
 }
 
-fun relayReducer(g: GlobalState, a: Actions.RelayEvent): GlobalState {
+fun relayReducer(g: GlobalState, a: RelayAction.EventAction): GlobalState {
     return g.mutate(clients = g.clients.clientMutate(a.configuration) { clientReducer(it, a) })
 }
 

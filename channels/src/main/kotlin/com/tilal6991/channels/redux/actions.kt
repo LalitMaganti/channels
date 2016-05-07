@@ -9,7 +9,4 @@ sealed class Actions : Action {
     class ChangeSelectedChild(val type: Int, val position: Int) : Actions()
 
     class NewConfigurations(val configurations: List<ChannelsConfiguration>) : Actions()
-
-    class RelayEvent(val configuration: ChannelsConfiguration,
-                     val event: Events.Event) : Actions()
 }

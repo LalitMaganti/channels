@@ -100,7 +100,7 @@ class ClientVM(private val context: Context,
     }
 
     fun sendUserMessage(message: String, context: ClientChildVM) {
-        val line = userMessageParser.parse(message, context, server) ?: return
+        val line = userMessageParser.parse(message, context) ?: return
         client.send(line)
     }
 

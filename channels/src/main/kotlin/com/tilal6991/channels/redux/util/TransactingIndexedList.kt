@@ -126,22 +126,22 @@ class TransactingIndexedList<T> private constructor(
             return this
         }
 
-        override fun addAll(elements: Traversable<T>): Builder<T, TransactingIndexedList<T>> {
+        override fun addAll(elements: Traversable<T>): TransactingBuilder<T> {
             actualBuilder = actualBuilder.addAll(elements)
             return this
         }
 
-        override fun addAll(elements: MutableIterable<T>): Builder<T, TransactingIndexedList<T>> {
+        override fun addAll(elements: MutableIterable<T>): TransactingBuilder<T> {
             actualBuilder = actualBuilder.addAll(elements)
             return this
         }
 
-        override fun addAll(iterator: MutableIterator<T>): Builder<T, TransactingIndexedList<T>> {
+        override fun addAll(iterator: MutableIterator<T>): TransactingBuilder<T> {
             actualBuilder = actualBuilder.addAll(iterator)
             return this
         }
 
-        override fun addAll(e1: T, e2: T, vararg es: T): Builder<T, TransactingIndexedList<T>> {
+        override fun addAll(e1: T, e2: T, vararg es: T): TransactingBuilder<T> {
             actualBuilder = actualBuilder.addAll(e1, e2, *es)
             return this
         }

@@ -7,16 +7,16 @@ import com.tilal6991.relay.ClientGenerator
 
 class UserMessageParser(private val listener: Listener) {
 
-    fun parse(userMessage: String, context: ClientChildVM, serverVM: ServerVM): String? {
+    fun parse(userMessage: String, context: ClientChildVM): String? {
         if (context is ServerVM) {
-            return parseServerMessage(userMessage, serverVM)
+            return parseServerMessage(userMessage)
         } else if (context is ChannelVM) {
-            return parse(userMessage, context, serverVM)
+            return parse(userMessage, context)
         }
         return null
     }
 
-    fun parseServerMessage(userMessage: String, serverVM: ServerVM): String? {
+    fun parseServerMessage(userMessage: String): String? {
         var message = userMessage
         val spaceIndex = userMessage.indexOf(' ')
         val command: String
@@ -68,7 +68,7 @@ class UserMessageParser(private val listener: Listener) {
         return onUnknownEvent(message)
     }
 
-    fun parse(userMessage: String, context: ChannelVM, serverVM: ServerVM): String? {
+    fun parse(userMessage: String, context: ChannelVM): String? {
         if (!userMessage.startsWith("/")) {
             listener.onChannelMessage(context, userMessage)
             return ClientGenerator.privmsg(context.name.toString(), userMessage)
@@ -115,7 +115,7 @@ class UserMessageParser(private val listener: Listener) {
         }
         */
             else -> {
-                return parseServerMessage(message, serverVM)
+                return parseServerMessage(message)
             }
         }
 

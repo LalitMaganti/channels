@@ -9,6 +9,7 @@ import com.brianegan.bansa.Store
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.configuration.UserConfiguration
 import com.tilal6991.channels.redux.state.GlobalState
+import com.tilal6991.channels.redux.util.UserMessageParser
 import com.tilal6991.channels.relay.*
 import com.tilal6991.listen.EventObjectListener
 import com.tilal6991.messageloop.AndroidHandlerMessageLoop
@@ -21,16 +22,37 @@ val clients = ArrayMap<ChannelsConfiguration, RelayClient>()
 
 fun relayMiddleware(context: Context): Middleware<GlobalState> = RelayMiddleware(context)
 
+sealed class RelayAction : Action {
+    class EventAction(val configuration: ChannelsConfiguration,
+                      val event: Events.Event) : RelayAction()
+
+    class MessageAction(val configuration: ChannelsConfiguration,
+                        val message: String) : RelayAction()
+}
+
 class RelayMiddleware<S>(private val context: Context) : Middleware<S> {
     override fun dispatch(store: Store<S>, action: Action, next: NextDispatcher) {
         when (action) {
-            is Actions.SelectClient -> if (clients[action.configuration] == null) {
-                val client = createRelayClient(context, store, action.configuration)
-                clients.put(action.configuration, client)
-                client.init().connect()
-            }
+            is Actions.SelectClient -> selectClient(action, store)
+            is RelayAction.MessageAction -> sendMessage(action)
         }
         next.dispatch(action)
+    }
+
+    private fun selectClient(action: Actions.SelectClient, store: Store<S>) {
+        if (clients[action.configuration] != null) {
+            return
+        }
+
+        val client = createRelayClient(context, store, action.configuration)
+        clients.put(action.configuration, client)
+        client.init().connect()
+    }
+
+    private fun sendMessage(action: RelayAction.MessageAction) {
+        val client = clients[action.configuration] ?: return
+        val line = UserMessageParser.parseServerMessage(action.message) ?: return
+        client.send(line)
     }
 }
 
@@ -83,6 +105,6 @@ class EventClassListener<S>(private val store: Store<S>,
                             private val configuration: ChannelsConfiguration) : EventObjectDispatcher() {
 
     override fun onEvent(event: Events.Event) {
-        store.dispatch(Actions.RelayEvent(configuration, event))
+        store.dispatch(RelayAction.EventAction(configuration, event))
     }
 }

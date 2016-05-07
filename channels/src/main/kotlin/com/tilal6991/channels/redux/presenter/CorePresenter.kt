@@ -10,6 +10,7 @@ import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
@@ -178,6 +179,17 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                     DSL.imeOptions(EditorInfo.IME_ACTION_SEND)
                     DSL.inputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
                             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+
+                    onEditorAction { textView, actionId, event ->
+                        val handled = actionId == EditorInfo.IME_ACTION_SEND ||
+                                event.action == KeyEvent.ACTION_DOWN &&
+                                        event.keyCode == KeyEvent.KEYCODE_ENTER
+                        val config = selectedClient()?.configuration
+                        if (handled && config != null) {
+                            context.store.dispatch(RelayAction.MessageAction(config, textView.text.toString()))
+                        }
+                        handled && config != null
+                    }
                 }
             }
         }

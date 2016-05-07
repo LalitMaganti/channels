@@ -1,6 +1,7 @@
 package com.tilal6991.channels.redux.util
 
 import com.github.andrewoma.dexx.collection.IndexedList
+import kotlin.collections.binarySearch
 import java.util.*
 
 inline fun <T> TransactingIndexedList<T>.transform(fn: (T) -> T): TransactingIndexedList<T> {
@@ -15,6 +16,18 @@ inline fun <T> TransactingIndexedList<T>.transform(fn: (T) -> T): TransactingInd
     return list
 }
 
+fun <T : Comparable<T>> MutableList<T>.addSorted(elem: T): MutableList<T> {
+    if (size == 0) {
+        add(elem)
+        return this
+    }
+
+    val index = binarySearch(elem)
+    val elementsBefore = if (index >= 0) index + 1 else -index - 1
+    add(elementsBefore, elem)
+    return this
+}
+
 fun <T : Comparable<T>> TransactingIndexedList<T>.addSorted(elem: T): TransactingIndexedList<T> {
     val index = binarySearch(elem) { it }
     val elementsBefore = if (index >= 0) index + 1 else -index - 1
@@ -25,6 +38,26 @@ fun <T> TransactingIndexedList<T>.addSorted(elem: T, comparator: Comparator<T>):
     val index = binarySearch(elem, { it }, comparator)
     val elementsBefore = if (index >= 0) index + 1 else -index - 1
     return addAt(elem, elementsBefore)
+}
+
+fun <T, U : Comparable<U>> List<T>.binarySearch(elem: U, selector: (T) -> U): Int {
+    var low = 0
+    var high = size - 1
+
+    while (low <= high) {
+        val mid = (low + high).ushr(1) // safe from overflows
+        val midVal = get(mid)
+        val cmp = selector(midVal).compareTo(elem)
+
+        if (cmp < 0) {
+            low = mid + 1
+        } else if (cmp > 0) {
+            high = mid - 1
+        } else {
+            return mid
+        }
+    }
+    return -(low + 1)
 }
 
 fun <T, U : Comparable<U>> IndexedList<T>.binarySearch(elem: U, selector: (T) -> U): Int {
