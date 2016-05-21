@@ -5,12 +5,12 @@ import android.os.Handler
 import android.os.Looper
 import com.brianegan.bansa.Subscription
 import com.tilal6991.channels.base.store
-import com.tilal6991.channels.redux.reselect.Reselect.createSelector
 import com.tilal6991.channels.redux.state.Client
 import com.tilal6991.channels.redux.state.ClientChild
 import com.tilal6991.channels.redux.state.GlobalState
 import com.tilal6991.channels.redux.util.binarySearch
 import com.tilal6991.channels.redux.util.getOrNull
+import com.tilal6991.reselect.Reselect.createSelector
 import trikita.anvil.Anvil
 import java.util.*
 

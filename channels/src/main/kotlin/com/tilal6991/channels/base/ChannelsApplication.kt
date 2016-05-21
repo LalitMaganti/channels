@@ -2,7 +2,6 @@ package com.tilal6991.channels.base
 
 import android.app.Application
 import com.brianegan.bansa.BaseStore
-import com.squareup.leakcanary.LeakCanary
 import com.tilal6991.channels.db.ConnectionDatabase
 import com.tilal6991.channels.redux.Actions
 import com.tilal6991.channels.redux.initialState
@@ -26,7 +25,7 @@ class ChannelsApplication : Application() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { store.dispatch(Actions.NewConfigurations(it)) }
 
-        LeakCanary.install(this)
+        // LeakCanary.install(this)
         Timber.plant(Timber.DebugTree())
     }
 }

@@ -1,15 +1,14 @@
 package com.tilal6991.channels.configuration
 
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
-import org.parceler.ParcelProperty
+import nz.bradcampbell.paperparcel.PaperParcel
+import nz.bradcampbell.paperparcel.PaperParcelable
 
-@Parcel(Parcel.Serialization.BEAN)
-class ChannelsConfiguration @ParcelConstructor constructor(
-        @param:ParcelProperty("id") val id: Int,
-        @param:ParcelProperty("name") val name: String,
-        @param:ParcelProperty("server") val server: ServerConfiguration,
-        @param:ParcelProperty("user") val user: UserConfiguration) : Comparable<ChannelsConfiguration> {
+@PaperParcel
+data class ChannelsConfiguration(
+        val id: Int,
+        val name: String,
+        val server: ServerConfiguration,
+        val user: UserConfiguration) : Comparable<ChannelsConfiguration>, PaperParcelable {
 
     override fun compareTo(other: ChannelsConfiguration): Int {
         return name.compareTo(other.name)
@@ -22,5 +21,9 @@ class ChannelsConfiguration @ParcelConstructor constructor(
 
     override fun hashCode(): Int {
         return id
+    }
+
+    companion object {
+      @JvmField val CREATOR = PaperParcelable.Creator(ChannelsConfiguration::class.java)
     }
 }

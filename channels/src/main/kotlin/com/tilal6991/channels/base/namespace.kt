@@ -17,5 +17,3 @@ val Presenter.relayVM: RelayVM
 
 val Context.store: Store<GlobalState>
     get() = app.store
-val View.store: Store<GlobalState>
-    get() = context.store

@@ -1,17 +1,15 @@
 package com.tilal6991.channels.configuration
 
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
-import org.parceler.ParcelProperty
+import nz.bradcampbell.paperparcel.PaperParcel
 
-@Parcel(Parcel.Serialization.BEAN)
-data class UserConfiguration @ParcelConstructor constructor(
-        @param:ParcelProperty("nicks") val nicks: List<String>,
-        @param:ParcelProperty("autoChangeNick") val autoChangeNick: Boolean,
-        @param:ParcelProperty("realName") val realName: String,
-        @param:ParcelProperty("authType") val authType: Int,
-        @param:ParcelProperty("authUsername") val authUsername: String?,
-        @param:ParcelProperty("authPassword") val authPassword: String?) {
+@PaperParcel
+data class UserConfiguration(
+        val nicks: List<String>,
+        val autoChangeNick: Boolean,
+        val realName: String,
+        val authType: Int,
+        val authUsername: String?,
+        val authPassword: String?) {
 
     companion object {
         const val NONE_AUTH_TYPE = 0

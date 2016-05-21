@@ -1,6 +1,7 @@
 package com.tilal6991.channels.view
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
@@ -19,7 +20,7 @@ import com.tilal6991.channels.viewmodel.SelectedClientsVM
 class ClientCarouselView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyle: Int = 0) : RelativeLayout(context, attrs, defStyle) {
+        defStyle: Int = 0) : ConstraintLayout(context, attrs, defStyle) {
 
     private lateinit var viewArray: Array<ImageView>
 

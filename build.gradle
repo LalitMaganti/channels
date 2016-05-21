@@ -12,11 +12,11 @@ allprojects {
 }
 
 ext {
-    kotlinVersion = '1.0.1'
+    kotlinVersion = '1.0.2'
     kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    supportVersion = '23.3.0'
+    supportVersion = '23.4.0'
     supportv4 = "com.android.support:support-v4:$supportVersion"
     appcompat = "com.android.support:appcompat-v7:$supportVersion"
     recyclerview = "com.android.support:recyclerview-v7:$supportVersion"
@@ -31,6 +31,9 @@ ext {
     anvilDesign = "co.trikita:anvil-design:$anvilVersion"
     anvilRecycler = "co.trikita:anvil-recyclerview-v7:$anvilVersion"
 
+    rxjava = 'io.reactivex:rxjava:1.1.5'
+    rxandroid = 'io.reactivex:rxandroid:1.2.0'
+
     bansa = 'com.github.brianegan.bansa:bansa:1.0.0-beta'
 
     relay = ':relay-jvm:relay'
@@ -42,13 +45,13 @@ ext {
     listen = 'com.tilal6991.listen:listen:0.2.0-SNAPSHOT'
     listenCompiler = 'com.tilal6991.listen:listen-compiler:0.2.0-SNAPSHOT'
 
-    parcellerApi = 'org.parceler:parceler-api:1.0.4'
-    parceller = 'org.parceler:parceler:1.0.4'
-
     okio = 'com.squareup.okio:okio:1.6.0'
+
+    sqlbrite = 'com.squareup.sqlbrite:sqlbrite:0.6.2'
+    ankoSqlite = 'org.jetbrains.anko:anko-sqlite:0.8.3'
 
     junit = 'junit:junit:4.12'
     truth = 'com.google.truth:truth:0.28'
-    assertj = 'org.assertj:assertj-core:2.4.0'
-    mockito = 'org.mockito:mockito-core:2.0.43-beta'
+    assertj = 'org.assertj:assertj-core:2.4.1'
+    mockito = 'org.mockito:mockito-core:2.0.52-beta'
 }

@@ -22,7 +22,6 @@ import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.NavigationHeaderVM
-import org.parceler.Parcels
 
 class NavigationPresenter(override val context: MainActivity,
                           private val drawerLayout: DrawerLayout,
@@ -154,7 +153,7 @@ class NavigationPresenter(override val context: MainActivity,
 
             val manageClick: (ChannelsConfiguration) -> Unit = {
                 val intent = Intent(context, ConfigurationEditActivity::class.java)
-                intent.putExtra(ConfigurationEditActivity.CONFIGURATION, Parcels.wrap(it))
+                intent.putExtra(ConfigurationEditActivity.CONFIGURATION, it)
                 context.startActivityForResult(intent, MainActivity.REQUEST_EDIT)
             }
 

@@ -9,9 +9,9 @@ class SelectedClientsVM {
     val latest: ClientVM?
         get() = clientList.firstOrNull()
     val penultimate: ClientVM?
-        get() = if (clientList.size >= 2) clientList[1] else null
+        get() = clientList.getOrNull(1)
     val antepenultimate: ClientVM?
-        get() = if (clientList.size >= 3) clientList[2] else null
+        get() = clientList.getOrNull(2)
 
     val clientList: LinkedList<ClientVM> = LinkedList()
 
@@ -48,8 +48,8 @@ class SelectedClientsVM {
             return
         }
 
-        var oldLatest = clientList.removeFirst()
-        var oldSecond = clientList.removeFirst()
+        val oldLatest = clientList.removeFirst()
+        val oldSecond = clientList.removeFirst()
         clientList.addFirst(oldLatest)
         clientList.addFirst(oldSecond)
 
@@ -62,9 +62,9 @@ class SelectedClientsVM {
             return
         }
 
-        var latest = clientList.removeFirst()
-        var second = clientList.removeFirst()
-        var third = clientList.removeFirst()
+        val latest = clientList.removeFirst()
+        val second = clientList.removeFirst()
+        val third = clientList.removeFirst()
         clientList.addFirst(second)
         clientList.addFirst(latest)
         clientList.addFirst(third)

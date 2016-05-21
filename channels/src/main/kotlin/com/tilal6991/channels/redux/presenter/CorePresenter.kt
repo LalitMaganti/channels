@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.view.Gravity
 import android.view.KeyEvent
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
@@ -44,6 +45,15 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
     private var navigationLockedState = DrawerLayout.LOCK_MODE_LOCKED_OPEN
     private var userLockedState = DrawerLayout.LOCK_MODE_LOCKED_CLOSED
     private var drawerVisible = true
+    private val drawerListener = object : DrawerLayout.SimpleDrawerListener() {
+        override fun onDrawerClosed(drawerView: View?) {
+            drawerVisible = false
+        }
+
+        override fun onDrawerOpened(drawerView: View?) {
+            drawerVisible = true
+        }
+    }
 
     val resources: Resources
         get() = context.resources
@@ -162,7 +172,7 @@ class CorePresenter(private val context: AppCompatActivity) : Anvil.Renderable {
                             Anvil.render()
                         }
 
-                        AppCompatv7DSL.title(selectedChild()?.name ?: "Channels")
+                        title(selectedChild()?.name ?: "Channels")
                         subtitle(selectedClient()?.configuration?.name)
                         backgroundColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
                     }

@@ -66,8 +66,8 @@
                 android:hint="@string/message_hint"
                 android:imeOptions="actionSend"
                 android:inputType="textAutoComplete|textCapSentences"
+                android:maxLines="1"
                 android:padding="8dp"
-                android:singleLine="true"
                 android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>

@@ -2,6 +2,4 @@ rootProject.name = 'channels-root'
 
 include ':channels'
 include ':relay-jvm:relay'
-include ':relay-jvm:relay-core'
-include ':relay-jvm:relay-semantic'
 include ':MemorizingTrustManager:library'

@@ -30,7 +30,6 @@ import com.tilal6991.channels.ui.helper.CommitingIntWatcher
 import com.tilal6991.channels.ui.helper.CommitingNullableWatcher
 import com.tilal6991.channels.ui.helper.CommitingWatcher
 import com.tilal6991.channels.util.addAll
-import org.parceler.Parcels
 import java.util.*
 
 class ConfigurationEditActivity : AppCompatActivity() {
@@ -54,8 +53,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
 
         supportActionBar!!.title = getString(R.string.configuration_add_title)
 
-        val extras = intent.extras
-        configuration = if (extras == null) null else Parcels.unwrap<ChannelsConfiguration>(extras.getParcelable(CONFIGURATION))
+        configuration = intent.extras?.getParcelable(CONFIGURATION)
 
         val serverBinding = ConfigurationEditServerBinding.inflate(layoutInflater, pager, false)
         server = ConfigurationServerPresenter(this, serverBinding, configuration)
@@ -111,7 +109,7 @@ class ConfigurationEditActivity : AppCompatActivity() {
 
             val result = Intent()
             result.putExtra(RESULT_OLD_ID, configuration?.id ?: -1)
-            result.putExtra(RESULT_CONFIGURATION, Parcels.wrap(configuration))
+            result.putExtra(RESULT_CONFIGURATION, configuration)
             setResult(RESULT_OK, result)
 
             super.onBackPressed()
