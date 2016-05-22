@@ -62,16 +62,16 @@ dependencies {
 
     compile rootProject.ext.supportv4
     compile rootProject.ext.appcompat
-    compile rootProject.ext.recyclerview
+    compile rootProject.ext.recyclerView
     compile rootProject.ext.design
     compile rootProject.ext.preferencev7
     compile rootProject.ext.preferencev14
 
-    compile rootProject.ext.anvil
-    compile rootProject.ext.anvilSupportv4
-    compile rootProject.ext.anvilAppCompat
-    compile rootProject.ext.anvilDesign
-    compile rootProject.ext.anvilRecycler
+    compile rootProject.ext.rxbinding
+    compile rootProject.ext.rxbindingSupportv4
+    compile rootProject.ext.rxbindingAppcompatv7
+    compile rootProject.ext.rxbindingDesign
+    compile rootProject.ext.rxbindingRecyclerview
 
     compile rootProject.ext.bansa
     compile 'com.github.tilal6991:reselect-jvm:v0.0.1'
@@ -85,9 +85,9 @@ dependencies {
     compile rootProject.ext.rxjava
     compile rootProject.ext.rxandroid
 
-    //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-    //releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    //testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
     compile rootProject.ext.messageLoopAndroid
     compile rootProject.ext.listen

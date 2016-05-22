@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import butterknife.bindView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.adapter.NavigationAdapter
-import trikita.anvil.BaseDSL.v
 
 class NavigationDrawerView @JvmOverloads constructor(
         context: Context,
@@ -24,11 +23,5 @@ class NavigationDrawerView @JvmOverloads constructor(
 
     fun setAdapter(adapter: NavigationAdapter) {
         recycler.adapter = adapter
-    }
-
-    companion object {
-        fun navigationDrawerView(r: () -> Unit): Void? {
-            return v(NavigationDrawerView::class.java, r)
-        }
     }
 }

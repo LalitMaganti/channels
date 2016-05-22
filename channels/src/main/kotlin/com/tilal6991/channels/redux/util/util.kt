@@ -2,9 +2,7 @@ package com.tilal6991.channels.redux.util
 
 import android.content.Context
 import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.widget.TextViewCompat
 import android.util.TypedValue
-import android.widget.TextView
 import com.github.andrewoma.dexx.collection.IndexedList
 import com.tilal6991.channels.R
 import com.tilal6991.channels.configuration.ChannelsConfiguration
@@ -13,7 +11,6 @@ import com.tilal6991.channels.util.failAssert
 import com.tilal6991.relay.MoreStringUtils
 import com.tilal6991.relay.ReplyCodes
 import timber.log.Timber
-import trikita.anvil.DSL.*
 import java.util.*
 
 fun Context.resolveDrawable(attr: Int): Int {
@@ -150,24 +147,3 @@ private val displayedCodes: Set<Int> = arrayOf(
         ReplyCodes.RPL_GLOBALUSERS, ReplyCodes.RPL_STATSCONN, ReplyCodes.RPL_MOTDSTART,
         ReplyCodes.RPL_MOTD, ReplyCodes.RPL_ENDOFMOTD
 ).toCollection(HashSet())
-
-fun recyclerHeader(context: Context, id: Int) = recyclerHeader(context) {
-    text(id)
-}
-
-fun recyclerHeader(context: Context, string: String) = recyclerHeader(context) {
-    text(string)
-}
-
-private inline fun recyclerHeader(context: Context, crossinline textSetter: () -> Unit) {
-    textView {
-        size(MATCH, WRAP)
-        gravity(CENTER_VERTICAL or START)
-        maxLines(1)
-        padding(dip(16), dip(12), dip(16), 0)
-        attr({ v, n, o -> TextViewCompat.setTextAppearance((v as TextView), n) },
-                R.style.TextAppearance_AppCompat_Body2)
-        textColor(context.resolveColor(android.R.attr.textColorSecondary))
-        textSetter()
-    }
-}

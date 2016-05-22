@@ -5,7 +5,6 @@ allprojects {
         }
     }
     repositories {
-        mavenLocal()
         jcenter()
         maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     }
@@ -19,7 +18,7 @@ ext {
     supportVersion = '23.4.0'
     supportv4 = "com.android.support:support-v4:$supportVersion"
     appcompat = "com.android.support:appcompat-v7:$supportVersion"
-    recyclerview = "com.android.support:recyclerview-v7:$supportVersion"
+    recyclerView = "com.android.support:recyclerview-v7:$supportVersion"
     design = "com.android.support:design:$supportVersion"
     preferencev7 = "com.android.support:preference-v7:$supportVersion"
     preferencev14 = "com.android.support:preference-v14:$supportVersion"
@@ -30,6 +29,13 @@ ext {
     anvilAppCompat = "co.trikita:anvil-appcompat-v7:$anvilVersion"
     anvilDesign = "co.trikita:anvil-design:$anvilVersion"
     anvilRecycler = "co.trikita:anvil-recyclerview-v7:$anvilVersion"
+
+    rxbindingVersion = '0.4.0'
+    rxbinding = "com.jakewharton.rxbinding:rxbinding-kotlin:$rxbindingVersion"
+    rxbindingSupportv4 = "com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:$rxbindingVersion"
+    rxbindingAppcompatv7 = "com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:$rxbindingVersion"
+    rxbindingDesign = "com.jakewharton.rxbinding:rxbinding-design-kotlin:$rxbindingVersion"
+    rxbindingRecyclerview = "com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:$rxbindingVersion"
 
     rxjava = 'io.reactivex:rxjava:1.1.5'
     rxandroid = 'io.reactivex:rxandroid:1.2.0'

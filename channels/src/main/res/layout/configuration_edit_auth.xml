@@ -63,7 +63,7 @@
                         android:fontFamily="sans-serif"
                         android:hint="@string/nickserv_password"
                         android:inputType="textPassword"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:text="@{configuration.authIndex == ConfigurationAuthPresenter.NICKSERV_INDEX ? configuration.password : null}" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -84,7 +84,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/sasl_username"
-                            android:singleLine="true"
+                            android:maxLines="1"
                             android:text="@{configuration.authIndex == ConfigurationAuthPresenter.SASL_INDEX ? configuration.username : null}" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -100,7 +100,7 @@
                             android:fontFamily="sans-serif"
                             android:hint="@string/sasl_password"
                             android:inputType="textPassword"
-                            android:singleLine="true"
+                            android:maxLines="1"
                             android:text="@{configuration.authIndex == ConfigurationAuthPresenter.SASL_INDEX ? configuration.password : null}" />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
@@ -126,7 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/server_username"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="@{configuration.serverUsername}" />
             </android.support.design.widget.TextInputLayout>
 
@@ -144,7 +144,7 @@
                     android:fontFamily="sans-serif"
                     android:hint="@string/server_password"
                     android:inputType="textPassword"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="@{configuration.serverPassword}" />
 
                 <TextView

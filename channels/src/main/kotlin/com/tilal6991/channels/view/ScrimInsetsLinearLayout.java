@@ -111,5 +111,4 @@ public class ScrimInsetsLinearLayout extends LinearLayout {
 
     protected void onInsetsChanged(Rect insets) {
     }
-
 }
