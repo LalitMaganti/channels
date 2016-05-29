@@ -18,18 +18,17 @@ class TransactingIndexedList<T> private constructor(
 
     override fun drop(number: Int): TransactingIndexedList<T> {
         // TODO(tilal6991) what if number is greater than or equal to the size of the list.
-        val list = if (number <= 0) transactions else maxAppend(transactions, Transaction(REMOVE, 0, -1, number))
+        val list = if (number <= 0) transactions else transactions.maxAppend(Transaction(REMOVE, 0, -1, number))
         return TransactingIndexedList(actual.drop(number), list, maxSize, runningCount + 1)
     }
 
     override fun append(elem: T): TransactingIndexedList<T> {
-        return TransactingIndexedList(actual.append(elem), maxAppend(transactions,
-                Transaction(ADD, actual.size(), -1, 1)), maxSize, runningCount + 1)
+        return mutate(actual.append(elem), Transaction(ADD, actual.size(), -1, 1))
     }
 
     override fun take(number: Int): TransactingIndexedList<T> {
         // TODO(tilal6991) what if number is greater than the less than or equal to zero.
-        val list = if (number >= size()) transactions else maxAppend(transactions, Transaction(REMOVE, number, -1, size() - number))
+        val list = if (number >= size()) transactions else transactions.maxAppend(Transaction(REMOVE, number, -1, size() - number))
         return TransactingIndexedList(actual.take(number), list, maxSize, runningCount + 1)
     }
 
@@ -40,11 +39,11 @@ class TransactingIndexedList<T> private constructor(
         var rc = runningCount
         var list: IndexedList<Transaction> = transactions
         if (firstEnd != 0) {
-            list = maxAppend(list, Transaction(REMOVE, 0, -1, firstEnd))
+            list = list.maxAppend(Transaction(REMOVE, 0, -1, firstEnd))
             rc++
         }
         if (secondStart != size()) {
-            list = maxAppend(list, Transaction(REMOVE, secondStart, -1, size() - secondStart))
+            list = list.maxAppend(Transaction(REMOVE, secondStart, -1, size() - secondStart))
             rc++
         }
 
@@ -55,14 +54,11 @@ class TransactingIndexedList<T> private constructor(
         if (get(i) === elem) {
             return this
         }
-
-        return TransactingIndexedList(actual.set(i, elem),
-                maxAppend(transactions, Transaction(CHANGE, i, -1, 1)), maxSize, runningCount + 1)
+        return mutate(actual.set(i, elem), Transaction(CHANGE, i, -1, 1))
     }
 
     override fun prepend(elem: T): TransactingIndexedList<T> {
-        return TransactingIndexedList(actual.prepend(elem), maxAppend(transactions,
-                Transaction(ADD, 0, -1, 1)), maxSize, runningCount + 1)
+        return mutate(actual.prepend(elem), Transaction(ADD, 0, -1, 1))
     }
 
     fun addAt(elem: T, index: Int): TransactingIndexedList<T> {
@@ -71,8 +67,7 @@ class TransactingIndexedList<T> private constructor(
                 .add(elem)
                 .addAll(actual.drop(index) as Traversable<T>)
                 .build()
-        return TransactingIndexedList(list, maxAppend(transactions,
-                Transaction(ADD, index, -1, 1)), maxSize, runningCount + 1)
+        return mutate(list, Transaction(ADD, index, -1, 1))
     }
 
     fun removeAt(index: Int): TransactingIndexedList<T> {
@@ -80,8 +75,7 @@ class TransactingIndexedList<T> private constructor(
                 .addAll(actual.take(index) as Traversable<T>)
                 .addAll(actual.drop(index + 1) as Traversable<T>)
                 .build()
-        return TransactingIndexedList(list, maxAppend(transactions,
-                Transaction(REMOVE, index, -1, 1)), maxSize, runningCount + 1)
+        return mutate(list, Transaction(REMOVE, index, -1, 1))
     }
 
     fun move(fromIndex: Int, toIndex: Int): TransactingIndexedList<T> {
@@ -99,17 +93,19 @@ class TransactingIndexedList<T> private constructor(
                     .addAll(actual.range(toIndex, true, fromIndex, false) as Traversable<T>)
                     .addAll(actual.range(fromIndex, false, size(), false) as Traversable<T>)
         }
-
-        return TransactingIndexedList(builder.build(), maxAppend(transactions,
-                Transaction(MOVE, fromIndex, toIndex, 1)), maxSize, runningCount + 1)
+        return mutate(builder.build(), Transaction(MOVE, fromIndex, toIndex, 1))
     }
 
-    private fun maxAppend(list: IndexedList<Transaction>, elem: Transaction): IndexedList<Transaction> {
-        if (list.size() >= maxSize) {
-            val i = list.size() - maxSize + 1
-            return list.drop(i).append(elem)
+    private fun IndexedList<Transaction>.maxAppend(elem: Transaction): IndexedList<Transaction> {
+        if (size() >= maxSize) {
+            val i = size() - maxSize + 1
+            return drop(i).append(elem)
         }
-        return list.append(elem)
+        return append(elem)
+    }
+
+    fun mutate(list: IndexedList<T>, transaction: Transaction): TransactingIndexedList<T> {
+        return TransactingIndexedList(list, transactions.maxAppend(transaction), maxSize, runningCount + 1)
     }
 
     override fun toString(): String {

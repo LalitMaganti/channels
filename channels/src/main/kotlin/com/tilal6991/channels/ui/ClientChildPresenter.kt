@@ -36,7 +36,7 @@ class ClientChildPresenter(override val context: MainActivity,
     private var listener: ObservableListAdapterProxy<CharSequence> = object : ObservableListAdapterProxy<CharSequence>(adapter) {
         override fun onItemRangeInserted(sender: ObservableList<CharSequence>?, positionStart: Int, itemCount: Int) {
             super.onItemRangeInserted(sender, positionStart, itemCount)
-            eventRecyclerView.scroll(positionStart + itemCount - 1)
+            eventRecyclerView.scrollIfLastVisible(positionStart + itemCount - 1)
         }
     }
     private val messageBoxListener = object : Observable.OnPropertyChangedCallback() {

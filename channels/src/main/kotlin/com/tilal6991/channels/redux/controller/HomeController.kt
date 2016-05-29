@@ -9,12 +9,13 @@ import com.bluelinelabs.conductor.ChildControllerTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.tilal6991.channels.R
 import com.tilal6991.channels.base.storeEvents
+import com.tilal6991.channels.redux.Selectors
 import com.tilal6991.channels.redux.select
-import com.tilal6991.channels.redux.selectedClientSelector
 import com.tilal6991.channels.util.bindToLifecycle
 import com.tilal6991.channels.util.bindView
 
 class HomeController : BaseController() {
+
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -29,7 +30,7 @@ class HomeController : BaseController() {
                 .pushChangeHandler(handler).build())
 
         // Handle drawer state correctly.
-        storeEvents.select(selectedClientSelector)
+        storeEvents.select(Selectors.selectedClient)
                 .bindToLifecycle(this)
                 .distinctUntilChanged()
                 .map { it == null }

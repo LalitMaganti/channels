@@ -79,14 +79,23 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
-        notifyItemRangeMovedInSection(section, sectionItemStart + fromPosition, sectionItemStart + toPosition, itemCount)
+        for (i in 0..itemCount - 1) {
+            notifyItemMoved(sectionItemStart + fromPosition + i, sectionItemStart + toPosition + i)
+        }
     }
 
     fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int) {
         checkSetup()
 
         val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
-        notifyItemRangeChanged(section, sectionItemStart + positionStart, itemCount)
+        notifyItemRangeChanged(sectionItemStart + positionStart, itemCount)
+    }
+
+    fun notifyItemRangeChangedInSection(section: Int, positionStart: Int, itemCount: Int, payload: Any?) {
+        checkSetup()
+
+        val sectionItemStart = sectionAbsolutePositions[section] + getSectionHeadersBefore(section) + getHeaderOffsetForSection(section)
+        notifyItemRangeChanged(sectionItemStart + positionStart, itemCount, payload)
     }
 
     fun notifyItemRangeRemovedInSection(section: Int, offset: Int, removeCount: Int) {
@@ -193,6 +202,34 @@ abstract class SectionAdapter<CVH : RecyclerView.ViewHolder,
             }
         }
         return count
+    }
+
+    class ObserverProxy(private val section: Int,
+                        private val adapter: SectionAdapter<*, *>) : RecyclerView.AdapterDataObserver() {
+
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            adapter.notifyItemRangeMovedInSection(section, fromPosition, toPosition, itemCount)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            adapter.notifyItemRangeInsertedInSection(section, positionStart, itemCount)
+        }
+
+        override fun onChanged() {
+            adapter.notifySectionedDataSetChanged()
+        }
+
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            adapter.notifyItemRangeRemovedInSection(section, positionStart, itemCount)
+        }
+
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+            adapter.notifyItemRangeChangedInSection(section, positionStart, itemCount)
+        }
+
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+            adapter.notifyItemRangeChangedInSection(section, positionStart, itemCount, payload)
+        }
     }
 
     interface GridSpanSizeLookup {

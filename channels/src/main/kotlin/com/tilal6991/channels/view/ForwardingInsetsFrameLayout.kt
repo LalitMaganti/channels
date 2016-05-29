@@ -11,7 +11,7 @@ class ForwardingInsetsFrameLayout @JvmOverloads constructor(
         defStyle: Int = 0,
         defStyleRes: Int = 0) : FrameLayout(context, attrs, defStyle, defStyleRes) {
 
-    override fun onApplyWindowInsets(insets: WindowInsets?): WindowInsets? {
+    override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
         for (i in 0..childCount - 1) {
             getChildAt(i).dispatchApplyWindowInsets(insets)
         }

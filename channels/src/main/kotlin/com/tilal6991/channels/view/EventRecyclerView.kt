@@ -67,7 +67,7 @@ class EventRecyclerView @JvmOverloads constructor(
         layoutManager = layout as LinearLayoutManager
     }
 
-    fun scroll(position: Int) = post {
+    fun scrollIfLastVisible(position: Int) = post {
         // If the last item visible is the final one then keep scrolling.
         val last = layoutManager.findLastCompletelyVisibleItemPosition()
         if (scrollState == SCROLL_STATE_IDLE &&

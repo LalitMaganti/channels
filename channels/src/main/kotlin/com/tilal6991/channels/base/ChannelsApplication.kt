@@ -16,9 +16,10 @@ class ChannelsApplication : Application() {
     val relayHandle: RelayVM by lazy { RelayVM(this) }
 
     val state = store.observable()
+            .replay(1)
             // .onBackpressureDrop()
             // .observeOn(AndroidSchedulers.mainThread())
-            .share()
+            .autoConnect()
 
     override fun onCreate() {
         super.onCreate()
