@@ -5,8 +5,10 @@ import android.databinding.Observable
 import android.databinding.ObservableList
 import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.ViewGroup
 import com.tilal6991.channels.R
 import com.tilal6991.channels.adapter.NavigationAdapter
 import com.tilal6991.channels.adapter.NavigationChildAdapter
@@ -17,15 +19,15 @@ import com.tilal6991.channels.collections.ListSectionProxy
 import com.tilal6991.channels.configuration.ChannelsConfiguration
 import com.tilal6991.channels.ui.helper.ClientChildListener
 import com.tilal6991.channels.ui.helper.ClientListener
-import com.tilal6991.channels.view.NavigationDrawerView
 import com.tilal6991.channels.viewmodel.ChannelVM
 import com.tilal6991.channels.viewmodel.ClientChildVM
 import com.tilal6991.channels.viewmodel.ClientVM
 import com.tilal6991.channels.viewmodel.NavigationHeaderVM
+import org.jetbrains.anko.find
 
 class NavigationPresenter(override val context: MainActivity,
                           private val drawerLayout: DrawerLayout,
-                          private val view: NavigationDrawerView) : Presenter {
+                          private val view: ViewGroup) : Presenter {
     override val id: String get() = "NAVIGATION_PRESENTER"
 
     private lateinit var currentHelper: Helper
@@ -68,8 +70,10 @@ class NavigationPresenter(override val context: MainActivity,
 
         currentHelper = clientHelper
 
+        val recycler = view.find<RecyclerView>(R.id.navdrawer_recycler)
         adapter = NavigationAdapter(view.context, clientHelper.clientAdapter, headerVM, selectedClientsVM)
-        view.setAdapter(adapter)
+        recycler.adapter = adapter
+        recycler.layoutManager = LinearLayoutManager(view.context)
 
         // If there are no selected server, then start with the drawer open.
         if (savedState == null && relayVM.selectedClients.latest == null) {

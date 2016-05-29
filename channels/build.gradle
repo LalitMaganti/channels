@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath rootProject.ext.kotlinPlugin
-        classpath 'com.android.tools.build:gradle:2.2.0-alpha1'
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha2'
     }
 }
 
@@ -72,6 +72,10 @@ dependencies {
     compile rootProject.ext.rxbindingAppcompatv7
     compile rootProject.ext.rxbindingDesign
     compile rootProject.ext.rxbindingRecyclerview
+
+    compile 'com.bluelinelabs:conductor:1.1.6'
+    compile 'com.bluelinelabs:conductor-support:1.1.6'
+    compile 'com.bluelinelabs:conductor-rxlifecycle:1.1.6'
 
     compile rootProject.ext.bansa
     compile 'com.github.tilal6991:reselect-jvm:v0.0.1'

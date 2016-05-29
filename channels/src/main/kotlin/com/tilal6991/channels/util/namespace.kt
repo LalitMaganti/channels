@@ -1,10 +1,15 @@
 package com.tilal6991.channels.util
 
+import android.app.Fragment
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.text.TextUtils
+import android.view.View
+import com.bluelinelabs.conductor.Controller
 import com.tilal6991.channels.collections.IndexedMap
 import timber.log.Timber
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 fun CharSequence.compareTo(other: CharSequence): Int {
     val count = Math.min(length, other.length)

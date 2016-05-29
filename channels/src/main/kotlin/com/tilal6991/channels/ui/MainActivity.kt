@@ -15,12 +15,11 @@ import butterknife.bindView
 import com.tilal6991.channels.R
 import com.tilal6991.channels.util.addAll
 import com.tilal6991.channels.view.EventRecyclerView
-import com.tilal6991.channels.view.NavigationDrawerView
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val navDrawerView: NavigationDrawerView by bindView(R.id.navdrawer_view)
+    private val navDrawerView: ViewGroup by bindView(R.id.navdrawer_view)
     private val eventRecycler: EventRecyclerView by bindView(R.id.event_recycler)
     private val toolbar: Toolbar by bindView(R.id.toolbar)
     private val drawerLayout: DrawerLayout by bindView(R.id.drawer_layout)
